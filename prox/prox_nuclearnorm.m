@@ -26,8 +26,15 @@ function [sol, info] = prox_nuclearnorm(x, gamma, param)
 %   * *param.svds* : 0 uses svd, 1 uses svds. (default: 1 for sparse
 %     matrices, 0 for full matrices)
 %
-%   * *param.max_rank* : TODO!! will be availlable soon for large sparse
-%     matrices and svds!! 
+%   * *param.max_rank* : upper bound of rank expected after thresholding.
+%     If actual rank is greater, SVDS has to restart with bigger bound.
+%     (default: the maximum between 20 and sqrt(n))
+%
+%   * *param.tol* : tolerance for svds. Bigger tolerance yelds faster
+%     results. (default: 1e-5);
+%
+%   * *param.single* : single precision (1) or not (0)? (default: single
+%     only if input is single precision);
 %
 %   info is a Matlab structure containing the following fields:
 %
@@ -47,15 +54,18 @@ function [sol, info] = prox_nuclearnorm(x, gamma, param)
 %
 %   See also:  prox_l1 proj_b1 prox_tv
 
+%% TODO: Fix for single precision input! Can't use single and svds at the 
+%% same time! Right now "svds" flag overrides "single" flag!
 
-% Authors: Nathanael Perraudin, Vassilis Kalofolias
-% Date: June 2012 EPFL
+
+% Authors: Vassilis Kalofolias, Nathanael Perraudin
+% Date: June 2012, revised 2014, EPFL
 %
 
 % Start the time counter
 t1 = tic;
 
-if nargin<3, param=struct; end
+if nargin < 3, param = struct; end
 
 % Optional input arguments
 if ~isfield(param, 'verbose'), param.verbose = 1; end
@@ -68,6 +78,13 @@ if ~isfield(param, 'svds'),
         param.svds = 0;     
     end
 end
+if param.svds == 1
+    if ~isfield(param, 'max_rank'),
+        param.max_rank = max(20, sqrt(min(size(x))));
+    end
+end
+if ~isfield(param, 'tol'), param.tol = 1e-5; end
+if ~isfield(param, 'single'), param.single = isa(x, 'single'); end
 
 
 % Test of gamma
@@ -89,21 +106,32 @@ end
 % Useful functions
 soft = @(z, T) sign(z).*max(abs(z) - T, 0);
 
+svds_opts.tol = param.tol;
+
 if param.svds
-    %TODO: use upper bound for rank! don't compute everything...
-    [U, Sigma, V] = svds(x, min(size(x)));
+    % use upper bound for rank! don't compute everything...
+    [U, S, V] = svds(double(x), param.max_rank, 'L', svds_opts);
+    %[U, Sigma, V] = svds(x, min(size(x)));
+    while S(end) > gamma
+        param.max_rank = 2 * param.max_rank;
+        [U, S, V] = svds(double(x), param.max_rank, 'L', svds_opts);
+    end
 else
     try
-        [U, Sigma, V] = svd(full(x), 'econ');       % good for small, dense matrices!!
+        if param.single
+            [U, S, V] = svd(single(full(x)), 'econ');       % good for small, dense matrices!!
+        else
+            [U, S, V] = svd(full(x), 'econ');       % good for small, dense matrices!!
+        end
     catch %err
         % This can save you sometimes
         fprintf('SVD failed!! Trying with svds...\n');
-        [U, Sigma, V] = svds(x, min(size(x)));
+        [U, S, V] = svds(double(x), min(size(x)));
     end
 end
 
 % Shrink:
-sigma = diag(Sigma);            % column vector
+sigma = diag(S);            % column vector
 sigma = soft(sigma, gamma);     % modified singular values!
 r = sum(sigma > 0);             % rank of solution
 
@@ -116,6 +144,9 @@ sigma = sigma(1:r);
 nuclearNorm = sum(sigma);
 % sol = Ur Sr Vr', where Ur = U(:, 1:r), Sr = diag(sigma), Vr = Vr(:, 1:r)
 sol = U(:, 1:r) * bsxfun(@times, sigma, V(:, 1:r).');
+if param.single
+    sol = single(sol);
+end
 
 if param.verbose >= 1
     fprintf('  prox nuclear norm: rank= %i, |x|_* = %e \n', r, nuclearNorm);

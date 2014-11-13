@@ -1,12 +1,12 @@
 function x = prox_tv1d(y, gamma)
 
 % CZ
-% Tato funkce poËÌt· proxim·lnÌ oper·tor 1D tv normy, tj. ¯eöÌ tento problÈm:
+% Tato funkce po√®√≠t√° proxim√°ln√≠ oper√°tor 1D tv normy, tj. √∏e≈°√≠ tento probl√©m:
 %    prox(x) := min_y 1/2 ||x - y||_2^2 + gamma ||y||_TV.
-% VstupnÌ parametry jsou:
-%     y ... vstupnÌ sign·l
-%     gamma ... konstanta p¯ed tv normou
-%  PouûitÌ:  x = prox_tv1d(y, gamma)
+% Vstupn√≠ parametry jsou:
+%     y ... vstupn√≠ sign√°l
+%     gamma ... konstanta p√∏ed tv normou
+%  Pou≈æit√≠:  x = prox_tv1d(y, gamma)
 % ------------------------------------------------------------------------------------------------------------------
 % EN
 % This function computes proximal operator of 1D tv norm, i.e. it solves this problem:
@@ -16,7 +16,7 @@ function x = prox_tv1d(y, gamma)
 %     gamma ... constant at tv norm
 %  Use:  x = prox_tv1d(y, gamma)
 %
-% podle Ël·nku / according to article: CONDAT, Laurent. A Direct Algorithm for 1-D Total Variation Denoising. 
+% podle √®l√°nku / according to article: CONDAT, Laurent. A Direct Algorithm for 1-D Total Variation Denoising. 
 % IEEE Signal Processing Letters. 2013, vol. 20, issue 11. DOI: 10.1109/LSP.2013.2278339.
     
 N = length(y);

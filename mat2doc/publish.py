@@ -1,50 +1,41 @@
 #!/usr/bin/python
 
 import sys,os,platform
-import notes
 import publishfunctions
 
+curdir = os.path.dirname(os.path.realpath(__file__))
 
 # ------- Configuration parameters -------------
-
-
 
 projectname='unlocbox'
 
 if platform.system()=='Darwin':
-    homefolder='/Users/nati'
+    homefolder='/Users/user'
 else:
-    homefolder='/home/nati'
+    homefolder='/home/user'
 
-project=homefolder+'/work/svn/toolbox/'+projectname+'/'
+project=homefolder+'/'+projectname+'/'
 
 # Configure HTML placement at remote server
-host='nperraud,'+projectname+'@web.sourceforge.net'
-www='/home/project-web/'+projectname+'/htdocs/'
-outputdirweb= '~/work/svn/website/unlocbox-web/'
+host='nati@lts2research.epfl.ch'
+www='/home/nati/'+projectname+'/'
+outputdirweb= '~/work/git/website/unlocbox-web/'
+
 
 # -------- Configuration of mat2doc ------------
-mat2docpath='~/work/git/mat2doc'
+mat2docpath='~/mat2doc'
 
-# -------- Configuration of note ------------
-
-notesdir = homefolder+'/work/svn/unlocbox-note/'
-notehtml = homefolder+'/work/publish/unlocbox/notes/'
-noteswww = www+'notes/'
-
-
-# -------- Configuration of doc tex ------------
-fulldocnote='003'
-tutorialnote1='008'
-tutorialname1='demos/demo_unlocbox*'
-
-
+try :
+    from publish_local import *
+except:
+    pass
 
 # -------- Automatique configuration ------------
 import conf
 outputdir=conf.outputdir
 outputdirphp=outputdir+projectname+'-php/'
 outputdirmat=outputdir+projectname+'-mat/'
+outputdirrelease=outputdir+projectname+'-release/'
 outputdirtex=outputdir+projectname+'-tex/'
 
 f=file(project+projectname+'_version')
@@ -52,13 +43,19 @@ versionstring=f.read()[:-1]
 f.close()
 
 # ------- do not edit below this line ----------
-
-
+f = open(project + 'mat2doc/startup.m', 'w')
+f.write('addpath ' + unlocxpath + '\n')
+f.write('init_unlocbox;\n\n')
+f.write('addpath ' + ltfatpath + '\n')
+f.write('ltfatstart;\n');
+f.close()
 
 
 todo=sys.argv
 
 
+#if 'package' in todo:
+#    todo.append('release')
 
 #  Optional parameters
 
@@ -85,29 +82,10 @@ if 'phpall' in todo:
 
 
 #  Publish
-if 'mat' in todo:
-    s=mat2docpath+'/mat2doc.py '+project+' mat'
-    os.system(s)
-
-    
-if 'php' in todo:
-    s=mat2docpath+'/mat2doc.py '+plot+build+' '+project+' php'
-    os.system(s)
-
-
-if 'html' in todo:
-    s=mat2docpath+'/mat2doc.py '+plot+build+' '+project+' html'
-    os.system(s)
-
-if 'tex' in todo:
-    s=mat2docpath+'/mat2doc.py '+plot+build+' '+project+' tex'
-    os.system(s)
-
-if 'copytex' in todo:
-    s='cp -R '+outputdirtex+' '+notesdir+fulldocnote
-    os.system(s)
-    s='cp '+outputdirtex+tutorialname1+' '+notesdir+tutorialnote1
-    os.system(s)
+for mode in  ['mat', 'php', 'html', 'tex']:
+    if mode in todo:
+        s = '%s %s/mat2doc.py %s%s %s %s' % ('PYTHONPATH="%s:$PYTHONPATH"' % (curdir,), mat2docpath, plot if mode != 'mat' else '', build if mode != 'mat' else '', project, mode,)
+        os.system(s)
 
 
 #  Packaging
@@ -141,6 +119,8 @@ if 'package' in todo:
     os.system('rm -r '+outputdir+projectname)
 
 
+
+
 #  Send to the server
 
 
@@ -166,6 +146,14 @@ if 'sendfile' in todo:
     s='rsync -av '+outputdir+projectname+'.zip '+host+':'+www
     os.system(s)
 
+
+
+
+if 'copytex' in todo:
+    s='cp -R '+outputdirtex+' '+notesdir+fulldocnote
+    os.system(s)
+    s='cp '+outputdirtex+tutorialname1+' '+notesdir+tutorialnote1
+    os.system(s)
 
 
 #  Make the notes
