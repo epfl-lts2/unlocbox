@@ -1,8 +1,5 @@
 %DEMO_UNLOCBOX  Simple tutorial for the UNLocBoX
 %
-%   Introduction
-%   ------------
-%
 %   This toolbox is designed to solve convex optimization problems of the
 %   form:
 %
@@ -21,20 +18,20 @@
 %   refer to the userguide (UNLocBoX-note-002) availlable on
 %   `<http://unlocbox.sourceforge.net/note/>`_. 
 %
-%   This toolbox uses proximal splitting methods. Those cut the
+%   This toolbox uses proximal splitting methods. These cut the
 %   problem into smaller (and easier) subproblems that will be solved
 %   iteratively.
 %
 %   The toolbox is essentially made of three kind of functions:
 %   
-%   * Solvers: the core of the toolbox
+%   * Solvers: the core of the toolbox.
 %
 %   * Proximity operators: they solve small minimization problems and 
 %     allow a quick implementation of common problems. 
 %
 %   * Demonstration files: examples to help you to use the toolbox
 %
-%   This toolbox is provided for free. We would be happy to receive
+%   This toolbox is provided for free. We would be happy to recieve
 %   comments, bugs or any kind of help that could help us to improve the
 %   toolbox.
 %
@@ -46,7 +43,7 @@
 %
 %   .. figure::
 %
-%      This figure shows the original image (The cameraman).   
+%      The original image provided by the toolbox. Use cameraman() function to access.
 %
 %      
 %
@@ -62,13 +59,13 @@
 %
 %   .. figure::
 %
-%      This figure shows the noisy image.    
+%      Noisy image.    
 %
 %      
 %
 %   .. figure::
 %
-%      This figure shows the measurements. 50 percents of the pixels have been removed.    
+%      Measurements. 50 percents of the pixels have been removed.    
 %
 %       
 %
@@ -83,7 +80,7 @@
 %   .. math::  Ax = y
 %
 %   where $x$ is the vectorized image we want to recover, $y$ are the
-%   observe noisy pixels and $A$ a linear operator representing the mask.
+%   observed noisy pixels and $A$ a linear operator representing the mask.
 %   However due to the addition of noise this constraint is a little bit
 %   relaxed. We rewrite it in the following form 
 %
@@ -96,28 +93,30 @@
 %   In our case, as the measurements are noisy, we set $\epsilon$ to the
 %   standard deviation of the noise.
 %
-%   Using the prior assumption that the image has a small TV-norm (image
-%   composed of patch of color and few degradee), we will express the
+%   We use the prior assumption that the image has a small total variation
+%   norm (TV-norm). On images, this norm is low when the image is
+%   composed of patch of color and few "degradee" (gradient). (The TV-norm
+%   is the $l^1$-norm of the gradient of $x$.) To summary, we express the
 %   problem as
 %
 %   ..  argmin ||x||_TV s.t ||Ax-y||_2 < epsilon        (Problem I)
 %
-%   .. math:: arg \min_x \|x\|_{TV} \hspace{1cm} \text{subject}\hspace{0.25cm}  \text{to}\hspace{1cm} \|b-Ax\|_2 \leq \epsilon \hspace{1cm} \text{(Problem I)}
+%   .. math:: arg \min_x \|x\|_{TV} \hspace{1cm} \text{subject}\hspace{0.25cm}  \text{to}\hspace{1cm} \|Ax-y\|_2 \leq \epsilon \hspace{1cm} \text{(Problem I)}
 %  
-%   where b is the degraded image and A an linear operator
+%   where $y$ is the degraded image and A a linear operator
 %   representing the mask. $\epsilon$ is a free parameter that tunes the
 %   confidence to the measurements.
 %   This is not the only way to define the problem. We could also write:
 %
 %   ..  argmin ||Ax-y||_2 + lambda  ||x||_TV            (Problem II)
 %
-%   .. math:: arg \min_x \|b-Ax\|_2 + \lambda \|x\|_{TV} \hspace{1cm} \text{(Problem II)}
+%   .. math:: arg \min_x \|Ax-y\|_2 + \lambda \|x\|_{TV} \hspace{1cm} \text{(Problem II)}
 %
 %   with the first function playing the role of a data fidelity term and
 %   the second a prior assumption on the signal. $\lambda$ adjusts the tradeoff
 %   between measurement fidelity and prior assumption. We call it the 
 %   `regularization parameter`. The smaller it is, the more we trust the
-%   measurements and vice-versa. $\epsilon$ play a similar role as $\lambda$.
+%   measurements and conversely. $\epsilon$ play a similar role as $\lambda$.
 %
 %   Note that there exist a bijection between the parameters $\lambda$ and
 %   $\epsilon$ leading to the same solution. The bijection function is not
@@ -128,7 +127,7 @@
 %   ------------------
 %
 %   The UNLocBoX is using proximal splitting techniques for solving convex
-%   optimization problem. Those techniques consist in dividing the problem
+%   optimization problems. Those techniques consist of dividing the problem
 %   into easier problems. Each function is minimized with its proximity
 %   operator.
 %   In this particular case, the solver will iteratively minimize the TV 
@@ -141,11 +140,12 @@
 %
 %     .. math:: prox_{f,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2 +  \gamma f(x)
 %
-%   Proximity operators are minimizing a function without going too far
+%   Proximity operators minimizes a function without going too far
 %   from a initial point. They can be assimilated as denoising operator. They
-%   are also considered as generalization of projection.
-%
-%   Indeed, the proximity operator of the indicator function define by:
+%   are also often considered as generalization of projection because
+%   projections are proximity operator of indicator functions. Those
+%   functions tells if $x$ belong to a set $C$. They can take only two values:
+%   $0$ if $x$ is in the set and $\infty$ otherwise:
 %
 %   ..             /   0       if   x in C   
 %         i_C(x) = |
@@ -153,68 +153,77 @@
 %
 %   .. math:: i_{C}:\mathbb{R}^{L}\rightarrow\{0,+\infty\}:x\mapsto\begin{cases}0,\hspace{0.25cm} & \text{if}\hspace{0.25cm}x\in C\\+\infty\hspace{0.25cm} & \text{otherwise}\end{cases}
 %
-%   is simply the projection onto the set $C$.
+%   The solution of the proximity operator of this function has to be in
+%   the set $C$, otherwise the $i_C(x)=\infty$. Moreover, since it also
+%   minimizes $\|x-z\|_2^2$, the proximity operator will select the closest
+%   point to $z$. As a result the proximity operator of this function is
+%   indeed a projection.
 %
-%   The toolbox solvers cannot directly handle constraints and only take
-%   functions as input. However the constraints can be inserted in the 
-%   objective function in the form of indicator functions. 
+%   It is important to keep the equivalence between constraints and
+%   indicative function in mind sincet the toolbox solvers cannot directly
+%   handle constraints and only take functions as input. The constraint
+%   will thus be inserted in the form of indicative functions.
 %
 %   Solving problem I
 %   -----------------
 %
-%   The UNLocBoX solvers take as input functions with their proximity
-%   operator or with their gradient. In the toolbox, functions are
-%   modelized with structure object with at least two fields. One field
+%   The UNLocBoX solvers take as input functions. Those function have to
+%   contains a proximity operator or a gradient. In the toolbox, functions 
+%   are modelized by structure with at least two fields. One field
 %   contains an operator to evaluate the function and the other allows to
 %   compute either the gradient (in case of differentiable function) or the
-%   proxitity operator ( in case of non differentiable functions). In this
+%   proximity operator ( in case of non differentiable functions). In this
 %   example, we need to provide two functions: 
 %
 %   * $f_1(x)=||x||_{TV}$
-%     We define the prox of $f_1$ as: 
+%     The proximity operator of $f_1$ is: 
 %
-%     .. prox_{f1,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma ||z||_TV
+%     .. prox_{f1,gamma} (z) = argmin_{z} 1/2 ||x-z||_2^2  +  gamma ||z||_TV
 %
-%     .. math:: prox_{f1,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2  +  \gamma \|z\|_{TV}
+%     .. math:: prox_{f1,\gamma} (z) = arg \min_{z} \frac{1}{2} \|x-z\|_2^2  +  \gamma \|z\|_{TV}
 %
 %     This function is defined in Matlab using::
 %
 %           paramtv.verbose=1;
 %           paramtv.maxit=50;
-%           f1.prox=@(x, T) prox_tv(x, T, paramtv);
+%           f1.prox=@(x, gamma) prox_tv(x, gamma, paramtv);
 %           f1.eval=@(x) tv_norm(x);   
 %
 %     This function is a structure with two fields. First, *f1.prox* is an
 %     operator taking as input $x$ and $T$ and evaluating the proximity
-%     operator of the function ($T$ plays the role of $\gamma$ is the
+%     operator of the function ($T$ plays the role of $\gamma$ in the
 %     equation above). Second, and sometime optional, *f1.eval* is also an
 %     operator evaluating the function at $x$.
 %
 %     The proximal operator of the TV norm is already implemented in the
 %     UNLocBoX by the function `prox_tv`. We tune it by setting the maximum
-%     number of iterations and a verbosity level. Other parameters are also
-%     available (see documentation).
+%     number of iterations and a verbosity level.
 %
 %     * *paramtv.verbose* selects the display level (0 no log, 1 summary at
 %       convergence and 2 display all steps).
 %
 %     * *paramtv.maxit* defines the maximum number of iteration.
 %
-%   * $f_2$ is the indicator function of the set S defines by $||Ax-b||_2 <\epsilon$ 
-%     We define the proximity operator of $f_2$ as 
+%     Other parameters are also available (see documentation).
+%
+%   * $f_2$ is the indicator function of the set S defined by $||Ax-y||_2 <\epsilon$ 
+%     The proximity operator of $f_2$ is: 
 %
 %     .. prox_{f2,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma i_S( x ),
 %
 %     .. math:: prox_{f2,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2   + i_S(x) ,
 %
 %     with $i_S(x)$ is zero if x is in the set S and infinite otherwise.
-%     This previous problem has an identical solution as:
+%     Under some technical assumption, this previous problem has an
+%     identical solution as:
 %
 %     .. argmin_{z} ||x - z||_2^2   s.t.  || A z - y||_2 < epsilon
 %
-%     .. math:: arg \min_{z} \|x - z\|_2^2   \hspace{1cm} \text{subject} \hspace{0.25cm} \text{to} \hspace{1cm} \|Az-by\|_2 \leq \epsilon
+%     .. math:: arg \min_{z} \|x - z\|_2^2   \hspace{1cm} \text{subject} \hspace{0.25cm} \text{to} \hspace{1cm} \|Az-y\|_2 \leq \epsilon
 %
-%     It is simply a projection on the B2-ball. In matlab, we write::
+%     It is simply a projection on the B2-ball (The B2-ball is the set of
+%     all points satisfying $\| A x - y\|_2 < \epsilon$ ). In matlab, we
+%     write::
 %
 %           param_proj.epsilon=epsilon;
 %           param_proj.A=A;
@@ -229,9 +238,26 @@
 %     implementation reasons, it is better to set the value of the operator
 %     *f2.eval* to *eps* than to $0$. Note that this hypothesis could lead
 %     to strange evolution of the objective function. Here the parameter
-%     *A* and *At* are mendatory. Note that *A* = *At*, since the masking
-%     operator can be performed by a diagonal matrix containing 1's for
-%     observed pixels and 0's for hidden pixels.
+%     *A* and *At* are mandatory. Please notice here the two following
+%     lines:: 
+%
+%           param_proj.A = A;
+%           param_proj.At = A;
+%
+%     In fact we consiser here the masking operator *A* as a diagonal
+%     matrix containing 1's for observed pixels and 0's for hidden pixels.
+%     As a consequence: *A* = *At*. In matlab, one easy way to implement
+%     this operator is to use::
+%
+%           A = @(x) matA .* x;
+%
+%     with *matA* the mask. In a compressed sensing problem for instance,
+%     you would define:
+%
+%           param_proj.A = @(x) Phi * x;
+%           param_proj.At = @(x) Phi' * x;
+%
+%     where *Phi* is the sensing matrix!
 %
 %   At this point, a solver needs to be selected. The UNLocBoX contains many
 %   different solvers. You can try them and observe the convergence speed. 
@@ -331,7 +357,28 @@
 %   Some methods allow to compute those parameter. However, this is far
 %   beyond the scope of this tutorial.
 %
-%   References: combettes2011proximal
+%   
+%   Conclusion
+%   ----------
+%
+%   It is not trivial to know which formulation of the problem is better.
+%   Generally, forward backward and ADMM are considered as the best solver.
+%   However, writing the problem with a constraint allows the use of
+%   projection. This formulation (using Douglas Rachford) is usually slower
+%   but allows usually the user to set up the parameter more easily. Indeed
+%   it is simpler to fix the radius of the B2-ball (it can be computed with
+%   the noise level for instance) than to find the correct $\lambda$ the
+%   regularization parameter. 
+%
+%   Speed consideration are relative when using the UNLocBoX. Due to
+%   general implementation of the toolbox, we estimate the overall speed two
+%   times slower than an optimal algorithm cooked and optimized for a
+%   special problem. We are working to improve this.
+%
+%   Thanks for reading this tutorial
+%   
+%
+%   References: combettes2011proximal perraudin2014unlocbox
 
 % Author: Nathanael Perraudin
 % Date: fev 23 2012

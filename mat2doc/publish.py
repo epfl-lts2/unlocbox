@@ -2,6 +2,7 @@
 
 import sys,os,platform
 import publishfunctions
+import notes
 
 curdir = os.path.dirname(os.path.realpath(__file__))
 
@@ -29,6 +30,20 @@ try :
     from publish_local import *
 except:
     pass
+
+
+
+# -------- Configuration of note ------------
+
+notesdir = homefolder+'/work/svn/unlocbox-note/'
+notehtml = homefolder+'/work/publish/unlocbox/notes/'
+noteswww = www+'notes/'
+
+
+# -------- Configuration of doc tex ------------
+fulldocnote='003'
+tutorialnote1='008'
+tutorialname1='demos/demo_unlocbox*'
 
 # -------- Automatique configuration ------------
 import conf
@@ -155,9 +170,29 @@ if 'copytex' in todo:
     s='cp '+outputdirtex+tutorialname1+' '+notesdir+tutorialnote1
     os.system(s)
 
+    # Suppress the first line and replace description by introduction
+    f = open(notesdir+tutorialnote1+"/demo_unlocbox.tex","r")
+    lines = f.readlines()
+    f.close()
+    f = open(notesdir+tutorialnote1+"/demo_unlocbox.tex","w")
+    linenumber = 0
+    for line in lines:
+        linenumber = linenumber+1
+        if  linenumber>1:
+            line = line.replace("\\begin{figure}","\\begin{figure}[ht!]")
+            line = line.replace("\\subsubsection","\\section")
+            line = line.replace("\\section{Description","\\section{Introduction")
+
+            f.write(line)
+            #print line
+    f.close()
+
+
+
 
 #  Make the notes
 if 'noteall' in todo:
+    todo.append('notesclean')
     todo.append('notesmake')
     todo.append('notestexclean')
     todo.append('noteshtml')
