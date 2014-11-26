@@ -3,9 +3,9 @@
 %   This toolbox is designed to solve convex optimization problems of the
 %   form:
 %
-%   ..          argmin_x  f1(x) + f2(x),
+%   ..          argmin_x  (f1(x) + f2(x)),
 %
-%   .. math:: arg \min_{x \in \mathbb{R}^N}  f_1(x) + f_2(x),
+%   .. math:: arg \min_{x \in \mathbb{R}^N}  \left(f_1(x) + f_2(x)\right),
 %
 %   or more generally
 %   
@@ -18,28 +18,30 @@
 %   refer to the userguide (UNLocBoX-note-002) availlable on
 %   `<http://unlocbox.sourceforge.net/note/>`_. 
 %
-%   This toolbox uses proximal splitting methods. These cut the
-%   problem into smaller (and easier) subproblems that will be solved
-%   iteratively.
+%   This toolbox uses proximal splitting methods. These methods separate
+%   the problem into smaller (and easier) subproblems that can be solved in
+%   an iterative fashion.
 %
-%   The toolbox is essentially made of three kind of functions:
+%   The toolbox essentially consists of three families of functions:
 %   
-%   * Solvers: the core of the toolbox.
-%
 %   * Proximity operators: they solve small minimization problems and 
-%     allow a quick implementation of common problems. 
+%     allow a quick implementation of many composite problems. 
+%
+%   * Solvers: generic mimimization algorithms that can work with different
+%     combinations of proximity operators in order to minimize complex
+%     objective functions
 %
 %   * Demonstration files: examples to help you to use the toolbox
 %
-%   This toolbox is provided for free. We would be happy to recieve
-%   comments, bugs or any kind of help that could help us to improve the
+%   This toolbox is provided for free. We would be happy to receive
+%   comments, bugs information or any kind of help in order to improve the
 %   toolbox.
 %
-%   The problem
+%   A simple example: Image inpainting
 %   -----------
-%   Let's suppose we have a noisy image with missing pixels. Our goal would
-%   be to find the closest image to the original one. We begin first by
-%   setting up some assumptions about the problem.
+%   Let's suppose we have a noisy image with missing pixels. Our goal is to
+%   find the closest image to the original one. We begin first by setting
+%   up some assumptions about the problem.
 %
 %   .. figure::
 %
@@ -50,12 +52,15 @@
 %   Assumptions
 %   -----------
 %   In this particular example, we firstly assume that we know the position 
-%   of the missing pixels. This can be the result of a previous process on 
-%   the image or a simple assumption.
-%   Secondly, we assume that the image is not special. Thus, it is
-%   composed of well delimited patches of colors.
-%   Thirdly, we suppose that known pixels are subject to some Gaussian
-%   noise with a variance of $\epsilon$.
+%   of the missing pixels. This is the case when we know that a specific
+%   part of a photo is destroyed and we want to recover it, or when we have
+%   sampled some of the pixels in known positions and we want to recover
+%   the rest of the image. Secondly, we assume that the image follows some
+%   standard distribution. For example, many natural images are known to
+%   have sharp edges and almost flat regions (an extreme case are cartoon
+%   images with completely flat regions). Thirdly, we suppose that known
+%   pixels are subject to some Gaussian noise with a variance of
+%   $\epsilon$.
 %
 %   .. figure::
 %
@@ -88,16 +93,16 @@
 %
 %   .. math::  \| Ax - y \|_2 \leq \epsilon  
 %   
-%   Note that $\epsilon$ can be chosen equal to 0 to satisfy exactly the 
-%   constraint.
-%   In our case, as the measurements are noisy, we set $\epsilon$ to the
-%   standard deviation of the noise.
+%   Note that $\epsilon$ can be chosen to be equal to 0 so that the
+%   equality $y=Ax$ is satisfied. In our case, as the measurements are
+%   noisy, we set $\epsilon$ to be the expected value of the norm of the
+%   noise (standard deviation times square root of number of measurements).
 %
 %   We use the prior assumption that the image has a small total variation
 %   norm (TV-norm). On images, this norm is low when the image is
-%   composed of patch of color and few "degradee" (gradient). (The TV-norm
-%   is the $l^1$-norm of the gradient of $x$.) To summary, we express the
-%   problem as
+%   composed of patches of color and few "degradee" (gradients). (The
+%   TV-norm is the $l^1$-norm of the gradient of $x$.) To summarize, we
+%   express the problem as
 %
 %   ..  argmin ||x||_TV s.t ||Ax-y||_2 < epsilon        (Problem I)
 %
@@ -116,22 +121,25 @@
 %   the second a prior assumption on the signal. $\lambda$ adjusts the tradeoff
 %   between measurement fidelity and prior assumption. We call it the 
 %   `regularization parameter`. The smaller it is, the more we trust the
-%   measurements and conversely. $\epsilon$ play a similar role as $\lambda$.
+%   measurements and conversely. $\epsilon$ plays a similar role as
+%   $\lambda$. 
 %
-%   Note that there exist a bijection between the parameters $\lambda$ and
+%   Note that there exists a bijection between the parameters $\lambda$ and
 %   $\epsilon$ leading to the same solution. The bijection function is not
 %   trivial to determine. Choosing between one or the other problem will
-%   affect the solvers and the convergence rate.
+%   affect the choice of the solver and the convergence rate.
 %
-%   Proximity operator
-%   ------------------
+%   Proximity operators
+%   -------------------
 %
 %   The UNLocBoX is using proximal splitting techniques for solving convex
-%   optimization problems. Those techniques consist of dividing the problem
-%   into easier problems. Each function is minimized with its proximity
-%   operator.
+%   optimization problems. These techniques consist of dividing the problem
+%   into easier problems. Each function is minimized by consecutive
+%   applications of its proximity operator.
 %   In this particular case, the solver will iteratively minimize the TV 
-%   norm and then perform the projection. 
+%   norm and then perform the projection on the fidelity term ball (the
+%   ball in the space of $x$ with radius $\epsilon$ defined by the
+%   inequality $\|Ax-y\|\leq \epsilon$).   
 %
 %   The proximity operator of a lower semi-continuous convex function $f$ is
 %   defined by:
@@ -140,12 +148,12 @@
 %
 %     .. math:: prox_{f,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2 +  \gamma f(x)
 %
-%   Proximity operators minimizes a function without going too far
-%   from a initial point. They can be assimilated as denoising operator. They
-%   are also often considered as generalization of projection because
-%   projections are proximity operator of indicator functions. Those
-%   functions tells if $x$ belong to a set $C$. They can take only two values:
-%   $0$ if $x$ is in the set and $\infty$ otherwise:
+%   Proximity operators minimize a function without going too far
+%   from a initial point. They can be thought of assimilated as denoising
+%   operator. They are also often considered as generalization of
+%   projection because projections are proximity operator of indicator
+%   functions. Those functions tells if $x$ belong to a set $C$. They can
+%   take only two values: $0$ if $x$ is in the set and $\infty$ otherwise:
 %
 %   ..             /   0       if   x in C   
 %         i_C(x) = |
