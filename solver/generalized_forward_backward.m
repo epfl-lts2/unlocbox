@@ -196,7 +196,7 @@ elseif param.verbose==1
 
 
     % Stopping criterion
-    fprintf(', %i iter', iter);
+    fprintf(', it = %i', iter);
     fprintf(', crit: %s \n', crit);
 end
 

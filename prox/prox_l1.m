@@ -115,13 +115,14 @@ param.weights = test_weights(param.weights);
 if param.tight && ~param.pos % TIGHT FRAME CASE
     temp = param.A(x);
     if ~isfield(param, 'y'), param.y = zeros(size(temp)); end
-    temp = temp - param.y;
     % TODO: improve this code to suppress the unuseful operation to compute
     % the norm_l1...
-    sol = x + 1/param.nu * param.At(soft_threshold(temp, ...
-        gamma*param.nu*param.weights)-temp);
+    % Done!!!
+    temp2 = param.y + soft_threshold(temp -  param.y , ...
+                        gamma*param.nu*param.weights) - temp;
+    sol = x + 1/param.nu * param.At(temp2);
     crit = 'REL_OBJ'; iter = 1;
-    dummy = param.A(sol)-param.y;
+    dummy = temp2 +temp;
     norm_l1 = gamma*sum(param.weights(:).*abs(dummy(:)));
 
 else % NON TIGHT FRAME CASE OR CONSTRAINT INVOLVED
