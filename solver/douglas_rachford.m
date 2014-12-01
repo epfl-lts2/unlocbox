@@ -36,7 +36,9 @@ function [sol,info,objective] = douglas_rachford(x_0,f1, f2, param)
 %
 %     General parameters:
 %
-%     * *param.gamma* : is the gamma of the convergence parameter. By default, it's 1
+%     * *param.gamma* : is the stepsize. It should be stricly positive.
+%       Tuning this parameter allows a tradeoff between speed of convergence
+%       and precision.  By default, it's 1.  
 %
 %     * *param.tol* : is stop criterion for the loop. The algorithm stops if
 %
@@ -51,6 +53,7 @@ function [sol,info,objective] = douglas_rachford(x_0,f1, f2, param)
 %       'ISTA'. By default, it's 'FISTA'.
 %
 %     * *param.lambda* : is the weight of the update term. By default 1.
+%       (Do not touch this parameter unless you read the paper in reference) 
 %
 %     * *param.maxit* : is the maximum number of iteration. By default, it is 200.
 % 
@@ -133,7 +136,7 @@ while 1
      % Global stopping criterion
     curr_norm = f1.eval(sol)+f2.eval(sol);
     [stop,rel_norm,prev_norm,iter,objective,crit] = convergence_test(curr_norm,prev_norm,iter,objective,param);
-    [x_n,param] = post_process(sol, iter, curr_norm, prev_norm, param);
+    [x_n,param] = post_process(sol, iter, curr_norm, prev_norm, objective, param);
 
     if param.verbose >= 2
         fprintf('  ||f|| = %e, rel_norm = %e\n', ...
@@ -166,11 +169,13 @@ elseif param.verbose>=1
 end
 
 
-info.algo=mfilename;
-info.iter=iter;
-info.final_eval=curr_norm;
-info.crit=crit;
-info.time=toc(t1);
-info.rel_norm=rel_norm;
+info.algo = mfilename;
+info.iter = iter;
+info.final_eval = curr_norm;
+info.crit = crit;
+info.time = toc(t1);
+info.rel_norm = rel_norm;
+info.objective = objective;
+
 
 end
