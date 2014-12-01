@@ -161,7 +161,7 @@ while 1
 
     curr_norm = f.eval(sol)+norm_sumg(sol,F);
     [stop,rel_norm,prev_norm,iter,objective,crit] = convergence_test(curr_norm,prev_norm,iter,objective,param);
-    [sol,param]=post_process(sol,iter,curr_norm,prev_norm,param);
+    [sol, param] = post_process(sol, iter, curr_norm, prev_norm, objective, param);
     if stop
         break;
     end
