@@ -10,6 +10,8 @@ errors=errors+test_prox_l2_iter1(tol);
 errors=errors+test_prox_l2_iter2(tol);
 errors=errors+test_prox_l2_iter3(tol);
 
+errors=errors+test_prox_l2_tightT(tol);
+
 
 errors=errors+test_prox_l2_op1(tol);
 errors=errors+test_prox_l2_op2(tol);
@@ -71,6 +73,41 @@ param.tol=eps(10);
 
 end
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  -- test prox l2 y       --  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [errors]=test_prox_l2_tightT(tol)
+x= randn(100,1);
+y= randn(100,1);
+w= rand(100,1);
+
+M = rand(100,1);
+M = double(M>0.5);
+gamma=0.5;
+
+param.A = @(x) M.*x;
+param.At= @(x) M.*x;
+param.verbose=0;
+param.weights=w;
+param.y=y;
+param.tight = 0;
+param.tol=eps(10);
+
+sol = prox_l2(x,gamma,param);
+
+param.tightT = 1;
+    if norm(prox_l2(x,gamma,param)-sol)<1e-6
+       fprintf('Test prox L2 - TightT - ok\n')
+       errors=0;
+    else
+       fprintf('Test prox L2 - TightT - Error !!!!!!!!!!!!!!\n')
+       param.verbose=2;
+       norm(prox_l2(x,gamma,param)-sol)
+       errors=1;
+    end
+
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  -- test prox l2 weights --  %

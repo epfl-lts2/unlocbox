@@ -30,7 +30,11 @@ function [sol,info] = prox_l2(x, gamma, param)
 %
 %   * *param.At* : Adjoint operator (default: A).
 %
+%   * *param.tightT* : 1 if $A^T$ is a tight frame or 0 if not (default = 1)
+%     Note that $A^T$ tight means $A A^T = \nu I$.
+%
 %   * *param.tight* : 1 if A is a tight frame or 0 if not (default = 1)
+%     Note that $A$ tight means $A^T A = \nu I$.
 %
 %   * *param.nu* : bound on the norm of the operator A (default: 1), i.e.
 %
@@ -69,20 +73,21 @@ function [sol,info] = prox_l2(x, gamma, param)
 %
 %
 %   See also:  proj_b2 prox_l1
-
+ 
 % Author: Nathanael Perraudin
 % Date: Nov 2012
 %
-
+ 
 % Start the time counter
 t1 = tic;
-
+ 
 % Optional input arguments
 if nargin<3, param=struct; end
-
+ 
 % Optional input arguments
 if ~isfield(param, 'verbose'), param.verbose = 1; end
 if ~isfield(param, 'tight'), param.tight = 1; end
+if ~isfield(param, 'tightT'), param.tightT = 0; end
 if ~isfield(param, 'nu'), param.nu = 1; end
 if ~isfield(param, 'tol'), param.tol = 1e-3; end
 if ~isfield(param, 'maxit'), param.maxit = 200; end
@@ -91,20 +96,20 @@ if ~isfield(param, 'At'), param.At = param.A; end
 if ~isfield(param, 'y'), param.y = zeros(size(param.A(x))); end
 if ~isfield(param, 'weights'), param.weights = ones(size(param.y)); end
 if ~isfield(param, 'pcg'), param.pcg = 1; end
-
-
-
-
+ 
+ 
+ 
+ 
 % Check if the weight are correct with respect to the tight frame
 if (max(param.weights(:))~=min(param.weights(:))) && param.tight
     param.tight=0;    
 end
-
-
+ 
+ 
 if max(param.weights(:))==min(param.weights(:))
     param.weights=max(param.weights(:));
 end
-
+ 
 % test the parameters
 if test_gamma(gamma)
     sol = x;
@@ -116,15 +121,31 @@ if test_gamma(gamma)
     
     return; 
 end
-
+ 
 param.weights=test_weights(param.weights);
-
-
-
+ 
+ 
+ 
 % Projection
 if param.tight % TIGHT FRAME CASE
     
     sol=(x+gamma*2*param.At(param.y.*abs(param.weights).^2))./(gamma*2*param.nu*param.weights.^2+1);
+    
+    
+    % Infos for log...
+    % L2 norm of the estimate
+    dummy = (param.A(sol)-param.y);
+    norm_l2 = .5*norm(x(:) - sol(:), 'fro')^2 + gamma *  norm(param.weights(:).*dummy(:))^2;
+    % stopping criterion
+    crit = 'REL_OB'; 
+    % number of iteration
+    iter=0;
+    
+elseif param.tightT % TIGHT FRAME CASE OF A^T
+    
+    sol=(x - 2*gamma./((2*gamma*param.weights.^2 +1)*param.nu) .*...
+        param.At((param.A(x)-param.y).*abs(param.weights).^2));
+
     
     
     % Infos for log...
@@ -144,7 +165,7 @@ else % NON TIGHT FRAME
 %         b = 2*gamma*param.At(param.weights.^2.*param.y) + x;        
 %         [sol,flag,~,iter] = pcg(A,b,param.tol,param.maxit,[],[],x);       
         sx = size(x);
-
+ 
         A = @(z) reshape( 2*gamma*param.At( param.weights.^2 .* ...
             param.A(reshape(z,sx))),[],1) + z;
         b = 2*gamma*param.At(param.weights.^2.*param.y) + x;        
@@ -169,31 +190,31 @@ else % NON TIGHT FRAME
         stepsize=1/(2*gamma*max(abs(param.weights)).^2*param.nu+1);
         % gradient
         grad= @(z) z-x+gamma*2.*param.At(param.weights.^2.*(param.A(z)-param.y));
-
+ 
         % Init
         if param.verbose > 1
             fprintf('  Proximal l2 operator:\n');
         end
         while 1
-
+ 
             % L2 norm of the estimate
             dummy = param.weights.*(param.A(sol)-param.y);
             norm_l2 = .5*norm(x(:) - sol(:), 'fro')^2 + gamma * norm(dummy(:))^2;
             rel_l2 = abs(norm_l2-prev_l2)/norm_l2;
-
+ 
             % Log
             if param.verbose>1
                 fprintf('   Iter %i, ||w (A x- y)||_2^2 = %e, rel_l2 = %e\n', ...
                     iter, norm_l2, rel_l2);
             end
-
+ 
             % Stopping criterion
             if (rel_l2 < param.tol)
                 crit = 'REL_OB'; break;
             elseif iter >= param.maxit
                 crit = 'MAX_IT'; break;
             end
-
+ 
             % FISTA algorithm
             x_n=u_n-stepsize*grad(u_n);
             tn1=(1+sqrt(1+4*tn^2))/2;
@@ -201,28 +222,28 @@ else % NON TIGHT FRAME
             %updates
             sol=x_n;
             tn=tn1;
-
-
+ 
+ 
             % Update
             prev_l2 = norm_l2;
             iter = iter + 1;
-
+ 
         end
     end
 end
-
+ 
 % Log after the projection onto the L2-ball
 if param.verbose >= 1
     fprintf('  prox_L2: ||w (A x- y) ||_2^2 = %e, %s, iter = %i\n', ...
     norm_l2, crit, iter);
-
+ 
 end
-
-
+ 
+ 
 info.algo=mfilename;
 info.iter=iter;
 info.final_eval=norm_l2;
 info.crit=crit;
 info.time=toc(t1);
-
+ 
 end
