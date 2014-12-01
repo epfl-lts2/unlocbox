@@ -16,7 +16,7 @@ function [sol,info] = prox_l1(x, gamma, param)
 %
 %   .. sol = argmin_{z} 0.5*||x - z||_2^2 + gamma * ||A z - y ||_1
 %
-%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \|A z\|_1
+%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \|A z - y\|_1
 %
 %   param is a Matlab structure containing the following fields:
 %

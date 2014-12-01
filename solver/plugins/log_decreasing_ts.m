@@ -20,7 +20,7 @@ function gamma = log_decreasing_ts(x, gamma_in, gamma_fin, nit)
 %   in the structure of optional argument of the solver.
 %
 
-% Author: Nathanaël Perraudin
+% Author: Nathanael Perraudin
 % Date:   3 April 2014
 
 
