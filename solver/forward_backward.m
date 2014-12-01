@@ -178,7 +178,7 @@ end
 % Log
 if param.verbose>=2
     % Print norm
-    fprintf('\n Solution found:\n');
+    fprintf('\n Forward backward:\n');
     fprintf(' Final relative norm: %e\n', rel_norm );
     
     
@@ -186,8 +186,8 @@ if param.verbose>=2
     fprintf(' %i iterations\n', iter);
     fprintf(' Stopping criterion: %s \n\n', crit);
 elseif param.verbose>=1
-    fprintf('  Solution found: ||f|| = %e, rel_norm = %e, %s\n', ...
-                    curr_norm, rel_norm,crit);
+    fprintf('  Forward backward: ||f|| = %e, rel_norm = %e, it = %i, %s\n', ...
+                    curr_norm, rel_norm, iter,crit);
 
 end
 
