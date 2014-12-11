@@ -24,7 +24,7 @@ function [sol,info] = prox_l12(x, gamma , param)
 %   .. math::  \| x \|_{21}^2 =  \sum_j \left| \sum_i |x(i,j)|  \right|^2 
 %
 %   The easiest way to use this proximla operator is to give a matrix x as
-%   imput. In this case, the one norm will be computed over the lines (2nd
+%   input. In this case, the one norm will be computed over the lines (2nd
 %   dimention) and the two norm will be computed over the rows (1st
 %   dimention).
 %

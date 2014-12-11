@@ -38,7 +38,7 @@
 %   toolbox.
 %
 %   A simple example: Image inpainting
-%   -----------
+%   ----------------------------------
 %   Let's suppose we have a noisy image with missing pixels. Our goal is to
 %   find the closest image to the original one. We begin first by setting
 %   up some assumptions about the problem.
@@ -113,9 +113,9 @@
 %   confidence to the measurements.
 %   This is not the only way to define the problem. We could also write:
 %
-%   ..  argmin ||Ax-y||_2 + lambda  ||x||_TV            (Problem II)
+%   ..  argmin ||Ax-y||_2^2 + lambda  ||x||_TV            (Problem II)
 %
-%   .. math:: arg \min_x \|Ax-y\|_2 + \lambda \|x\|_{TV} \hspace{1cm} \text{(Problem II)}
+%   .. math:: arg \min_x \|Ax-y\|_2^2 + \lambda \|x\|_{TV} \hspace{1cm} \text{(Problem II)}
 %
 %   with the first function playing the role of a data fidelity term and
 %   the second a prior assumption on the signal. $\lambda$ adjusts the tradeoff
@@ -144,9 +144,9 @@
 %   The proximity operator of a lower semi-continuous convex function $f$ is
 %   defined by:
 %
-%     .. prox_{f,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma f(x)
+%     .. prox_{f,lambda} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  lambda f(x)
 %
-%     .. math:: prox_{f,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2 +  \gamma f(x)
+%     .. math:: prox_{f,\lambda} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2 +  \lambda f(x)
 %
 %   Proximity operators minimize a function without going too far
 %   from a initial point. They can be thought of assimilated as denoising
@@ -183,25 +183,26 @@
 %   proximity operator ( in case of non differentiable functions). In this
 %   example, we need to provide two functions: 
 %
-%   * $f_1(x)=||x||_{TV}$
+%   * $f_1(x)= \lambda ||x||_{TV}$
 %     The proximity operator of $f_1$ is: 
 %
-%     .. prox_{f1,gamma} (z) = argmin_{z} 1/2 ||x-z||_2^2  +  gamma ||z||_TV
+%     .. prox_{f1,lambda} (x) = argmin_{z} 1/2 ||x-z||_2^2  +  lambda ||z||_TV
 %
-%     .. math:: prox_{f1,\gamma} (z) = arg \min_{z} \frac{1}{2} \|x-z\|_2^2  +  \gamma \|z\|_{TV}
+%     .. math:: prox_{f1,\lambda} (x) = arg \min_{z} \frac{1}{2} \|x-z\|_2^2  +  \lambda \|z\|_{TV}
 %
 %     This function is defined in Matlab using::
 %
 %           paramtv.verbose=1;
 %           paramtv.maxit=50;
-%           f1.prox=@(x, gamma) prox_tv(x, gamma, paramtv);
-%           f1.eval=@(x) tv_norm(x);   
+%           f1.prox=@(x, T) prox_tv(x, T * lambda, paramtv);
+%           f1.eval=@(x) lambda * tv_norm(x);   
 %
 %     This function is a structure with two fields. First, *f1.prox* is an
 %     operator taking as input $x$ and $T$ and evaluating the proximity
-%     operator of the function ($T$ plays the role of $\gamma$ in the
-%     equation above). Second, and sometime optional, *f1.eval* is also an
-%     operator evaluating the function at $x$.
+%     operator of the function ($T$ has be stay a free weight for the
+%     solver. it is going to be replaced by the timestep later). Second,
+%     and sometimes optional, *f1.eval* is also an  operator evaluating the
+%     function at $x$.
 %
 %     The proximal operator of the TV norm is already implemented in the
 %     UNLocBoX by the function `prox_tv`. We tune it by setting the maximum

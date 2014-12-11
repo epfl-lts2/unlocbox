@@ -151,7 +151,7 @@ while 1
     % Global stopping criterion
     curr_norm = f.eval(sol)+eps;  
     [stop,rel_norm,prev_norm,iter,objective,crit] = convergence_test(curr_norm,prev_norm,iter,objective,param);
-    [x_n,param]=post_process(sol,iter,curr_norm,prev_norm,param);
+    [x_n,param] = post_process(sol, iter, curr_norm, prev_norm, objective, param);
     
     if param.verbose >= 2
         fprintf('  ||f|| = %e, rel_norm = %e\n', ...
