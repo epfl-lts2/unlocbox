@@ -100,12 +100,9 @@ if ~isfield(param, 'gamma'), param.gamma=1 ; end
 if ~isfield(param, 'abs_tol'), param.abs_tol=0 ; end
 
 
-if nargin<3 
-    f2.prox=@(x) prox_L1(x, 1, param);
-    f2.eval=@(x) norm(x(:),1);   
-end
 
-if nargin<2
+
+if nargin<3
     error('Not enought input arguments');
 end
 

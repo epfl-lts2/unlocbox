@@ -16,7 +16,7 @@
 %   where the $f_i$ are  lower semi-continuous convex functions and $x$ the
 %   optimization variables. For more details about the problems, please
 %   refer to the userguide (UNLocBoX-note-002) availlable on
-%   `<http://unlocbox.sourceforge.net/note/>`_. 
+%   `<https://lts2research.epfl.ch/unlocbox/note/>`_. 
 %
 %   This toolbox uses proximal splitting methods. These methods separate
 %   the problem into smaller (and easier) subproblems that can be solved in

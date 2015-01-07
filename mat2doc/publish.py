@@ -20,7 +20,7 @@ project=homefolder+'/'+projectname+'/'
 # Configure HTML placement at remote server
 host='nati@lts2research.epfl.ch'
 www='/home/nati/'+projectname+'/'
-outputdirweb= '~/work/git/website/unlocbox-web/'
+outputdirweb= '~/work/git/website/unlocbox/'
 
 
 # -------- Configuration of mat2doc ------------
@@ -144,9 +144,9 @@ if 'sendphp' in todo:
     os.system(s)  
 
 
-if 'sendweb' in todo:
-	s='rsync -av --exclude=".svn" '+outputdirweb+' '+host+':'+www
-	os.system(s)
+#if 'sendweb' in todo:
+#	s='rsync -av --exclude=".svn" '+outputdirweb+' '+host+':'+www
+#	os.system(s)
 
 if 'sendfile' in todo:
     fname=outputdir+projectname+'-'+versionstring
