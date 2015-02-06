@@ -1,185 +1,239 @@
 %DEMO_OVERLAPING_GROUPS_STRUCTURED_SPARSITY Demonstration for the use of overlaping structured sparsity
 %
-%   Here we try to deblur an image through a deconvolution problem. The
-%   convolution operator is the blur. 
-%   In order to get better results, we try to group some pixel of the
-%   wavelet transform.
+%   Here we solve a sound declipping problem. The problem can be
+%   expressed as this 
 %
-%   The group of 4 pixels are made in H(x) like this:
+%   ..   argmin_x  ||A G^* x-b||^2 + tau * || x ||_21
 %
-%   For a 4 by 4 image:: 
-%
-%       1122        1221
-%       1122        3443
-%       3344        3443
-%       3344        1221
-%
-%   This is probably not the best way to do it.
-%
-%   The problem can be expressed as this
-%
-%   ..   argmin  ||Ax-b||^2 + tau*||H(x)||_12
-%
-%   .. math:: arg \min_x \|Ax-b\|^2 + \tau \|H(x)\|_{12}
+%   .. math:: arg \min_x \|A G^*  x-b\|^2 + \tau \| x \|_{21}
 %  
-%   Where b is the degraded image, I the identity and A an operator representing the mask.
+%   where $b$ is the signal at the non clipped part,  $A$ an operator
+%   representing the mask selecting the non clipped part of the signal and
+%   $G^*$ is the Gabor synthesis operation
 %
-%   H is a linear operator projecting the signal in a sparse
-%   representation. Here we worked with wavelet. 
+%   Here the general assumption is that the signal is sparse in the Gabor
+%   domain!
 %
-%   Warning! Note that this demo require the rwt(RICE WAVELET TOOLBOX) to work.
+%   Warning! Note that this demo requires the LTFAT toolbox to work.
 %
 %   We set 
 %
-%   * $f_1(x)=||H(x)||_{12}$
+%   * $f_1(x)=||x||_{21}$
 %     We define the prox of $f_1$ as: 
 %
-%     .. prox_{f1,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma  ||H(z)||_12
+%     .. prox_{f1,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma  ||z||_21
 %
-%     .. math:: prox_{f1,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2  +  \gamma \|H(z)\|_{12}
+%     .. math:: prox_{f1,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2  +  \gamma \|z\|_{21}
+%
+%     The groups are defined like this
+%
+%     For a 2 by 8 spectrogram 
+%     11112222        21111222        22111122        22211112       
+%     33334444        43333444        44333344        44433334
 %
 %   * $f_2(x)=||Ax-b||_2^2$
 %     We define the gradient as: 
 %
-%     .. grad_f(x) = 2 * A^*(Ax-b)
+%     .. grad_f(x) = 2 * G A^*( A G^*x - b )
 %
-%     .. math:: \nabla_f(x) = 2 A^*(x-b)
+%     .. math:: \nabla_f(x) = 2 * G A^*(AG^*x-b)
 %
 %   Results
 %   -------
 %
 %   .. figure::
 %
-%      Original image
+%      Original spectrogram
 %
-%      This figure shows the original cameraman image. 
-%
-%   .. figure::
-%
-%      Depleted image
-%
-%      This figure shows the image after the application of the blur.
+%      This figure shows the original spectrogram.
 %
 %   .. figure::
 %
-%      Reconstruted image
+%      Spectrogram of the depleted sound
 %
-%      This figure shows the reconstructed image thanks to the algorithm.
+%      This figure shows the spectrogram after the loss of the sample (We loos 75% of the samples.)
 %
-%   References: raguet2011generalized
+%   .. figure::
+%
+%      Spectrogram of the reconstructed sound
+%
+%      This figure shows the spectrogram of the reconstructed sound thanks to the algorithm.
+%
+%   References: raguet2011generalized siedenburg2014audio
 
 
 % Author: Nathanael Perraudin
-% Date: sept 30 2011
+% Date: January 8 2015
 %
+
 
 
 %% Initialisation
 
-clear all;
+clear;
 close all;
 
 % Loading toolbox
 init_unlocbox();
+ltfatstart(); % start the ltfat toolbox
 
 verbose = 2;    % verbosity level
+writefile=0;    % writting wav sound
 
 %% Defining the problem
 
-tau = 0.001; %parameter for the problem
-
-% Original image
-im_original=barbara();
+% Original sound
+[sound_original, Fs]=gspi();
 
 
-% Create a blur
-sigma = 0.05;
-[x, y] = meshgrid(linspace(-1, 1, length(im_original)));
-r = x.^2 + y.^2;
-G = exp(-r/(2*sigma^2));
 
-A=@(x) real(ifft2(fftshift(G).*(fft2(x))));
-At=@(x) real(ifft2(conj(fftshift(G)).*(fft2(x))));
+%%
+length_sig=length(sound_original); % Put a small number here if you want to proceed only a part a of the signal
+sound_part=sound_original(1:length_sig);
 
-% Blur the original image
-b = A(im_original);
+% In oder to write the depleted sound somewhere
+if writefile
+    wavwrite(sound_part,Fs,'original.wav');
+end
 
-% The group of 4 pixels are made in H(x) like this
+tmax = 0.08;
+tmin = -0.3;
+Mask = 1-(sound_part>tmax) - (sound_part<tmin);
+
+% Depleted sound
+sound_depleted = sound_part;
+sound_depleted(sound_part>tmax) = tmax;
+
+sound_depleted(sound_part<tmin) = tmin;
+if writefile
+    wavwrite(sound_depleted,Fs,'depleted.wav');
+end
+
+%% Setting proximal operators
+
+tau = 1e-2; % regularization parameter for the problem
+
+% select a gabor frame for a real signal with a Gaussian window
+a=64; % size of the shift in time
+M=256;% number of frequencies
+F=frametight(frame('dgtreal','gauss',a,M));
+% Get the framebounds
+GB = M/a;
+
+% Define the Frame operators
+Psi = @(x) frana(F,x);
+Psit = @(x) frsyn(F,x);
+
+
+% % setting the function f2 (l2 norm)
+% f2.grad = @(x) 2*Psi(Mask.*(Mask.*Psit(x)-sound_depleted));
+% f2.eval = @(x) norm(Mask.*Psit(x)-sound_depleted,'fro')^2;
+
+f2.prox = @(x,T) Psi(Psit(x) .* ( 1 -  Mask )+ Mask.* sound_depleted);
+f2.eval = @(x) eps;
+
+% setting the function f1 (l1 norm of the Gabor transform)
+
+%%
+% set parameters
+param_l12.verbose = verbose - 1;
+
+
+
+% The groups are made like this
 %
-%   For a 4 by 4 image 
-%   1122        1221
-%   1122        3443
-%   3344        3443
-%   3344        1221
+%   For a 2 by 8 spectrogram 
+%   11112222        21111222        22111122        22211112       
+%   33334444        43333444        44333344        44433334
 
 % Create the group (this is a bad code)
     % -------------------------------------------- %
-    g_d1=zeros(size(b,1)*size(b,2),1);
-    indice=1:length(g_d1);
-    mat_indice=reshape(indice,size(b))';
-
-
-    k=size(b,1)/2;
-    l=size(b,2)/2;
-    for i=1:k
-       for j=1:l
-           g_d1((i-1)*4*l+4*(j-1)+1:(i-1)*4*l+4*(j-1)+4) = ...
-            reshape(mat_indice(2*(i-1)+1:2*(i-1)+2,2*(j-1)+1:2*(j-1)+2),4,1);                                                                                                                                           
+    lg = 4; % length of the group;
+    
+    xin = Psi(sound_depleted);
+    xin_im = framecoef2native(F,xin);
+    
+    K=size(xin_im,1);
+    L=size(xin_im,2);
+    
+    g_d1=zeros(K*L,1);
+    
+    indice = 1:length(g_d1);
+    
+    indice_mat =reshape(indice,L,K)';
+    sgd = floor(L/lg)*lg * K;
+    g_d = zeros(lg,sgd);
+    g_t = lg*ones(lg,sgd/lg);
+    
+    for ii=1:lg
+       for jj=1 : floor(L/lg)
+           for ll = 1:K
+                g_d( ii, (1:4) + (jj-1)*lg + floor(L/lg)*lg * (ll-1)) = ...
+                indice_mat(ll, mod((1:4) + (jj-1)*lg+ii -1, L)+1 );
+           end            
        end
     end
 
-    temp=reshape(g_d1,size(b));
-    temp=[temp(2:end,:);temp(1,:)];
-    temp=[temp(:,2:end),temp(:,1)];
-    g_d2=zeros(size(b,1)*size(b,2),1);
-    for i=1:k
-       for j=1:l
-           g_d2((i-1)*4*l+4*(j-1)+1:(i-1)*4*l+4*(j-1)+4) = ...
-            reshape(temp(2*(i-1)+1:2*(i-1)+2,2*(j-1)+1:2*(j-1)+2),4,1);                                                                                                                                           
-       end
-    end
 
 
-    g_t1=4*ones(length(g_d1)/4,1);
-    g_t2=g_t1;
+
+    
     
     % -------------------------------------------- %
   
-param_l12.g_t=[g_t1'; g_t2'];
-param_l12.g_d=[g_d1'; g_d2'];
+param_l12.g_t = g_t;
+param_l12.g_d = g_d;
 
-% Wavelet operator for the l12 norm
-L=6;
-% h = daubcqf(2);
-% A2 = @(x) mdwt(x,h,L);
-% A2t = @(x) midwt(x,h,L);
-A2 = @(x) fwt2(x,'db2',L);
-A2t = @(x) ifwt2(x,'db2',L);
 
-param_l12.verbose=1;
+f1.prox=@(x, T) prox_l21(x, T*tau, param_l12);
+f1.eval=@(x) tau*norm_l21(x,g_d, g_t);   
 
-f.prox=@(x, T) x+ A2t(prox_l12(A2(x), T*tau, param_l12)-A2(x));
-f.eval=@(x) tau*norm_l12(A2(x));   
 
 
 %% solving the problem
 
-% setting different parameter for the simulation
-param_solver.verbose = verbose;     % display parameter
-param_solver.maxit = 50;            % maximum iteration
-param_solver.tol = 10e-7;           % tolerance to stop iterating
-param_solver.gamma = 0.5;           % stepsize (beta is equal to 2)
-param_solver.method = 'FISTA';      % desired method for solving the problem
 
-% solving the problem
-sol=rlr(b,f,A,At,param_solver);
+% setting different parameters  for the simulation
+param.verbose = verbose; % display parameter
+param.maxit = 100; % maximum iteration
+param.tol = 1e-6; % tolerance to stop iterating
+%param.gamma = 0.5; % stepsize (beta is equal to 2)
+param.method = 'FISTA'; % desired method for solving the problem
+
+%sol=Psit(forward_backward(xin,f1,f2,param));
+
+param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
+sol=Psit(douglas_rachford(Psi(sound_part),f1,f2,param));
 
 
-%% displaying the result
-imagesc_gray(im_original, 1, 'Original image');
-imagesc_gray(b, 2, 'Depleted image');
-imagesc_gray(sol, 3, 'Reconstructed image');
-    
 
-%% Closing the toolbox
-close_unlocbox();
+
+%% Evaluate the result
+snr_in = snr(sound_part,sound_depleted);
+snr_fin = snr(sound_part,sol);
+
+
+fprintf('The SNR of the initial signal is %g dB \n',snr_in);
+fprintf('The SNR of the recovered (FB) signal is %g dB \n',snr_fin);
+
+
+
+% In order to write the restored sound somewhere
+if writefile
+    wavwrite(sol,Fs,'restored.wav');
+end
+%%
+dr=90;
+
+figure(1);
+plotframe(F,Psi(sound_part),Fs,dr);
+title('Gabor transform of the original sound');
+
+figure(2);
+plotframe(F,Psi(sound_depleted),Fs,dr);
+title('Gabor transform of the depleted sound');
+
+figure(3);
+plotframe(F,Psi(sol),Fs,dr);
+title('Gabor transform of the reconstructed sound');
+

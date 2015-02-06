@@ -186,7 +186,7 @@ while 1
     curr_norm = gen_norm(sol,F);  
     [~,rel_norm,prev_norm,iter,objective,crit] = convergence_test(...
             curr_norm,prev_norm,iter,objective,param);
-    [x_n,param]=post_process(sol,iter,curr_norm,prev_norm,param);
+    [sol,param] = post_process(sol, iter, curr_norm, prev_norm, objective, param);
     if reldual<param.tol
         break;
     end

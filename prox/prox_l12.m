@@ -226,7 +226,7 @@ else % overlapping group
         param3.g_t=param.g_t(k,:);
         param3.g_d=param.g_d(k,:);
         param3.multi_group=0;
-        param3.verbose=0;
+        param3.verbose=param.verbose - 1;
         g.prox=@(x,T) prox_l12(x,T,param3);
         g.eval=@(x) norm_l12(x,param.g_d(k,:),param.g_t(k,:));
         G{k}=g;

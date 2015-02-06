@@ -189,7 +189,7 @@ while 1
     dummy = Psi(sol);
     curr_norm = sum(param_l1.weights(:).*abs(dummy(:)));    
     [stop,rel_norm,prev_norm,iter,objective,crit] = convergence_test(curr_norm,prev_norm,iter,objective,param);
-    [sol,param]=post_process(sol,iter,curr_norm,prev_norm,param);
+    [sol,param] = post_process(sol, iter, curr_norm, prev_norm, objective, param);
 
     if param.verbose >= 1
         fprintf('  ||x||_1 = %e, rel_norm = %e\n', ...
