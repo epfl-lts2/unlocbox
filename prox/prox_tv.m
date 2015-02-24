@@ -141,7 +141,8 @@ for iter = 1:param.maxit
     sol = b - gamma*div_op(r, s, wx, wy);
 
     % Objective function value
-    obj = .5*norm(b(:)-sol(:), 2)^2 + gamma * sum(norm_tv(sol, wx, wy));
+    tmp = gamma * sum(norm_tv(sol, wx, wy));
+    obj = .5*norm(b(:)-sol(:), 2)^2 + tmp;
     rel_obj = abs(obj-prev_obj)/obj;
     prev_obj = obj;
 
@@ -202,6 +203,7 @@ end
 
 info.algo=mfilename;
 info.crit=crit;
+info.final_eval = tmp;
 info.time=toc(t1);
 
 end

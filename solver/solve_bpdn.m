@@ -89,24 +89,6 @@ function [sol,info,objective] = solve_bpdn(y, epsilon, A, At, Psi, Psit, param)
 %
 %     .. math::  \sum_i w_i |x_i|     
 %
-%
-%   info is a Matlab structure containing the following fields:
-%
-%   * *info.algo* : Algorithm used
-%
-%   * *info.iter* : Number of iteration
-%
-%   * *info.time* : Time of exectution of the function in sec.
-%
-%   * *info.final_eval* : Final evaluation of the objectivs functions
-%
-%   * *info.crit* : Stopping critterion used 
-%
-%   * *info.rel_norm* : Relative norm at convergence 
-%
-%   * *info.residue* : Final residue 
-%
-%
 %   The problem is solved thanks to a Douglas-Rachford splitting
 %   algorithm.
 %
@@ -142,6 +124,8 @@ if isfield(param, 'maxit_b2')
     param_b2.maxit = param.maxit_b2;
 end
 
+f
+
 % Input arguments for prox L1
 param_l1.A = Psi; param_l1.At = Psit; param_l1.pos = param.pos_l1;
 param_l1.verbose = param.verbose; param_l1.tol = param.tol;
@@ -163,69 +147,12 @@ else
     param_l1.weights = 1;
 end
 
-% Initialization
-xhat = At(y); 
-sol = xhat;
-[~,~,prev_norm,iter,objective,~] = convergence_test();
+f1.prox = @(x,T) prox_l1(x,T,param_l1);
+f1.eval = @(x) norm(x(:),1);
 
-% Main loop
-while 1
-    
-    if param.verbose >= 1
-       fprintf('Iteration %i:\n', iter);
-    end
-    
-    % Proximal L1 operator
-    xhat = 2*sol - xhat;
-    temp = prox_l1(xhat, param.gamma, param_l1);
-    xhat = temp + sol - xhat;
-    
+f2.prox = @(x,T) proj_b2(x,T,param_b2);
+f2.eval = @(x) eps;
 
-    
-    % Projection onto the L2-ball
-    [sol, param_b2.u] = proj_b2(xhat, NaN, param_b2);
-    
-    % Global stopping criterion
-    dummy = Psi(sol);
-    curr_norm = sum(param_l1.weights(:).*abs(dummy(:)));    
-    [stop,rel_norm,prev_norm,iter,objective,crit] = convergence_test(curr_norm,prev_norm,iter,objective,param);
-    [sol,param] = post_process(sol, iter, curr_norm, prev_norm, objective, param);
-
-    if param.verbose >= 1
-        fprintf('  ||x||_1 = %e, rel_norm = %e\n', ...
-            curr_norm, rel_norm);
-    end
-
-    if stop
-        break;
-    end
-
-    
-  
-end
-
-% Log
-if param.verbose>=1
-    % L1 norm
-    fprintf('\n Solution found:\n');
-    fprintf(' Final L1 norm: %e\n', curr_norm);
-    
-    % Residual
-    dummy = A(sol); res = norm(y(:)-dummy(:), 2);
-    fprintf(' epsilon = %e, ||y-Ax||_2=%e\n', epsilon, res);
-    
-    % Stopping criterion
-    fprintf(' %i iterations\n', iter);
-    fprintf(' Stopping criterion: %s \n\n', crit);
-    
-end
-
-info.algo=mfilename;
-info.iter=iter;
-info.final_eval=curr_norm;
-info.crit=crit;
-info.time=toc(t1);
-info.rel_norm=rel_norm;
-info.residue=res;
+[sol,info,objective] = douglas_rachford(Psit(y),f1, f2, param);
 
 end

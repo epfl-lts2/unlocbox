@@ -1,4 +1,4 @@
-function [stop,rel_norm,prev_norm,iter,objectiv,crit] = convergence_test(curr_norm,prev_norm,iter,objectiv,param)
+function [stop,rel_norm,prev_norm,iter,objectiv,crit] = convergence_test(curr_norm,prev_norm,iter,objectiv,param,s)
 %CONVERGENCE_TEST Test the convergence of an algorithm
 %   Usage: stop = convergence_test(curr_norm,prev_norm,objectiv,param);
 %          stop = convergence_test(curr_norm,prev_norm,[],param);
@@ -77,6 +77,8 @@ if ~isfield(param, 'tol'), param.tol=10e-4 ; end
 if ~isfield(param, 'maxit'), param.maxit=200; end
 if ~isfield(param, 'abs_tol'), param.abs_tol=0 ; end
 if ~isfield(param, 'verbose'), param.verbose=1 ; end
+if ~isfield(param, 'use_dual'), param.use_dual=0 ; end
+
 if ~isfield(param, 'alg'), 
     txt = dbstack(); 
     param.alg = txt(2).name ; 
@@ -103,6 +105,10 @@ if ~kbstop('lauched')
     kbstop('init');
 end
 
+if param.use_dual &&  nargin>=6 && isfield(s,'reldual')
+    curr_norm = s.reldual;
+    param.abs_tol = 1;
+end
 if param.stop_box
     if iter<=1
         if isstruct(FS)
@@ -113,15 +119,15 @@ if param.stop_box
         FS = stopstruct(param.alg,'Stop the algorithm') ;
     end
 end
-% perform simple test
-if (curr_norm==0)
-    if param.verbose
-        fprintf('WARNING: current norm is equal to 0! Adding eps to continure...\n');
-    end
-    curr_norm=eps;
-end
+% % perform simple test
+% if (curr_norm==0)
+%     if param.verbose
+%         fprintf('WARNING: current norm is equal to 0! Adding eps to continure...\n');
+%     end
+%     curr_norm=eps;
+% end
 
-rel_norm = abs(curr_norm - prev_norm)/curr_norm;
+rel_norm = abs(curr_norm - prev_norm)/(curr_norm + eps);
 if iter
     if isa(curr_norm,'gpuArray')
         objectiv(iter)=gather(curr_norm);

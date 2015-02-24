@@ -131,69 +131,13 @@ if isfield(param, 'maxit_tv')
     param_tv.maxit= param.maxit_tv;
 end
 
-% Initialization
-xhat = At(y); 
-[~,~,prev_norm,iter,objective,~] = convergence_test(norm_tv(y));
-% Main loop
-while 1
-    
-    %
-    if param.verbose>=1
-        fprintf('Iteration %i:\n', iter);
-    end
-    
-    % Projection onto the L2-ball
-    [sol, param_b2.u] = proj_b2(xhat, NaN, param_b2);
-    
-    % Global stopping criterion
-    curr_norm = norm_tv(sol);
-    [stop,rel_norm,prev_norm,iter,objective,crit] =...
-        convergence_test(curr_norm,prev_norm,iter,objective,param);
-    [sol,param] = post_process(sol, iter, curr_norm, prev_norm, objective, param);
-    if stop
-        break;
-    end
-    if param.verbose >= 1
-        fprintf('  ||x||_TV = %e, rel_norm = %e\n', ...
-            curr_norm, rel_norm);
-    end
+f1.prox = @(x,T) prox_lv(x,T,param_tv);
+f1.eval = @(x) norm_tv(x,1);
 
-    
-    % Proximal L1 operator
-    xhat = 2*sol - xhat;
-    temp = prox_tv(xhat, param.gamma, param_tv);
-    xhat = temp + sol - xhat;
-    
-    
-end
+f2.prox = @(x,T) proj_b2(x,T,param_b2);
+f2.eval = @(x) eps;
 
-% Residual
-temp = A(sol);
-res=norm(y(:)-temp(:));
-% Log
-if param.verbose>=1
-    % L1 norm
-    fprintf('\n Solution found:\n');
-    fprintf(' Final TV norm: %e\n', curr_norm);
-    
-    % Residual
-    
-    fprintf(' epsilon = %e, ||y-Ax||_2=%e\n', epsilon, ...
-        res);
-    
-    % Stopping criterion
-    fprintf(' %i iterations\n', iter);
-    fprintf(' Stopping criterion: %s \n\n', crit);
-    
-end
+[sol,info,objective] = douglas_rachford(y,f1, f2, param);
 
-
-info.algo=mfilename;
-info.iter=iter;
-info.final_eval=curr_norm;
-info.crit=crit;
-info.time=toc(t1);
-info.rel_norm=rel_norm;
-info.residue=res;
 
 end
