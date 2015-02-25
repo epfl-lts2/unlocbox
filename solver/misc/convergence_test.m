@@ -137,7 +137,7 @@ if iter
 end
 
 
-if (curr_norm < param.tol) && (param.abs_tol)
+if (curr_norm < param.tol) && logical(param.abs_tol)
     crit = 'CURR_NORM';
     stop=1;
 elseif (abs(rel_norm) < param.tol) && (~param.abs_tol)

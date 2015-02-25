@@ -24,8 +24,8 @@ else
         beta = beta + Fg{ii}.beta;
     end
 
-    fg.grad = @(x) sum_eval(Fg,x);
-    fg.eval = @(x) sum_grad(Fg,x);
+    fg.grad = @(x) sum_grad(Fg,x);
+    fg.eval = @(x) sum_eval(Fg,x);
     fg.beta = beta;
 end
 
