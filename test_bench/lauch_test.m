@@ -36,6 +36,8 @@ errors=errors+test_proxl2grad();
 
 % Test proj_b2
 errors=errors+test_proj_b2();
+% Test proj_b1
+errors=errors+test_proj_b1();
 
 % Test TV
 errors=errors+test_tv();
@@ -48,6 +50,9 @@ errors=errors+test_solvers();
 
 % Test prox_lp
 errors=errors+test_proxlp();
+
+% Test proj nuclear norm
+errors=errors+test_proj_nuclear();
 
 
 %% Error in testbench

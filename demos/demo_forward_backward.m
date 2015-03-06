@@ -96,13 +96,18 @@ f1.eval=@(x) tau * norm_tv(x);
 
 % setting different parameter for the simulation
 param_solver.verbose = verbose; % display parameter
-param_solver.maxit = 30;        % maximum iteration
-param_solver.tol = 10e-6;       % tolerance to stop iterating
+param_solver.maxit = 50;        % maximum iteration
 param_solver.gamma = 0.5;       % stepsize (beta is equal to 2)
-param_solver.method = 'FISTA';  % desired method for solving the problem
+param_solver.tol = 1e-6;        % Tolerance to stop iterating
 
 % solving the problem
+t1 = tic;
 sol = forward_backward(b,f1,f2,param_solver);
+time1 = toc(t1);
+%%
+t1 = tic;
+sol2 = solvep(b,{f1, f2},param_solver);
+time2 = toc(t1);
 
 
 %% displaying the result

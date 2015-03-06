@@ -31,7 +31,7 @@ function bool = kbstop(cmd)
 %         kbstop('stop');
 %
 
-% Author: Nathanaël Perraudin
+% Author: Nathanael Perraudin
 % Date  : 17 sept 2014
 % Inspired by Amanda Ng of the function kbhit on matlabcentral
 %
