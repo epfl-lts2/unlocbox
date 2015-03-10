@@ -227,7 +227,7 @@ end
 function solver = select_solver(Fg,Fp)
     if numel(Fg)
         if numel(Fp)==0
-            solver = 'GRADIEN_DESCENT';
+            solver = 'GRADIENT_DESCENT';
         elseif numel(Fp)==1
             solver = 'FORWARD_BACKWARD';
         else
