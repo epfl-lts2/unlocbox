@@ -12,14 +12,16 @@
 %   operators.
 %
 %  General Proximal operators
+%    PROX_L0            -  Proximal operator of the L0 norm
 %    PROX_L1            -  Proximal operator of the L1 norm
 %    PROX_L2            -  Proximal operator of the L2 norm
 %    PROX_L2grad        -  Proximal operator of the L2 norm of the gradient 
 %    PROX_L2gradfourier -  Proximal operator of the L2 norm of the gradient in the Fourier domain
 %    PROX_Linf1         -  Proximal operator of the Linf1 norm
 %    PROX_L21           -  Proximal operator of the L21 norm
-%    PROX_L12           -  Proximal operator of the L12 norm
+%    PROX_L12           -  Proximal operator of the LP norm
 %    PROX_NUCLEARNORM   -  Proximal operator of the nuclear norm
+%    PROX_NUCLEARNORM_BLOC-  Proximal operator of the nuclear norm by bloc
 %    PROX_TV            -  Proximal operator of the TV norm
 %    PROX_TV3D          -  Proximal operator of the 3D TV norm
 %    PROX_TV1D          -  Proximal operator of the 1D TV norm
@@ -29,6 +31,9 @@
 %    PROJ_B1            -  Projection on a B1-Ball
 %    PROJ_B2            -  Projection on a B2-Ball
 %    PROJ_XLIM          -  Bound the value of x
+%    PROJ_NUCLEARNORM   -  Projection operator of the nuclear norm
+%    PROJ_SPSD          -  Projection onto the semi definite symetric positive set 
+%   
 %
 %  Proximal tools
 %    PROX_SUMG          -  Proximal operator of a sum of function

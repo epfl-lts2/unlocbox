@@ -16,3 +16,5 @@ if GLOBAL_useGPU
     reset(gpuDevice(1));
 end
 
+
+kbstop('stop');

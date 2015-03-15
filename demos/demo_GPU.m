@@ -66,7 +66,6 @@
 %
 %      This figure shows the reconstructed image thanks to the algorithm.
 %
-%   References: combettes2011proximal
 
 % Author: Nathanael Perraudin, Gilles Puy
 % Date: jan 23 2013
@@ -74,13 +73,13 @@
 
 %% Initialisation
 
-clear all;
+clear;
 close all;
 
 % Loading toolbox
 init_unlocbox();
 
-verbose = 2;    % verbosity level
+verbose = 1;    % verbosity level
 global GLOBAL_useGPU;
 
 %% Create a problem
@@ -114,8 +113,7 @@ f.eval=@(x) tau * norm_tv(x);
 param_solver.verbose = verbose; % display parameter
 param_solver.maxit = 20;        % maximum number of iterations
 param_solver.tol = 10e-6;       % tolerance to stop iterating
-param_solver.gamma = 0.5;       % stepsize (beta i1s equal to 2)
-param_solver.method = 'FISTA';  % desired method for solving the problem
+param_solver.nu = 1;
 
 %% solving the problem With the GPU
 fprintf('Solve the problem with the GPU \n');

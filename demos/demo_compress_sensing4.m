@@ -1,9 +1,9 @@
 %DEMO_COMPRESS_SENSING4 Compress sensing example using grouped L1inf norm
 %
 %   We present a compress sensing example solved with the douglas rachford
-%   solver. The particularity of this example is the used a mixed norm. We
-%   do not only know the the signal is sparse, we also know that the
-%   isolated coefficients are grouped. 
+%   solver. The particularity of this example is the use of a mixed norm. We
+%   do not only know that the signal is sparse, but we also know that the
+%   sparse coefficients are grouped. 
 %
 %   The problem can be expressed as this
 %

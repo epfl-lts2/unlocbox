@@ -18,10 +18,9 @@ else:
 project=homefolder+'/'+projectname+'/'
 
 # Configure HTML placement at remote server
-host='nati@lts2research.epfl.ch'
-www='/home/nati/'+projectname+'/'
+host='nperraud,'+projectname+'@web.sourceforge.net'
+www='/home/project-web/unlocbox/htdocs/'
 outputdirweb= '~/work/git/website/unlocbox/'
-
 
 # -------- Configuration of mat2doc ------------
 mat2docpath='~/mat2doc'
@@ -236,6 +235,11 @@ if 'noteshtml' in todo:
 
 if 'notesend' in todo:
     os.system('rsync -av '+notehtml+' '+host+':'+noteswww);
+
+if 'sendweb' in todo:
+    s="rsync --verbose --archive --exclude '.git' "+outputdirweb+' '+host+':'+www
+    os.system(s)  
+
 
 
 

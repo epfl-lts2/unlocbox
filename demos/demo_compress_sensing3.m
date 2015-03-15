@@ -1,9 +1,9 @@
 %DEMO_COMPRESS_SENSING3 Compress sensing example using grouped L12 norm
 %   
 %   We present a compress sensing example solved with the douglas rachford
-%   solver. The particularity of this example is the used a mixed norm. We
+%   solver. The particularity of this example is the use of a mixed norm. We
 %   do not only know the the signal is sparse, we also know that the
-%   isolated coefficients are grouped.
+%   sparse coefficients are grouped.
 %
 %   The problem can be expressed as this
 %
@@ -78,7 +78,7 @@
 
 %% Initialisation
 
-clear all;
+clear;
 close all;
 
 % Loading toolbox
@@ -130,15 +130,15 @@ param_proj.y = y;
 param_proj.tight = 0;
 param_proj.nu = norm(A)^2;
 param_proj.verbose = verbose - 1;
-f2.prox=@(x,T) proj_b2(x, T, param_proj);
-f2.eval=@(x) norm(A*x - y)^2;
+f2.prox = @(x,T) proj_b2(x, T, param_proj);
+f2.eval = @(x) norm(A*x - y)^2;
 
 % setting the function f1
 param_l21.verbose = verbose - 1;
 param_l21.g_d = g_d;
 param_l21.g_t = g_t;
-f1.prox=@(x, T) prox_l21(x, T, param_l21);
-f1.eval=@(x) norm_l21(x,g_d,g_t);   
+f1.prox = @(x, T) prox_l21(x, T, param_l21);
+f1.eval = @(x) norm_l21(x,g_d,g_t);   
 
 %% solving the problem
 
@@ -149,7 +149,7 @@ param_solver.tol = 1e-4;        % tolerance to stop iterating
 param_solver.gamma = 1e-2;      % stepsize
 
 % solving the problem
-sol = douglas_rachford(zeros(N,1), f1, f2, param_solver);
+sol = solvep(zeros(N,1), {f1, f2}, param_solver);
 
 %% displaying the result
 % figure;

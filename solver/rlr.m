@@ -35,58 +35,24 @@ function [sol,info,objective] = rlr(x_0,f,A,At, param)
 %
 %   * *At* is the adjoint operator of A
 %
-%   * *param* a Matlab structure containing the following fields:
+%   * *param* a Matlab structure containing solver paremeters. See the
+%     function |solvep| for more information. Additionally it contains those
+%     aditional fields:  
 %
-%     General parameters:
+%     * *param.nu* : bound on the norm of the operator A (default: 1), i.e.
 %
-%     * *param.gamma* : is the step size. Watch out, this parameter is bounded. It should
-%       be below $2/||A||_2$. By default, it's $10e-1$
+%     .. ` ||A x||^2 <= nu * ||x||^2 
 %
-%     * *param.tol* : is stop criterion for the loop. The algorithm stops if
-%
-%       ..  (  n(t) - n(t-1) )  / n(t) < tol,
-%      
-%       .. math:: \frac{  n(t) - n(t-1) }{ n(t)} < tol,
-%
-%       where  $n(t) = f_1(Lx)+f_2(x)$ is the objective function at iteration *t*
-%       by default, `tol=10e-4`.
+%     .. math::  \|A x\|^2 \leq \nu  \|x\|^2 
 %
 %     * *param.method* : is the method used to solve the problem. It can be 'FISTA' or
 %       'ISTA'. By default, it's 'FISTA'.
-%
-%     * *param.lambda*: is the weight of the update term in ISTA method. By default 1.
-%       This should be between 0 and 1. It's set to 1 for FISTA.
-%
-%     * *param.maxit* : is the maximum number of iteration. By default, it is 200.
-% 
-%     * *param.verbose* : 0 no log, 1 print main steps, 2 print all steps.
-%
-%     * *param.abs_tol* : If activated, this stopping critterion is the
-%       objectiv function smaller than *param.tol*. By default 0.
-%
-%
-%   info is a Matlab structure containing the following fields:
-%
-%   * *info.algo* : Algorithm used
-%
-%   * *info.iter* : Number of iteration
-%
-%   * *info.time* : Time of exectution of the function in sec.
-%
-%   * *info.final_eval* : Final evaluation of the objectivs functions
-%
-%   * *info.crit* : Stopping critterion used 
-%
-%   * *info.rel_norm* : Relative norm at convergence 
-%
 %            
-%   See also:  forward_backward douglas_rachford admm
-%
-%   Demos: demo_rlr 
+%   See also:  forward_backward solvep admm
 %
 %   References: combettes2007douglas
 
-% Author: Nathanael Perraudin, Gilles Puy
+% Author: Nathanael Perraudin
 % Date: sept 30 2011
 %
 
@@ -99,19 +65,16 @@ t1 = tic;
 % Optional input arguments
 if nargin<5, param=struct; end
 
-if ~isfield(param, 'gamma'), param.gamma = 1; end
-if ~isfield(param, 'tol'), param.tol=10e-4 ; end
-if ~isfield(param, 'maxit'), param.maxit=200; end
-if ~isfield(param, 'verbose'), param.verbose=1 ; end
-if ~isfield(param, 'lambda'), param.lambda=1 ; end
+if ~isfield(param, 'nu'), param.nu=1 ; end
 if ~isfield(param, 'method'), param.method='FISTA' ; end
 
 
 % setting the function f2 
-f2.grad=@(x) 2*At((A(x)-x_0));
-f2.eval=@(x) (norm(A(x)-x_0,'fro'))^2;
+f2.grad = @(x) 2*At((A(x)-x_0));
+f2.eval = @(x) (norm(A(x)-x_0,'fro'))^2;
+f2.beta = 2 * param.nu;
 
-[sol,info,objective]=forward_backward(x_0,f,f2,param);
+[sol,info,objective] = solvep(x_0,{f,f2},param);
 
 info.algo=mfilename;
 info.time=toc(t1);

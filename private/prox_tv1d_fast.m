@@ -1,13 +1,5 @@
 function x = prox_tv1d(y, gamma)
 
-% CZ
-% Tato funkce poèítá proximální operátor 1D tv normy, tj. øeší tento problém:
-%    prox(x) := min_y 1/2 ||x - y||_2^2 + gamma ||y||_TV.
-% Vstupní parametry jsou:
-%     y ... vstupní signál
-%     gamma ... konstanta pøed tv normou
-%  Použití:  x = prox_tv1d(y, gamma)
-% ------------------------------------------------------------------------------------------------------------------
 % EN
 % This function computes proximal operator of 1D tv norm, i.e. it solves this problem:
 %    prox(x) := min_y 1/2 ||x - y||_2^2 + gamma ||y||_TV.

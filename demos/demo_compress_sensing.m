@@ -94,8 +94,9 @@ y = A * x;
 %% Defining proximal operators
 
 % setting the function f2 
-f2.grad=@(x) 2*A'*(A*x-y);
-f2.eval=@(x) norm(A*x-y)^2;
+f2.grad = @(x) 2*A'*(A*x-y);
+f2.eval = @(x) norm(A*x-y)^2;
+f2.beta = 2 * norm(A)^2;
 
 
 % setting the function f1
@@ -113,10 +114,9 @@ param_solver.verbose = verbose; % display parameter
 param_solver.maxit = 300;       % maximum iteration
 param_solver.tol = 1e-4;        % tolerance to stop iterating
 param_solver.method = 'FISTA';  % desired method for solving the problem
-param_solver.gamma = 0.5 / norm(A)^2; % stepsize (beta=2*norm(A)^2)
 
 % solving the problem
-sol = forward_backward(zeros(N,1), f1, f2, param_solver);
+sol = solvep(zeros(N,1), {f1, f2}, param_solver);
 
 %% displaying the result
 % figure;

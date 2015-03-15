@@ -70,7 +70,7 @@
 
 %% Initialisation
 
-clear all;
+clear;
 close all;
 
 init_unlocbox;

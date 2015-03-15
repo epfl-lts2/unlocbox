@@ -13,7 +13,7 @@
 %   H is a linear operator projecting the signal in a sparse
 %   representation. Here we worked with wavelet. 
 %
-%   Warning! Note that this demo require the rwt(RICE WAVELET TOOLBOX) to work.
+%   Warning! Note that this demo require the LTFAT toolbox to work.
 %
 %   We set 
 %
@@ -60,7 +60,7 @@
 
 %% Initialisation
 
-clear all;
+clear;
 close all;
 
 init_unlocbox;
@@ -88,16 +88,11 @@ b=A(im_original);
 %% Define proximity operators
 
 % to deblur with wavelet
-tau = 0.001; %parameter for the problem
+tau = 0.0003; %parameter for the problem
 
-L=8;
-% % Use the rwt toolbox
-% h = daubcqf(2);
-% 
-% A2 = @(x) mdwt(x,h,L);
-% A2t = @(x) midwt(x,h,L);
 
 % Use LTFAT
+L=8;
 W = @(x) fwt2(x,'db1',L);
 Wt = @(x) ifwt2(x,'db1',L);
 
@@ -107,7 +102,7 @@ param_l1.At = Wt;
 param_l1.A = W;
 
 f.prox=@(x, T) prox_l1(x, T*tau, param_l1);
-f.eval=@(x) tau*norm(x(:),1);   
+f.eval=@(x) tau*sum(sum(abs(W(x))));   
 
 % % to deblur with TV
 % tau = 0.001;
@@ -123,7 +118,6 @@ param_proj.A = A;
 param_proj.At = At;
 param_proj.y = b;
 param_proj.verbose = verbose - 1;
-f2.grad = @(x) 2*At(A(x) - b);
 f2.eval = @(x) norm(A(x) - b).^2;
 f2.prox = @(x,T) proj_b2(x, T, param_proj);
 
@@ -134,11 +128,11 @@ f2.prox = @(x,T) proj_b2(x, T, param_proj);
 param_solver.verbose=verbose; % display parameter
 param_solver.maxit=300; % maximum iteration
 param_solver.tol=10e-9; % tolerance to stop iterating
-param_solver.gamma=1; % stepsize (beta is equal to 2)
-
+fig = figure(100);
+param_solver.do_sol=@(x) plot_image(x,fig); % plotting plugin
 % solving the problem
-sol=douglas_rachford(b, f, f2, param_solver);
-
+sol=solvep(b, {f, f2}, param_solver);
+close(fig)
 %% displaying the result
 imagesc_gray(im_original, 1, 'Original image',111,clim) 
 imagesc_gray(b, 2, 'Depleted image',111,clim) 

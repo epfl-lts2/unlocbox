@@ -4,7 +4,7 @@
 %   solver.
 %   The problem can be expressed as this
 %
-%   ..   argmin || x||_1 s.t ||b-Ax||_2 < epsilon
+%   ..   argmin || x ||_1 s.t ||b-Ax||_2 < epsilon
 %
 %   .. math:: arg \min_x \| x\|_1 \hspace{1cm} such \hspace{0.25cm}  that \hspace{1cm} \|b-Ax\|_2 \leq \epsilon
 %  
@@ -12,7 +12,7 @@
 %
 %   We set 
 %
-%   * $f_1(x)=||x||_1$
+%   * $f_1(x) = || x ||_1$
 %     We define the prox of $f_1$ as: 
 %
 %     .. prox_{f1,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma ||z||_1
@@ -70,7 +70,7 @@
 
 %% Initialisation
 
-clear all;
+clear;
 close all;
 
 % Loading toolbox
@@ -110,14 +110,14 @@ param_proj.y = y;
 param_proj.tight = 0;
 param_proj.nu = norm(A)^2;
 param_proj.verbose = verbose - 1;
-f2.prox=@(x,T) proj_b2(x, T, param_proj);
-f2.eval=@(x) eps;
+f2.prox = @(x,T) proj_b2(x, T, param_proj);
+f2.eval = @(x) eps;
 
 % setting the function f1
 param_l1.verbose=verbose - 1;
 param_l1.tight=1;
-f1.prox=@(x, T) prox_l1(x, T, param_l1);
-f1.eval=@(x) norm(x,1);   
+f1.prox = @(x, T) prox_l1(x, T, param_l1);
+f1.eval = @(x) norm(x,1);   
 
 %% solving the problem
 
@@ -128,7 +128,7 @@ param_solver.tol = 1e-4;        % tolerance to stop iterating
 param_solver.gamma = 1e-2;      % stepsize
 
 % solving the problem
-sol = douglas_rachford(zeros(N,1) ,f1, f2, param_solver);
+sol = solvep(zeros(N,1) ,{f1, f2}, param_solver);
 
 %% displaying the result
 % figure;

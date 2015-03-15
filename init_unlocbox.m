@@ -45,3 +45,5 @@ if GLOBAL_useGPU && gpuDeviceCount
         GLOBAL_useGPU=0;
     end
 end
+
+kbstop('stop');

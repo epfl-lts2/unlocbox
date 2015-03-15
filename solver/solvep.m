@@ -236,7 +236,7 @@ function solver = select_solver(Fg,Fp)
     else
         if numel(Fp) == 1
             error('Do you really want to minimize only one function?')
-        elseif numel(Fp) == 1
+        elseif numel(Fp) == 2
             solver = 'DOUGLAS_RACHFORD';
         else
             solver = 'PPXA';
