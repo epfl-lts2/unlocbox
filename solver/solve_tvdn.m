@@ -99,8 +99,6 @@ function [sol, info, objective] = solve_tvdn(y, epsilon, A, At, param)
 % Author: Gilles Puy, Nathanael Perraudin
 % Date: Nov. 1, 2012
 
-% Start the time counter
-t1 = tic;
 
 % Optional input arguments
 if nargin<5, param=struct; end
@@ -110,13 +108,13 @@ if nargin<5, param=struct; end
 if ~isfield(param, 'verbose'), param.verbose = 1; end
 if ~isfield(param, 'tol'), param.tol = 1e-4; end
 if ~isfield(param, 'maxit'), param.maxit = 200; end
-if ~isfield(param, 'gamma'), param.gamma = 1e-2; end
+%if ~isfield(param, 'gamma'), param.gamma = 1e-2; end
 if ~isfield(param, 'useGPU'), param.useGPU = 0; end
 
 % Input arguments for projection onto the L2 ball
 param_b2.A = A; param_b2.At = At;
 param_b2.y = y; param_b2.epsilon = epsilon;
-param_b2.verbose = param.verbose;
+param_b2.verbose = param.verbose-1;
 if isfield(param, 'nu_b2'), param_b2.nu = param.nu_b2; end
 if isfield(param, 'tol_b2'), param_b2.tol = param.tol_b2; end
 if isfield(param, 'tight_b2'), param_b2.tight = param.tight_b2; end
@@ -125,19 +123,19 @@ if isfield(param, 'maxit_b2')
 end
 
 % Input arguments for prox TV
-param_tv.verbose = param.verbose; param_tv.tol = param.tol;
+param_tv.verbose = param.verbose-1; param_tv.tol = param.tol;
 param_tv.useGPU = param.useGPU;
 if isfield(param, 'maxit_tv')
     param_tv.maxit= param.maxit_tv;
 end
 
-f1.prox = @(x,T) prox_lv(x,T,param_tv);
-f1.eval = @(x) norm_tv(x,1);
+f1.prox = @(x,T) prox_tv(x,T,param_tv);
+f1.eval = @(x) norm_tv(x);
 
 f2.prox = @(x,T) proj_b2(x,T,param_b2);
 f2.eval = @(x) eps;
 
-[sol,info,objective] = douglas_rachford(y,f1, f2, param);
+[sol,info,objective] = douglas_rachford(At(y), f2, f1, param);
 
 
 end

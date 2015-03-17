@@ -100,8 +100,6 @@ function [sol,info,objective] = solve_bpdn(y, epsilon, A, At, Psi, Psit, param)
 % Date: Nov. 1, 2012
 %
 
-% Start the time counter
-t1 = tic;
 
 % Optional input arguments
 if nargin<7, param=struct; end
@@ -110,13 +108,12 @@ if nargin<7, param=struct; end
 if ~isfield(param, 'verbose'), param.verbose = 1; end
 if ~isfield(param, 'tol'), param.tol = 1e-4; end
 if ~isfield(param, 'maxit'), param.maxit = 200; end
-if ~isfield(param, 'gamma'), param.gamma = 1; end
 if ~isfield(param, 'pos_l1'), param.pos_l1 = 0; end
 
 % Input arguments for projection onto the L2 ball
 param_b2.A = A; param_b2.At = At;
 param_b2.y = y; param_b2.epsilon = epsilon;
-param_b2.verbose = param.verbose;
+param_b2.verbose = param.verbose-1;
 if isfield(param, 'nu_b2'), param_b2.nu = param.nu_b2; end
 if isfield(param, 'tol_b2'), param_b2.tol = param.tol_b2; end
 if isfield(param, 'tight_b2'), param_b2.tight = param.tight_b2; end
@@ -124,11 +121,10 @@ if isfield(param, 'maxit_b2')
     param_b2.maxit = param.maxit_b2;
 end
 
-f
 
 % Input arguments for prox L1
 param_l1.A = Psi; param_l1.At = Psit; param_l1.pos = param.pos_l1;
-param_l1.verbose = param.verbose; param_l1.tol = param.tol;
+param_l1.verbose = param.verbose-1; param_l1.tol = param.tol;
 if isfield(param, 'nu_l1')
     param_l1.nu = param.nu_l1;
 end
@@ -143,16 +139,18 @@ if isfield(param, 'tol_l1')
 end
 if isfield(param, 'weights')
     param_l1.weights = param.weights;
+    f1.eval = @(x) norm(param_l1.weights(:).*x(:),1);
 else
     param_l1.weights = 1;
+    f1.eval = @(x) norm(x(:),1);
 end
 
 f1.prox = @(x,T) prox_l1(x,T,param_l1);
-f1.eval = @(x) norm(x(:),1);
+
 
 f2.prox = @(x,T) proj_b2(x,T,param_b2);
 f2.eval = @(x) eps;
 
-[sol,info,objective] = douglas_rachford(Psit(y),f1, f2, param);
+[sol,info,objective] = douglas_rachford(At(y),f2, f1, param);
 
 end

@@ -25,6 +25,7 @@
 %
 %      In painting with 33% of known pixel and a SNR of 30dB
 %
+
 %   .. figure::
 %
 %      Second problem
@@ -38,7 +39,7 @@
 
 %% Initialisation
 
-clear all;
+clear;
 close all;
 
 % Loading toolbox
@@ -73,8 +74,8 @@ y = y + randn(size(y))*sigma_noise;
 % Display the downsampled image
 imagesc_gray(At(y),2,'Measured image',121);
 % Parameters for TVDN
-param.verbose = 1; % Print log or not
-param.gamma = 1e-1; % Converge parameter
+param.verbose = 2; % Print log or not
+param.gamma = 0.1; % Stepsize
 param.tol = 1e-4; % Stopping criterion for the TVDN problem
 param.maxit = 200; % Max. number of iterations for the TVDN problem
 param.maxit_tv = 100; % Max. nb. of iter. for the sub-problem (proximal TV operator)
@@ -90,24 +91,27 @@ sol = solve_tvdn(y, epsilon, A, At, param);
 imagesc_gray(sol, 2, 'Reconstructed image',122);
 
 
-%% Second problem: Reconstruct from 33% of Fourier measurements
-% Composition (Masking o Fourier)
-A = @(x) Ma*reshape(fft2(x)/sqrt(numel(im)), numel(x), 1);
-At = @(x) ifft2(reshape(Ma'*x(:), size(im))*sqrt(numel(im)));
-% Select 33% of Fourier coefficients
-y = A(im);
-% Add Gaussian i.i.d. noise
-sigma_noise = 10^(-input_snr/20)*std(im(:));
-y = y + (randn(size(y)) + 1i*randn(size(y)))*sigma_noise/sqrt(2);
-% Display the downsampled image
-imagesc_gray(real(At(y)), 2 , 'Measured image',121);
-% Tolerance on noise
-epsilon = sqrt(chi2inv(0.99, 2*numel(ind))/2)*sigma_noise;
-% Solve TVDN problem
-sol = solve_tvdn(y, epsilon, A, At, param);
-% Show reconstructed image
-%%
-imagesc_gray(abs(sol), 2 , 'Reconstructed image',122);
-
+% %% Second problem: Reconstruct from 33% of Fourier measurements
+% % Composition (Masking o Fourier)
+% A = @(x) Ma*reshape(fft2(x)/sqrt(numel(im)), numel(x), 1);
+% At = @(x) ifft2(reshape(Ma'*x(:), size(im))*sqrt(numel(im)));
+% % Select 33% of Fourier coefficients
+% y = A(im);
+% % Add Gaussian i.i.d. noise
+% sigma_noise = 10^(-input_snr/20)*std(im(:));
+% y = y + (randn(size(y)) + 1i*randn(size(y)))*sigma_noise/sqrt(2);
+% % Display the downsampled image
+% imagesc_gray(real(At(y)), 3 , 'Measured image',121);
+% % Tolerance on noise (This is probably the problem)
+% epsilon = sqrt(chi2inv(0.99, 2*numel(ind))/2)*sigma_noise;
+% %epsilon = sqrt(numel(ind))*sigma_noise/2;
+% 
+% % Solve TVDN problem
+% sol = solve_tvdn(y, epsilon, A, At, param);
+% 
+% % Show reconstructed image
+% %
+% imagesc_gray(abs(sol), 3 , 'Reconstructed image',122);
+ 
 %%
 close_unlocbox();

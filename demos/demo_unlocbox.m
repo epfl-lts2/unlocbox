@@ -1,10 +1,10 @@
 %DEMO_UNLOCBOX  Simple tutorial for the UNLocBoX
 %
-%	Welcome to the tutorial to use the UNLocBoX. In this document, we
-%	provide the basic concepts to use the toolbox and some tricks that may
-%	be very useful. You can find an introduction and some more detailed
-%	documentation in the userguide available at
-%	http://unlocbox.sourceforge.net/notes/unlocbox-note-002.pdf
+%   Welcome to the tutorial to use the UNLocBoX. In this document, we
+%   provide the basic concepts to use the toolbox and some tricks that may
+%   be very useful. You can find an introduction and some more detailed
+%   documentation in the userguide available at
+%   http://unlocbox.sourceforge.net/notes/unlocbox-note-002.pdf
 %
 %   This toolbox is designed to solve convex optimization problems of the
 %   form:
@@ -43,7 +43,7 @@
 %   toolbox.
 %
 %   A simple example: Image in-painting
-%   ----------------------------------
+%   -----------------------------------
 %
 %   Let's suppose we have a noisy image with missing pixels. Our goal is
 %   simply to fill the unknown values in order to reconstruct an image
@@ -94,7 +94,7 @@
 %
 %   .. math::  \| Ax - y \|_2 \leq \sqrt{N}\epsilon  
 %   
-%	where $N$ is the number of known pixels.
+%   where $N$ is the number of known pixels.
 %   Note that $\epsilon$ can be chosen to be equal to 0 so that the
 %   equality $y=Ax$ is satisfied. In our case, as the measurements are
 %   noisy, we set $\epsilon$ to be the expected value of the norm of the
@@ -109,11 +109,11 @@
 %   ..  argmin ||x||_TV s.t ||Ax-y||_2 < sqrt{N} epsilon  (Problem I)
 %
 %   .. math:: arg \min_x \|x\|_{TV} \hspace{1cm} \text{subject}\hspace{0.25cm}  \text{to}\hspace{1cm} \|Ax-y\|_2 \leq \sqrt{N}\epsilon \hspace{1cm} \text{(Problem I)}
-%  
-%	Note that if the amount of noise is not known, \epsilon$ is considered
-%	as a free parameter that tunes the confidence to the measurements.
-%	However, this is not the only way to define the problem. We could also
-%	write:
+%   
+%   Note that if the amount of noise is not known, \epsilon$ is considered
+%   as a free parameter that tunes the confidence to the measurements.
+%   However, this is not the only way to define the problem. We could also
+%   write:
 %
 %   ..  argmin ||Ax-y||_2^2 + lambda  ||x||_TV            (Problem II)
 %
@@ -125,45 +125,45 @@
 %   the `regularization parameter`. The smaller it is, the more we trust
 %   the measurements and conversely. $\epsilon$ plays a similar role as
 %   $\lambda$.
-%	
-%	We have presented two ways to formulate the problem. The reader should
-%	keep in mind that choosing between one or the other problem will affect
-%	the choice of the solver and the convergence rate. With experience, one
-%	should be able to know in advance which problem will leads to the best
-%	solver.
+%   
+%   We have presented two ways to formulate the problem. The reader should
+%   keep in mind that choosing between one or the other problem will affect
+%   the choice of the solver and the convergence rate. With experience, one
+%   should be able to know in advance which problem will leads to the best
+%   solver.
 %
 %   Note that there exists a bijection between the parameters $\lambda$ and
 %   $\epsilon$ leading both problems to the same solution. Unfortunately,
 %   the bijection function is not trivial to determine.
 %
-%	Once your problem is well defined, we need to provide a list of
-%	functions to the UNLocBoX solver. (For example, in Problem 2, the
-%	functions are $\|Ax-y\|_2^2$ and $ \lambda \|x\|_{TV}$.) Every function
-%	is modeled by a MATLAB structure containing some special fields. We
-%	separate the functions in two different types: differentiable and non
-%	differentiable. For differentiable function, the user needs to fill the
-%	following fields:      
-%	* *func.eval* : An anonymous function that evaluate the function
-%	* *func.grad* : An anonymous function that evaluate the gradient
-%	* *func.beta* : An upper bound on the Lipschitz constant of the gradient
+%   Once your problem is well defined, we need to provide a list of
+%   functions to the UNLocBoX solver. (For example, in Problem 2, the
+%   functions are $\|Ax-y\|_2^2$ and $ \lambda \|x\|_{TV}$.) Every function
+%   is modeled by a MATLAB structure containing some special fields. We
+%   separate the functions in two different types: differentiable and non
+%   differentiable. For differentiable function, the user needs to fill the
+%   following fields:      
+%   * *func.eval* : An anonymous function that evaluate the function
+%   * *func.grad* : An anonymous function that evaluate the gradient
+%   * *func.beta* : An upper bound on the Lipschitz constant of the gradient
 %
-%	For instance, the function $\|Ax-y\|_2^2$ is defined in MATLAB by::
+%   For instance, the function $\|Ax-y\|_2^2$ is defined in MATLAB by::
 %
 %           fsmooth.grad = @(x) 2 * A' * (A*x-y);
 %           fsmooth.eval = @(x) norm(A*x-y);
-%			fsmooth.beta = 2 * norm(A)^2;
+%           fsmooth.beta = 2 * norm(A)^2;
 %
-%	The Lipschitz constant of a the gradient is defined as:
+%   The Lipschitz constant of a the gradient is defined as:
 %
-%	..	min_beta  such that for all x_1, x_2, we have 
-%	..            || grad_f(x_1) - grad_f(x_2) ||_2 < beta || x_1-x_2 ||_2
-%			
-%	.. math::  \min_{\beta} \text{ s.t } \forall x_1, x_2 \in \mathbb{R}^N \text{ we have } \|\nabla_f(x_1) - \nabla_f(x_2)\|_2 \leq \beta \|x_1 -x_2\|_2
+%   ..   min_beta  such that for all x_1, x_2, we have 
+%   ..           `|| grad_f(x_1) - grad_f(x_2) ||_2 < beta || x_1-x_2 ||_2
+%   
+%   .. math::  \min_{\beta} \text{ s.t } \forall x_1, x_2 \in \mathbb{R}^N \text{ we have } \|\nabla_f(x_1) - \nabla_f(x_2)\|_2 \leq \beta \|x_1 -x_2\|_2
 %
-%	When the function is not differentiable, the field *.beta* is dropped
-%	and *.grad* is replaced by the field *.prox* that contains an anonymous
-%	function for the proximity operator (They will be explained in more
-%	details the following section.
+%   When the function is not differentiable, the field *.beta* is dropped
+%   and *.grad* is replaced by the field *.prox* that contains an anonymous
+%   function for the proximity operator (They will be explained in more
+%   details the following section.
 %
 %           ftv.prox = @(x, T) prox_tv(x, T * lambda, paramtv);
 %           ftv.eval = @(x) lambda * tv_norm(x);   
@@ -186,7 +186,7 @@
 %   function. For $x^*$ the minimizer of the function $f$, it is obvious
 %   that:
 %
-%	   ..        x^* = prox_{f}(x^*)  = argmin_{x} 1/2 ||x-x^*||_2^2  + f(x)  
+%     ..        x^* = prox_{f}(x^*)  = argmin_{x} 1/2 ||x-x^*||_2^2  + f(x)  
 %
 %     .. math:: x^* = prox_{f} (x^* =) = arg \min_{x} \frac{1}{2} \|x-x^* =\|_2^2 + f(x)
 %
@@ -250,8 +250,10 @@
 %     UNLocBoX by the function `prox_tv`. We tune it by setting the maximum
 %     number of iterations and a verbosity level. Other parameters are also
 %     available (see documentation).
+%
 %     * *paramtv.verbose* selects the display level (0 no log, 1 summary at
 %       convergence and 2 display all steps).
+%
 %     * *paramtv.maxit* defines the maximum number of iteration for this
 %       proximity operator.
 %
@@ -315,12 +317,12 @@
 %   many different solvers and also a universal one that will select a
 %   suitable method for the problem. To use it, just write::
 %
-% 			sol = solvep(y,{f1,f2});
+%           sol = solvep(y,{f1,f2});
 %
-%	You can also use a specific solver for your problem. In this tutorial,
-%	we present two of them `forward_backward` and `douglas_rachford`. Both
-%	of them take as input two functions (they have generalization taking
-%	more functions), a starting point and some optional parameters.
+%   You can also use a specific solver for your problem. In this tutorial,
+%   we present two of them `forward_backward` and `douglas_rachford`. Both
+%   of them take as input two functions (they have generalization taking
+%   more functions), a starting point and some optional parameters.
 %
 %   In our problem, both functions are not smooth on all points of the
 %   domain leading to the impossibility to compute the gradient. In that
@@ -336,9 +338,9 @@
 %           param.do_sol=@(x) plot_image(x,fig); 
 %           sol = douglas_rachford(y,f1,f2,param); 
 %
-%	Or in an equivalent manner (this second way is recommended)::
+%   Or in an equivalent manner (this second way is recommended)::
 %
-%			param.method = "douglas_rachford"     
+%           param.method = "douglas_rachford"     
 %           sol = solvep(y,{f1,f2},param); 
 %
 %   * *param.verbose* selects the display level (0 no log, 1 summary at
@@ -360,7 +362,7 @@
 %     automatically.
 %
 %   * Finally, the following line allows to display the current
-%   reconstruction of the image at each iteration::
+%     reconstruction of the image at each iteration::
 %
 %           param.do_sol=@(x) plot_image(x,fig); 
 %
@@ -382,17 +384,16 @@
 %   modification of the previous code. First we define another function as
 %   follow::
 %
-%
 %           f3.grad = @(x) 2*A(A(x)-y);
 %           f3.eval = @(x) norm(A(x)-y,'fro');
-%			f3.beta = 2;
+%           f3.beta = 2;
 %
 %   The structure of *f3* contains a field *f3.grad*. In fact, the l2-norm 
 %   is a smooth function. As a consequence the gradient is well defined on 
 %   the entire domain. This allows using the `forward_backward` solver that
 %   can be called by:: 
 %   
-%			param.method = "forward_backward"     
+%           param.method = "forward_backward"     
 %           sol21 = solvep(y,{f1,f2},param); 
 %
 %   In this case, we can also use the `douglas_rachford` solver. To do so,
@@ -407,7 +408,7 @@
 %           f3.prox = @(x,T) prox_l2(x,T,param_l2);   
 %           f3.eval = @(x) norm(A(x)-y,'fro');
 %   
-%			param.method = "douglas_rachford"     
+%           param.method = "douglas_rachford"     
 %           sol22 = solvep(y,{f1,f3},param); 
 %
 %   We remind that `forward_backward` will not use the field *f3.prox* and

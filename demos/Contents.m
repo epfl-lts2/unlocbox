@@ -19,7 +19,6 @@
 %    DEMO_PIERRE -  Solves a source separation problem
 %
 %  Other demo
-%    DEMO_GPU           - Comparison between GPU and CPU computation
 %    DEMO_OVERLAPING_GROUPS_STRUCTURED_SPARSITY - Demonstration of the use of overlapping groups in structured sparsity
 %    DEMO_ADMM          -  Demonstration of the use of the admm solver
 %    DEMO_SDMM          -  Demonstration of the use of the SDMM solver

@@ -45,7 +45,7 @@
 
 %% Initialisation
 
-clear all;
+clear;
 close all;
 
 % Loading toolbox
@@ -67,8 +67,8 @@ K=50;
 M=rand(N,1);
 M=M>0.5;
 M=M*2-1;
-% We keep M in a vector form.
-%M= diag(M);
+% We keep M in a vector form but in fact %M= diag(M);
+
 
 % Creation of the operator Psi
 Psi=@(x) 1/sqrt(N)*fft(x);
@@ -116,18 +116,17 @@ f2.eval = @(x)   mu2*norm(Mb(x),1);
 % Define the gradient of ||s - Psi c - Phi b||_2^2 
 g.grad = @(x)  [ Psit( Psi(Mc(x)) + Phi(Mb(x)) - s ) ; ...
                  Phit( Psi(Mc(x)) + Phi(Mb(x)) - s ) ];
-g.eval = @(x)    norm(s-(Psi(Mc(x))+Phi(Mb(x))));
-
+g.eval = @(x)    norm(s-(Psi(Mc(x))+Phi(Mb(x))))^2;
+g.beta = (nu_Phi + nu_Psi);
 
 %% Define solver parameter
 
-paramfb.maxit=1000;
-paramfb.gamma=1/(nu_Phi+nu_Psi);
-paramfb.verbose=verbose;
+param_solver.maxit=1000;
+param_solver.verbose=verbose;
 
 % Solve the problem
 x0= eps*ones(2*N,1);
-sol=generalized_forward_backward(x0,{f1,f2},g,paramfb);
+sol= solvep(x0,{f1,f2,g},param_solver);
 
 
 %% Display the results

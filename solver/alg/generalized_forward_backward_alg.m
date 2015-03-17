@@ -34,7 +34,7 @@ end
 
 
 function [sol, s] = generalized_forward_backward_algorithm(fg, Fp, sol, s, param)
-    
+
     temp_grad = fg.grad(sol);
 	for ii = 1:length(Fp)
         s.x_n{ii} = Fp{ii}.prox_ad( 2*sol - s.u_n{ii} ...
@@ -45,7 +45,7 @@ function [sol, s] = generalized_forward_backward_algorithm(fg, Fp, sol, s, param
     
     sol = 0;
     for ii = 1:length(Fp)
-        sol=sol + param.weights(ii) * s.u_n{ii};
+        sol=sol + s.weights(ii) * s.u_n{ii};
     end
 
 end

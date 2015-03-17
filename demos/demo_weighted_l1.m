@@ -22,7 +22,8 @@
 % Date: Nov. 1, 2012 
 
 
-clear all;
+clear;
+close all;
 
 %%
 % Loading toolbox
@@ -47,8 +48,8 @@ mask = rand(size(im)) < 0.095; ind = find(mask==1);
 % Masking matrix (sparse matrix in matlab)
 Ma = sparse(1:numel(ind), ind, ones(numel(ind), 1), numel(ind), numel(im));
 % Masking operator
-A = @(x) Ma*x(:);
-At = @(x) reshape(Ma'*x(:), size(im));
+% A = @(x) Ma*x(:);
+% At = @(x) reshape(Ma'*x(:), size(im));
 
 %% Reconstruct from a few Fourier measurements
 
@@ -77,8 +78,8 @@ epsilon = sqrt(chi2inv(0.99, 2*numel(ind))/2)*sigma_noise;
 % Parameters for BPDN
 param.verbose = 1; % Print log or not
 param.gamma = 1e-1; % Converge parameter
-param.tol = 1e-4; % Stopping criterion for the TVDN problem
-param.maxit = 300; % Max. number of iterations for the TVDN problem 
+param.tol = 1e-4; % Stopping criterion for the BPDN problem
+param.maxit = 300; % Max. number of iterations for the BPDN problem 
 param.nu_b2 = 1; % Bound on the norm of the operator A
 param.tol_b2 = 1e-4; % Tolerance for the projection onto the L2-ball
 param.tight_b2 = 1; % Indicate if A is a tight frame (1) or not (0)

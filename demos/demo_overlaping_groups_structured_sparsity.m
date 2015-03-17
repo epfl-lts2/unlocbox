@@ -3,9 +3,9 @@
 %   Here we solve a sound declipping problem. The problem can be
 %   expressed as this 
 %
-%   ..   argmin_x  ||A G^* x-b||^2 + tau * || x ||_21
+%   ..   argmin_x   || x ||_21 such that A G^* x = b
 %
-%   .. math:: arg \min_x \|A G^*  x-b\|^2 + \tau \| x \|_{21}
+%   .. math:: arg \min_x  \tau \| x \|_{21} \text{ such that } A G^*  x = b
 %  
 %   where $b$ is the signal at the non clipped part,  $A$ an operator
 %   representing the mask selecting the non clipped part of the signal and
@@ -124,17 +124,10 @@ GB = M/a;
 Psi = @(x) frana(F,x);
 Psit = @(x) frsyn(F,x);
 
-
-% % setting the function f2 (l2 norm)
-% f2.grad = @(x) 2*Psi(Mask.*(Mask.*Psit(x)-sound_depleted));
-% f2.eval = @(x) norm(Mask.*Psit(x)-sound_depleted,'fro')^2;
-
 f2.prox = @(x,T) Psi(Psit(x) .* ( 1 -  Mask )+ Mask.* sound_depleted);
 f2.eval = @(x) eps;
 
 % setting the function f1 (l1 norm of the Gabor transform)
-
-%%
 % set parameters
 param_l12.verbose = verbose - 1;
 
@@ -197,13 +190,12 @@ f1.eval=@(x) tau*norm_l21(x,g_d, g_t);
 param.verbose = verbose; % display parameter
 param.maxit = 100; % maximum iteration
 param.tol = 1e-6; % tolerance to stop iterating
-%param.gamma = 0.5; % stepsize (beta is equal to 2)
-param.method = 'FISTA'; % desired method for solving the problem
+%param.method = 'FISTA'; % desired method for solving the problem
 
 %sol=Psit(forward_backward(xin,f1,f2,param));
 
 param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
-sol=Psit(douglas_rachford(Psi(sound_part),f1,f2,param));
+sol=Psit(solvep(Psi(sound_part),{f1,f2},param));
 
 
 

@@ -130,15 +130,7 @@ f2.eval = @(x) eps;
 
 
 % setting the function f1 (l1 norm of the Gabor transform)
-
-
-% set parameters
 param_l1.verbose = verbose - 1;
-
-
-% Since the space of Gabor coefficient is bigger than the space of time
-% coefficient
-
 
 f1.prox=@(x, T) prox_l1(x, T*tau, param_l1);
 f1.eval=@(x) tau*norm(x,1);   
@@ -152,12 +144,9 @@ f1.eval=@(x) tau*norm(x,1);
 param.verbose = verbose; % display parameter
 param.maxit = 100; % maximum iteration
 param.tol = 10e-5; % tolerance to stop iterating
-% param.gamma = 0.5; % stepsize (beta is equal to 2)
-param.method = 'FISTA'; % desired method for solving the problem
 
-% sol=Psit(forward_backward(Psi(sound_depleted),f1,f2,param));
 param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
-sol=Psit(douglas_rachford(Psi(sound_part),f1,f2,param));
+sol=Psit(solvep(Psi(sound_part),{f1,f2},param));
 
 
 

@@ -11,6 +11,8 @@ errors=errors+test_pocs();
 errors=errors+test_gradient_descent();
 
 errors=errors+test_gefwbw_simple();
+errors=errors+test_gefwbw_with_old();
+
 
 errors=errors+test_all_solver();
 
@@ -236,6 +238,42 @@ function [errors]=test_gefwbw_simple()
     
 end
 
+function [errors]=test_gefwbw_with_old()
+    errors = 0;
+    
+    N =10;
+    
+    y = 3*rand(N,1);
+    x0 = rand(N,1);
+    A = rand(N);
+    
+    f1.eval = @(x) norm(A*x-y)^2;
+    f1.grad = @(x) 2*A'*(A*x-y);
+    f1.beta = 2*norm(A)^2;
+    
+    paraml1.verbose = 0;
+    f2.eval = @(x) norm(x,1);
+    f2.prox = @(x,T) prox_l1(x,T,paraml1);
+    
+    f3 = f2;
+    param.maxit = 30;
+    param.tol = 100*eps;
+    param.verbose = 0;
+    p3 = solvep(x0, {f2,f3,f1}, param);
+
+    param.gamma = 1/(2*norm(A)^2);
+    
+    p2 = generalized_forward_backward_old(x0, {f2,f3},f1, param);
+    
+    if norm(p3-p2)/norm(p3)<1e-6
+        fprintf('  Test gefwbw with old 1 OK\n')
+    else
+        fprintf('  Test gefwbw with old 1 Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3-p2)/norm(p3)
+        errors= errors +1;
+    end
+    
+end
 
 function [errors]=test_fwbw_simple()
     errors = 0;
