@@ -1,8 +1,8 @@
 function [sol, info] = proj_nuclearnorm(x, ~, param)
 %PROJ_NUCLEARNORM Projection on the nuclear norm ball
-%   Usage:  sol=proj_nuclearnorm(x)
-%           sol=proj_nuclearnorm(x, gamma, param)
-%           [sol,info]=prox_nuclearnorm(...)
+%   Usage:  sol=proj_nuclearnorm(x);
+%           sol=proj_nuclearnorm(x, gamma, param);
+%           [sol,info]=proj_nuclearnorm(...);
 %
 %   Input parameters:
 %         x     : Input signal.

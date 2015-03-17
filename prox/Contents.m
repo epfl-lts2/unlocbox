@@ -21,7 +21,7 @@
 %    PROX_L21           -  Proximal operator of the L21 norm
 %    PROX_L12           -  Proximal operator of the LP norm
 %    PROX_NUCLEARNORM   -  Proximal operator of the nuclear norm
-%    PROX_NUCLEARNORM_BLOC-  Proximal operator of the nuclear norm by bloc
+%    PROX_NUCLEARNORM_BLOCK -  Proximal operator of the nuclear norm by block
 %    PROX_TV            -  Proximal operator of the TV norm
 %    PROX_TV3D          -  Proximal operator of the 3D TV norm
 %    PROX_TV1D          -  Proximal operator of the 1D TV norm

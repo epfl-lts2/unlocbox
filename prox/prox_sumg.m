@@ -65,25 +65,12 @@ function [sol, info] = prox_sumg(x, gamma , param)
 
 
 % Author:  Nathanael Perraudin
-% Date: October 2012
+% Date: Mars 2015
 %
-
-
-% Start the time counter
-t1 = tic;
 
 % Optional input arguments
 if nargin<3, param=struct; end
 
-if ~isfield(param, 'G'), param.G = struct([]); end
-if ~isfield(param, 'weights'), param.weights=ones(length(param.G),1); end
-if ~isfield(param, 'verbose'), param.verbose=1 ; end
-if ~isfield(param, 'maxit'), param.maxit=100 ; end
-if ~isfield(param, 'tol'), param.tol=1e-3 ; end
-
-% gamma should maybe be always set to 1 is this function
-param.gamma=1;
-if ~isfield(param, 'lambda_t'), param.lambda_t=1 ; end
 
 % Test of gamma
 if test_gamma(gamma)
@@ -95,103 +82,14 @@ if test_gamma(gamma)
     info.time=toc(t1);
     return; 
 end
+warning('This function was not tested!')
 
-% Test of the weights
-param.weights=test_weights(param.weights);
-
-% Normalizing the weights
-param.weights= param.weights/sum(param.weights);
-
-
-% Number of function
-l=length(param.G);
-
-
-
-
+if ~isfield(param, 'G'), param.G = cell(0); end
 % Definition of the gradient function
-grad = @(y) (y-x);
+f.grad = @(y) 1/gamma*(y-x);
+f.eval = @(y) 0.5/gamma*norm(y-x,'fro')^2;
+f.beta = 1/gamma;
 
-% Algorithm - Initialisation
-z=zeros([l,size(x)]);
+[sol, info] = solvep(x,{f,param.G{1:end}},param);
 
-
-for ii=1:l
-    z(ii,:,:)=x;
-end
-
-
-sol=x;
-iter=1;
-
-prev_norm = 0.5*norm(sol,2)^2+gamma*norm_sumg(sol,param.G);
-
-% Algorithm - Loop
-
-while 1
-    
-    %
-    if param.verbose >= 1
-        fprintf('Iteration %i:\n', iter);
-    end
-    
-    for ii=1:l
-       temp=2*sol-reshape(z(ii,:,:),size(x))-param.lambda_t*grad(sol);
-       z(ii,:,:) = reshape(z(ii,:,:),size(x))+ param.gamma* ...
-       (param.G{ii}.prox(temp,gamma/param.weights(ii)*param.lambda_t)-sol);
-    end
-    
-    sol=zeros(size(x));
-    for ii=1:l
-        sol=sol+param.weights(ii)* reshape(z(ii,:,:),size(x));
-    end
-    
-    % Global stopping criterion
-
-    curr_norm = 0.5*norm(sol,2)^2+gamma*norm_sumg(sol,param.G);
-    rel_norm = abs(curr_norm - prev_norm)/curr_norm;
-    if param.verbose >= 1
-        fprintf('  ||f|| = %e, rel_norm = %e\n', ...
-            curr_norm, rel_norm);
-    end
-    if (rel_norm < param.tol)
-        crit = 'REL_NORM';
-        break;
-    elseif iter >= param.maxit
-        crit = 'MAX_IT';
-        break;
-    end
-    
-    
-    % Update variables
-    iter = iter + 1;
-    prev_norm = curr_norm;
-  
-    
-end
-
-
-
-
-
-% Calculation of the norm
-norm_G=0.5*norm(sol,2)+gamma*norm_sumg(sol,param.G);
-
-% Log after the calculous of the prox
-if param.verbose >= 1
-    fprintf('  prox_sumG: Sum_||G(x)|| = %e\n', norm_G);
-
-
-    % Stopping criterion
-    fprintf(' %i iterations\n', iter);
-    fprintf(' Stopping criterion: %s \n\n', crit);
-
-end
-
-
-info.algo=mfilename;
-info.iter=iter;
-info.final_eval=norm_G;
-info.crit=crit;
-info.time=toc(t1);
 end
