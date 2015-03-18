@@ -92,7 +92,7 @@ function [sol,info,objective] = solve_bpdn(y, epsilon, A, At, Psi, Psit, param)
 %   The problem is solved thanks to a Douglas-Rachford splitting
 %   algorithm.
 %
-%   Demos: demo_bpdn demo_weighted_l1
+%   Demos: demo_weighted_l1
 %
 %   References: combettes2007douglas
 

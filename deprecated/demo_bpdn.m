@@ -43,7 +43,7 @@
 %
 
 %% Initialisation
-clear all;
+clear;
 close all;
 
 % Loading toolbox
@@ -73,9 +73,6 @@ b = A(im_original);
 
 % Prior assumption about the image (sparse in Wavelet)
 L=8;
-% h = daubcqf(2);
-% Psi2 = @(x) mdwt(x, h, L);
-% Psit2 = @(x) midwt(x, h, L);
 Psi = @(x) fwt2(x,'db1',L);
 Psit = @(x) ifwt2(x,'db1',L);
 %%

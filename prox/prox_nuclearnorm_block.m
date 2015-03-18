@@ -21,7 +21,7 @@ function [sol, info] = prox_nuclearnorm_block(X, ind_rows, ind_cols, gamma, para
 %
 %   .. sol = argmin_{Z} 0.5*||X - Z||_F^2 + sum_{i,j} gamma * W(i,j)||Z(i,j)||_*
 %
-%   .. math::  sol = arg\min_{Z} \frac{1}{2} \|X - Z\|_F^2 + \sum_{i,j} \gamma \W_{i,j}  ||Z_{i,j}||_*
+%   .. math::  sol = arg\min_{Z} \frac{1}{2} \|X - Z\|_F^2 + \sum_{i,j} \gamma W_{i,j}  ||Z_{i,j}||_*
 %   
 %   where Z(i,j) is the i,j-th block indicated by the indices ind_r == i,
 %   ind_c == j and w(i,j) is an optional weight for the block

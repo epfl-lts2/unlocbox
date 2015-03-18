@@ -36,8 +36,6 @@ function [sol, info,objective] = generalized_forward_backward(x_0, F, f , param)
 %
 %   * *param* is a Matlab structure containing the following fields:
 %
-%     General parameters:
-%
 %     * *param.weights* : weights of different functions (default = $1/N$,
 %        where $N$ is the total number of function) 
 %
@@ -46,8 +44,6 @@ function [sol, info,objective] = generalized_forward_backward(x_0, F, f , param)
 %
 %        
 %   See also: solvep forward_backward ppxa sdmm
-%
-%   Demos: demo_generalized_forward_backward
 %
 %   References: raguet2011generalized
 

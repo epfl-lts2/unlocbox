@@ -3,6 +3,7 @@ function [sol, info,objective] = forward_backward(x_0,f1, f2, param)
 %   Usage: sol = forward_backward(x_0,f1, f2, param);
 %          sol = forward_backward(x_0,f1, f2);
 %          [sol,infos,objectiv] = forward_backward(...);
+%
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
 %         f1    : First function to minimize
@@ -34,18 +35,16 @@ function [sol, info,objective] = forward_backward(x_0,f1, f2, param)
 %   function |solvep| for more information. Additionally it contains those
 %   aditional fields:  
 %
-%   * *param.lambda*: is the weight of the update term. It is kind of a
-%     timestep for the proximal operators. (Warning it should not be confused
-%     with *gamma*, the time step for gradient descent part). By default it
-%     is set to 1. Do not change this parameter unless you know what you
-%     do.
-%
+%   * *param.lambda* : is the weight of the update term. It is kind of a
+%     timestep for the proximal operators. (Warning it should not be
+%     confused with *gamma*, the time step for gradient descent part). By
+%     default it is set to 1. Do not change this parameter unless you know
+%     what you do.
 %   * *param.method* : is the method used to solve the problem. It can be
 %     'FISTA' or 'ISTA'. By default, it's 'FISTA'. 
 %
-%   See also:  solvep douglas_rachford admm generalized_forward_backward
 %
-%   Demos: demo_forward_backward 
+%   See also:  solvep douglas_rachford admm generalized_forward_backward
 %
 %   References: beck2009fast combettes2007douglas
 

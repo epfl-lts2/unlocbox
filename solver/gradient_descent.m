@@ -30,8 +30,6 @@ function [sol, info,objective] = gradient_descent(x_0,F, param)
 %
 %             
 %   See also:  forward_backward generalized_forward_backward
-%
-%   Demos: demo_gradient_descent
 
 
 

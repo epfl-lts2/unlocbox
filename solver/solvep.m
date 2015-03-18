@@ -79,12 +79,8 @@ function [sol, info,objective] = solvep(x_0, F, param)
 %
 %   * *info.rel_norm* : Relative norm at convergence 
 %
-%             
-%   See also:  
-%
-%   Demos: demo_forward_backward 
-%
-%   References: 
+
+
 
 
 % Author: Nathanael Perraudin

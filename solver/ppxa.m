@@ -40,8 +40,6 @@ function [sol, info, objective] = ppxa(x_0, F, param)
 %
 %   See also:  solvep sdmm admm generalized_forward_backward
 %
-%   Demos:  demo_ppxa
-%
 %   References:  combettes2011proximal
 
 % Author:  Nathanael Perraudin
