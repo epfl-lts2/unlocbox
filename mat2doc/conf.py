@@ -1,8 +1,8 @@
 plotengine='matlab'
 author='Nathanael Perraudin'
-version="1.1.97"
+version="1.6.1"
 versionfile="unlocbox_version"
-year="2014"
+year="2015"
 
 outputdir = '/tmp'
 

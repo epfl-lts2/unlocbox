@@ -26,4 +26,6 @@ f = mfilename('fullpath');
 
 im = imread([f, '.png']);
 
+im = rgb2gray(im);
+
 im = double(im) / 255;

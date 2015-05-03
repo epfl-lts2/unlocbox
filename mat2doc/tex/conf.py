@@ -1,5 +1,5 @@
 fext='.tex'
-urlbase='http://lts2research.epfl.ch/unlocbox/doc'
+urlbase='http://unlocbox.sourceforge.net/doc'
 urlext='php'
 widthstr='45ex'
 imagetype='eps'

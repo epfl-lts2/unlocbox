@@ -1,48 +1,71 @@
-%DEMO_ADMM  Example of use of the admm solver
+%DEMO_ADMM  Example of use of the ADMM solver
 %
-%   We present an example of the admm solver through an image
-%   reconstruction problem.
-%   The problem can be expressed as this
+%   The demo file present an example of the ADMM (alternating direction
+%   method of multipliers) solver. Unfortunately, this method is not fully
+%   automatic and the user needs to define the functions in a particular
+%   way.
 %
-%   ..  argmin ||x||_TV s.t ||b-Ax||_2 < epsilon
+%	Please read the paper of Boyd "Distributed Optimization and Statistical
+%	Learning via the Alternating Direction Method of Multipliers" to be
+%	able to understand this demonstration file. 
 %
-%   .. math:: arg \min_x \|x\|_{TV} \hspace{1cm} such \hspace{0.25cm}  that \hspace{1cm} \|b-Ax\|_2 \leq \epsilon
+%	ADMM is used to solve problem of the form
 %
-%   Note that the constraint can be inserted in the objective function
-%   thanks to the help of the indicative function. Then we recover the
-%   general formulation used for the solver of this toolbox.
+%   .. sol = argmin f1(x) + f2(y) such that y=Lx
 %
-%   In order to solve this problem with the `admm`, we need to transform 
-%   the problem a little. So, we formulate it in a different way.
+%   .. math::  sol = \min_x f_1(y) + f_2(x) \hspace{1cm} s.t. \hspace{1cm}  y=Lx
+%  
+%   In this demonstration file, we tackle the following problem
 %
-%   ..  argmin ||x||_TV s.t ||b-Ax||_2 < epsilon
+%   ..  argmin  tau || z - M x ||_2^2 + || L x ||_1
 %
-%   .. math:: arg \min_x \|x\|_{TV} \hspace{1cm} such \hspace{0.25cm} that \hspace{1cm} \|b-Ay\|_2 \leq \epsilon,  \hspace{0.5cm} y=Ix
+%   .. math:: arg \min_x  \tau \|Mx-z\|_2^2 + \|Lx\|_1 
 %
-%   Where b is the degraded image, I the identity and A an operator representing the mask. We set 
+%	where $z$ are the measurements, $W$ the discrete wavelet transform, $M$
+%	a masking operator and $\tau$ a regularization parameter. Clearly,
+%	setting $Lx=y$ allows to recover the general form for ADMM problem.
+%	Contrarily to the other solvers of the UNLocBoX the solver require
+%	special proximal operators.
 %
-%   * $f_1(x)=||x||_{TV}$
-%     We define the prox of $f_1$ as: 
+%	Here $f_1(x) = \tau \|Mx-z\|_2^2$ would normally take the following
+%	proximal operator::
 %
-%     .. prox_{f1,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma ||z||_TV
+%			f1.prox = @(x, t) ( 1 + tau * t * mask ).^(-1) .* ( x + tau * t * mask.*z);
+%			f1.eval = @(x) tau * norm(mask .* x - z)^2; 
 %
-%     .. math:: prox_{f1,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2  +  \gamma \|z\|_{TV}
+%	which correspond to the solution of the following problem
 %
-%   * $f_2$ is the indicator function of the set S define by $||Ax-b||_2 < \epsilon$
-%     We define the prox of $f_2$ as 
+%     .. prox_{f1,t} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  t || M x - y ||_2^2
 %
-%     .. prox_{f2,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma i_S( x ),
+%     .. math:: prox_{f1,t} (z) = arg \min_{x} \frac{1}{2} \| x - z \|_2^2  +  t \| M x - y \|_2^2
 %
-%     .. math:: prox_{f2,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2   + i_S(x) ,
+%	However, the ADMM algorithm requires to solve a special proximal
+%	operator instead:
 %
-%     with $i_S(x)$ is zero if x is in the set S and infinity otherwise.
-%     This previous problem has an identical solution as:
+%     .. prox_{f1,t}^L (z) = argmin_{x} 1/2 || L x - z ||_2^2  +  t || M x - y ||_2^2
 %
-%     .. argmin_{z} ||x - z||_2^2   s.t.  ||b - A z||_2 < epsilon
+%     .. math:: prox_{f1,t}^L (z) = arg \min_{x} \frac{1}{2} \| L x - z \|_2^2  +  t \| M x - y \|_2^2
 %
-%     .. math:: arg \min_{z} \|x - z\|_2^2   \hspace{1cm} such \hspace{0.25cm} that \hspace{1cm} \|Az-b\|_2 \leq \epsilon
+%	which is define in MATLAB as::
 %
-%     It is simply a projection on the B2-ball.
+%			f1.proxL = @(x, t) ( 1 + tau * t * mask ).^(-1) .* ( Lt(x) + tau * t * mask.*z);
+%			f1.prox = @(x, t) ( 1 + tau * t * mask ).^(-1) .* ( x + tau * t * mask.*z);
+%			f1.eval = @(x) tau * norm(mask .* x - z)^2; 
+%	
+%	where *Lt* it the adjoint of the $L$ ( here the inverse wavelet
+%	transform) Because the wavelet transform is an orthonormal basis. 
+%
+%	The function $f_2(y) = \| y \|_1$ is defined in MATLAB as::
+%
+%			param_l1.verbose = verbose - 1;
+%			f2.prox = @(x, T) prox_l1(x, T, param_l1);
+%			f2.eval = @(x) norm_l1(L(x));
+%			f2.L = L;
+%			f2.Lt = Lt;
+%
+%	Note the field *f2.L* and f2.Lt that indicate that the real function
+%	function is actually $f_2(Ly) =\| Lx \|_1$.
+%	
 %
 %   Results
 %   -------
@@ -57,88 +80,86 @@
 %
 %      Depleted image
 %
-%      This figure shows the image after the application of the mask. Note
-%      that 70% of the pixels have been removed.
+%      This figure shows the image after the application of the mask and addition of the noise. Note that 50% of the pixels have been removed.
 %
 %   .. figure::
 %
 %      Reconstructed image
 %
-%      This figure shows the reconstructed  image thanks to the algorithm.
+%      This figure shows the reconstructed image thanks to the algorithm.
 %   
 %
-%   References: combettes2011proximal
+%   References: combettes2011proximal boyd2011distributed
 
 % Author: Nathanael Perraudin
-% Date: November 2012
+% Date: Mai 2015 
 %
 
 
 %% Initialisation
 
-clear all;
+clear;
 close all;
 
 % Loading toolbox
 init_unlocbox();
+ltfatstart();
 
 verbose = 2;    % verbosity level
 
+% Regularization parameter: weight of the fielity term
+tau = 50;
+% Noise level
+sigma = 0.1;
+% Percent of missing pixels
+p = 50;
+
 %% Defining the problem
 
-tau = 1;        % regularization parameter
 
 % Original image
-im_original = lena();
-   
-% Creating the problem
-A = rand(size(im_original));
-A = (A > 0.7);
+im_original = barbara();
 
 % Depleted image
-b = A .* im_original;
+mask = rand(size(im_original))>p*100;
+z = mask .* im_original + sigma * rand(size(im_original));
+
+
 
 %% Defining proximal operators
-% Define the prox of f2 see the function proj_B2 for more help
-operatorA = @(x) A .* x;
-param_proj.epsilon = 0;
-param_proj.A = operatorA;
-param_proj.At = operatorA;
-param_proj.y = b;
-param_proj.verbose = verbose -1;
 
-% setting the function f2 
-f2.prox = @(x, T) proj_b2(x, T, param_proj);
-f2.eval = @(x) norm(A(:) .* x(:) - b(:))^2;
+% Define the wavelet operator
+L = @(x)  fwt2(x,'db8',6);
+Lt = @(x)  ifwt2(x,'db8',6);
 
-% setting the function f1 (norm TV)
-param_tv.verbose = verbose - 1;
-param_tv.maxit = 50;
+% setting the function tau * || Mx - y ||_2^2  
+f1.proxL = @(x, T) (1+tau*T*mask).^(-1) .* (Lt(x)+tau*T*mask.*z);
+f1.eval = @(x) tau * norm(mask .* x - z)^2;
 
-f1.prox = @(x, T) prox_tv(x, tau*T, param_tv);
-f1.eval = @(x) tau * norm_tv(x);   
-
-% setting the frame L
-L = @(x) x;
-% L= eye(size(b)); % Eventually, this choice is possible (Handle carefully)
+% setting the function || L x ||_1 using ADMM to move the operator ot of
+% the proximal
+param_l1.verbose = verbose - 1;
+f2.prox = @(x, T) prox_l1(x, T, param_l1);
+f2.eval = @(x) norm_l1(L(x));
+f2.L = L;
+f2.Lt = Lt;
 
 
 %% solving the problem
 
-% setting different parameter for the simulation
-param_solver.verbose = verbose;     % display parameter
-param_solver.maxit = 100;           % maximum iteration
-param_solver.tol = 1e-3;            % tolerance to stop iterating
-param_solver.gamma = 0.1;           % stepsize
-                                    % Be careful with this parameter
+% setting different parameter for the solver
+paramsolver.verbose = verbose;     % display parameter
+paramsolver.maxit = 100;           % maximum number of iterations
+paramsolver.tol = 1e-3;            % tolerance to stop iterating
+paramsolver.gamma = 1;             % stepsize
+fig=figure(100);
+paramsolver.do_sol=@(x) plot_image(x,fig);  
 
-param_solver.L = L;                 % Special paramter for ADMM
-
-sol = admm(b, f1, f2, param_solver);
+sol = admm(z, f1, f2, paramsolver);
 
 %% displaying the result
 imagesc_gray(im_original, 1, 'Original image');
-imagesc_gray(b, 2, 'Depleted image');
+imagesc_gray(z, 2, 'Depleted image');
 imagesc_gray(sol, 3, 'Reconstructed image');
     
 

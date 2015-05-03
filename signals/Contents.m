@@ -10,6 +10,7 @@
 %    MANDRILL    - A common image in signal processing (512 x 512 x 3)
 %    CAMERAMAN   - A common image in signal processing (256 x 256)
 %    PEPPERS     - A common image in signal processing (512 x 512 x 3)
+%    CHECKERBOARD- A checkerboard (200 x 200)
 %
 %
 %  For help, bug reports, suggestions etc. please send email to

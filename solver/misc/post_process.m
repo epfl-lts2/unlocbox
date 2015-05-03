@@ -1,4 +1,4 @@
-function [sol, param] = post_process(sol, iter, curr_norm, prev_norm, objective, param)
+function [sol, param] = post_process(sol, iter, curr_eval, prev_eval, objective, param)
 %POST_PROCESS Post processing for the UNLocBoX
 %   Usage: [sol,param]=post_process(sol,iter,curr_norm,prev_norm,param);
 %
@@ -11,8 +11,8 @@ if ~isfield(param, 'do_ts'), param.do_ts=@(x) x.gamma ; end
 
 info_iter.sol = sol;
 info_iter.iter = iter;
-info_iter.curr_norm = curr_norm;
-info_iter.prev_norm = prev_norm;
+info_iter.curr_eval = curr_eval;
+info_iter.prev_eval = prev_eval;
 info_iter.gamma = param.gamma;
 info_iter.objective = objective;
 

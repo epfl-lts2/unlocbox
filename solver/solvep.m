@@ -37,9 +37,10 @@ function [sol, info,objective] = solvep(x_0, F, param)
 %   
 %   *param* a Matlab structure containing the following fields:
 %
-%   * *param.gamma* : is the step size. Watch out, this parameter is bounded. It should
-%       be below $1/\beta$ (*f2* is $\beta$ Lipchitz continuous). By
-%       default, it is computed with all the lipschitz constant of all
+%   * *param.gamma* : is the step size. Watch out, this parameter is
+%     bounded. It should be below $1/\beta$ (*f2* is $\beta$ Lipchitz
+%     continuous). By default, it is computed with the lipschitz constant
+%     of all smooth functions.
 %
 %   * *param.tol* : is stop criterion for the loop. The algorithm stops if
 %
@@ -61,7 +62,7 @@ function [sol, info,objective] = solvep(x_0, F, param)
 %     objectiv function smaller than *param.tol*. By default 0.
 %
 %   * *param.use_dual* : If activated, use the norm of the dual variable
-%     instead of the evalution of the function itself for stopping
+%     instead of the evaluation of the function itself for stopping
 %     criterion. This is used in ADMM and SDMM for instance. To use it, the
 %     algorithm needs to store the dual variable in *s.dual_var*.
 %
@@ -145,11 +146,11 @@ end
 
 % Initialization
 if param.use_dual && isfield(s,'dual_var')
-    [curr_norm, dual_var_old] = eval_dual_var(s.dual_var);
+    [curr_eval, dual_var_old] = eval_dual_var(s.dual_var);
 else
-    curr_norm = eval_function(fg,Fp,x_0);
+    curr_eval = eval_function(fg,Fp,x_0);
 end
-[~,~,prev_norm,iter,objective,~] = convergence_test(curr_norm);
+[~,~,prev_eval,iter,objective,~] = convergence_test(curr_eval);
 
 
 % Main loop
@@ -162,18 +163,18 @@ while 1
     
     % Global stopping criterion
     if param.use_dual && isfield(s,'dual_var')
-        [curr_norm, dual_var_old] = eval_dual_var(s.dual_var,dual_var_old);
+        [curr_eval, dual_var_old] = eval_dual_var(s.dual_var,dual_var_old);
     else
-        curr_norm = eval_function(fg,Fp,sol,s,param);
+        curr_eval = eval_function(fg,Fp,sol,s,param);
     end   
-    [stop,rel_norm,prev_norm,iter,objective,crit] = convergence_test(curr_norm,prev_norm,iter,objective,param,s);
-    [sol, param] = post_process(sol, iter, curr_norm, prev_norm, objective, param);
+    [stop,rel_eval,prev_eval,iter,objective,crit] = convergence_test(curr_eval,prev_eval,iter,objective,param,s);
+    [sol, param] = post_process(sol, iter, curr_eval, prev_eval, objective, param);
     if param.verbose >= 2
         if param.use_dual && isfield(s,'dual_var')
-            fprintf('   Dual relative norm = %e\n', curr_norm);
+            fprintf('   Dual relative norm = %e\n', curr_eval);
         else
             fprintf('  ||f|| = %e, rel_norm = %e\n', ...
-            curr_norm, rel_norm);
+            curr_eval, rel_eval);
         end
     end
     if stop
@@ -189,21 +190,21 @@ if param.verbose>=2
     % Print norm
     fprintf(['\n ',algo.name,':\n']);
     if param.use_dual && isfield(s,'dual_var')
-        fprintf(' Final dual relative norm: %e\n', curr_norm );    
+        fprintf(' Final dual relative evaluation: %e\n', curr_eval );    
     else
-        fprintf(' Final relative norm: %e\n', rel_norm );   
-        fprintf(' ||f|| = %e\n', curr_norm );  
+        fprintf(' Final relative evaluation: %e\n', rel_eval );   
+        fprintf(' ||f|| = %e\n', curr_eval );  
     end
     % Stopping criterion
     fprintf(' %i iterations\n', iter);
     fprintf(' Stopping criterion: %s \n\n', crit);
 elseif param.verbose>=1
     if param.use_dual && isfield(s,'dual_var')
-        fprintf([algo.name,': Final dual relative norm = %e, it = %i, %s\n'], ...
-                        curr_norm, iter,crit);
+        fprintf([algo.name,': Final dual relative evaluation = %e, it = %i, %s\n'], ...
+                        curr_eval, iter,crit);
     else
-        fprintf([algo.name,': ||f|| = %e, rel_norm = %e, it = %i, %s\n'], ...
-                        curr_norm, rel_norm, iter,crit);
+        fprintf([algo.name,': f(x^*) = %e, rel_eval = %e, it = %i, %s\n'], ...
+                        curr_eval, rel_eval, iter,crit);
     end
 end
 
@@ -212,10 +213,10 @@ end
 
 info.algo=algo.name;
 info.iter=iter;
-info.final_eval=curr_norm;
+info.final_eval=curr_eval;
 info.crit=crit;
 info.time=toc(t1);
-info.rel_norm=rel_norm;
+info.rel_norm=rel_eval;
 
 end
 

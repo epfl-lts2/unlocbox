@@ -112,17 +112,17 @@ paraml2.verbose = param.verbose - 1;
 paraml2.tol = param.tol;
 paraml2.nu = param.nu;
 paraml2.tight = param.tight;
-f1.prox = @(x,T) reverse_prox(x,0.5*T,paraml2,z);
+f1.proxL = @(x,T) reverse_prox(x,0.5*T,paraml2,z);
 
 f2.eval = @(x) gamma*norm(x-param.y,1);
 y = param.y;
 paraml1.verbose = param.verbose -1;
 f2.prox = @(x,T) prox_l1(x-y,T*gamma,paraml1)+y;
+f2.L = param.A;
 
 paramsolver.maxit = param.maxit;
 paramsolver.verbose = param.verbose;
 paramsolver.tol = param.tol;
-paramsolver.L = param.A;
 
 [sol, info,objective] = admm(z,f1, f2, paramsolver);
 

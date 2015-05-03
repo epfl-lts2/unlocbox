@@ -3,8 +3,13 @@ function [ errors ] = test_solvers( )
 errors=0;
 gsp_reset_seed(1);
 
-%errors=errors+test_chambolle_pock_simple();
-%errors=errors+test_chambolle_pock_complex();
+% errors=errors+test_chambolle_pock_simple();
+% errors=errors+test_chambolle_pock_complex();
+
+%errors = errors + test
+
+errors=errors+test_all_solver();
+
 
 errors=errors+test_pocs();
 
@@ -14,7 +19,6 @@ errors=errors+test_gefwbw_simple();
 errors=errors+test_gefwbw_with_old();
 
 
-errors=errors+test_all_solver();
 
 
 errors=errors+test_fwbw_simple();
@@ -24,18 +28,25 @@ errors=errors+test_dr_complex();
 
 errors=errors+test_admm_simple();
 errors=errors+test_ppxa_simple();
-errors=errors+test_ppxa_complex();
 
+errors=errors+test_ppxa_complex();
 errors=errors+test_admm_complex();
 errors=errors+test_admm_complex2();
 errors=errors+test_admm_complex3();
 errors=errors+test_admm_complex4();
 errors=errors+test_admm_complex5();
 
+
 errors = errors + test_sdmm_simple();
 errors = errors + test_sdmm_complex();
 errors = errors + test_sdmm_complex2();
 
+
+errors = errors+ test_fb_based_primal_dual();
+errors = errors+ test_fb_based_primal_dual2();
+errors = errors+ test_fb_based_primal_dual3();
+
+errors = errors+ test_fb_based_primal_dual4();
 
 
 
@@ -125,6 +136,8 @@ function [errors]=test_all_solver()
     lambda = 0.03;
 
     x0 = y;
+    H =@(x) 1/N* dct2(x);
+    Ht = @(x) N * idct2(x);
     
     f1.eval = @(x) 1/2*norm(A(x)-y)^2;
     f1.grad = @(x) At(A(x)-y);
@@ -136,27 +149,46 @@ function [errors]=test_all_solver()
     f1.prox = @(x,T) prox_l2(x,0.5*T,paraml2);
     f1.beta = 1;
     
-    paramtv.verbose = 0;
-    f2.eval = @(x) lambda*norm_tv(x);
-    f2.prox = @(x,T) prox_tv(x,T*lambda,paramtv);
+    paraml1.verbose = 0;
+    paraml1.A = H;
+    paraml1.At = Ht;
+    f2.eval = @(x) lambda*norm(H(x),1);
+    f2.prox = @(x,T) prox_l1(x,T*lambda,paraml1);
     
     param.tol = 100*eps;
-    param.verbose = 1;
+    param.verbose = 0;
     param.maxit = 1000;
-    param.method = 'ISTA';
+    
+    f3.prox = @(x,T) x;
+    f3.eval = @(x) eps;
     
     p1 = forward_backward(x0,f2,f1,param);
+
     p2 = generalized_forward_backward(x0, {f2},f1, param);
+    param.gamma = 1;
+
     p3 = douglas_rachford(x0,f2,f1,param);
-    p4 = ppxa(x0, {f2,f1}, param);
     p5 = admm(x0,f2,f1, param);
+
     f1.x0 = x0;
-    f2.x0 = x0;
-    p6 = sdmm({f2,f1}, param);
+
+    param.maxit = 2000;
+    p4 = ppxa(x0, {f2,f1}, param);
+    
+    paraml12.verbose = 0;
+    f22.eval = @(x) lambda*norm(H(x),1);
+    f22.prox = @(x,T) prox_l1(x,T*lambda,paraml12);
+    f22.x0 = H(x0);
+    f22.L = H;
+    f22.Lt = Ht;
+    
+    p6 = sdmm({f22,f1}, param);
     %p7 = chambolle_pock(x0, f2,f1, param);
+
+    p8 = fb_based_primal_dual(x0,f1, f22, f3, param);
     
     
-    if norm(p2-p1)/norm(p1)<1e-5
+    if norm(p2-p1)/norm(p1)<1e-2
         fprintf('  Test all gefwbw OK\n')
     else
         fprintf('  Test all gefwbw Pas OK!!!!!!!!!!!!!!!!\n')
@@ -164,7 +196,7 @@ function [errors]=test_all_solver()
         errors= errors +1;
     end
     
-    if norm(p3-p1)/norm(p1)<1e-5
+    if norm(p3-p1)/norm(p1)<1e-2
         fprintf('  Test all dg OK\n')
     else
         fprintf('  Test all dg Pas OK!!!!!!!!!!!!!!!!\n')
@@ -172,7 +204,7 @@ function [errors]=test_all_solver()
         errors= errors +1;
     end
     
-    if norm(p4-p1)/norm(p1)<1e-5
+    if norm(p4-p1)/norm(p1)<1e-2
         fprintf('  Test all ppxa OK\n')
     else
         fprintf('  Test all ppxa Pas OK!!!!!!!!!!!!!!!!\n')
@@ -180,7 +212,7 @@ function [errors]=test_all_solver()
         errors= errors +1;
     end
 
-    if norm(p5-p1)/norm(p1)<1e-5
+    if norm(p5-p1)/norm(p1)<1e-2
         fprintf('  Test all admm 1 OK\n')
     else
         fprintf('  Test all admm 1 Pas OK!!!!!!!!!!!!!!!!\n')
@@ -189,7 +221,7 @@ function [errors]=test_all_solver()
     end
     
     
-    if norm(p6-p1)/norm(p1)<1e-5
+    if norm(p6-p1)/norm(p1)<1e-2
         fprintf('  Test all sdmm 1 OK\n')
     else
         fprintf('  Test all sdmm 1 Pas OK!!!!!!!!!!!!!!!!\n')
@@ -204,6 +236,14 @@ function [errors]=test_all_solver()
 %         norm(p7-p1)/norm(p1)
 %         errors= errors +1;
 %     end
+
+    if norm(p8-p1)/norm(p1)<1e-2
+        fprintf('  Test all fb_based_primal_dual 1 OK\n')
+    else
+        fprintf('  Test all fb_based_primal_dual 1 Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p8-p1)/norm(p1)
+        errors= errors +1;
+    end
 end
 
 function [errors]=test_gefwbw_simple()
@@ -546,17 +586,21 @@ function [errors]=test_admm_complex()
     y = 3*rand(N,1);
     x0 = rand(N,1);
     
+    L = @(x) 1/sqrt(N) * fft(x);
+    
     f1.eval = @(x) 1/2*norm(x-y)^2;
-    f1.prox = @(x,T) (sqrt(N) * ifft(x)+y)/(1+T);
-  
+    f1.proxL = @(x,T) (sqrt(N) * ifft(x)+y)/(1+T);
+    
     paraml1.verbose = 0;
+    
     f2.eval = @(x) norm(x,1);
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
-    
+    f2.L = L;
+   
     param.tol = 100*eps;
     param.verbose = 0;
     param.gamma = 1;
-    param.L =@(x) 1/sqrt(N) * fft(x);
+
     
     p2 = admm(x0,f1,f2, param);
     
@@ -590,16 +634,17 @@ function [errors]=test_admm_complex2()
     paraml2.A = @(x) 1/sqrt(N) * fft(x);
     paraml2.At = @(x) sqrt(N) * ifft(x);
     paraml2.tight = 1;
-    f1.prox = @(x,T) reverse_prox(x,0.5*T,paraml2,y);
-  
+    f1.proxL = @(x,T) reverse_prox(x,0.5*T,paraml2,y);
+    f1.prox = @(x,T) prox_l2(x,T);
+    
     paraml1.verbose = 0;
     f2.eval = @(x) norm(x,1);
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
+    f2.L = @(x) 1/sqrt(N) * fft(x);
     
     param.tol = 100*eps;
     param.verbose = 0;
     param.gamma = 1;
-    param.L =@(x) 1/sqrt(N) * fft(x);
     
     p2 = admm(x0,f1,f2, param);
     
@@ -639,16 +684,17 @@ function [errors]=test_admm_complex3()
     paraml2.At = @(x) sqrt(N) * ifft(x);
     paraml2.nu = 10;
     paraml2.tight = 0;
-    f1.prox = @(x,T) reverse_prox(x,0.5*T,paraml2,y);
+    f1.proxL = @(x,T) reverse_prox(x,0.5*T,paraml2,y);
   
     paraml1.verbose = 0;
     f2.eval = @(x) norm(x,1);
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
+    f2.L = @(x) 1/sqrt(N) * fft(x);
     
+   
     param.tol = 100*eps;
     param.verbose = 0;
     param.gamma = 1;
-    param.L =@(x) 1/sqrt(N) * fft(x);
     
     p2 = admm(x0,f1,f2, param);
     
@@ -698,15 +744,15 @@ function [errors]=test_admm_complex4()
     paraml2.At = At;
     paraml2.nu = B;
     paraml2.tight = 0;
-    f1.prox = @(x,T) reverse_prox(x,0.5*T,paraml2,y);
+    f1.proxL = @(x,T) reverse_prox(x,0.5*T,paraml2,y);
   
     paraml1.verbose = 0;
     f2.eval = @(x) norm(x,1);
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
+    f2.L = A;
     param.maxit = 1000;
     param.tol = 0;
     param.verbose = 0;
-    param.L =A;
     
     p2 = admm(x0,f1,f2, param);
     
@@ -751,15 +797,16 @@ function [errors]=test_admm_complex5()
     paraml2.At = At;
     paraml2.nu = 4;
     paraml2.tight = 0;
-    f1.prox = @(x,T) reverse_prox(x,0.5*T,paraml2,y);
-  
+    f1.proxL = @(x,T) reverse_prox(x,0.5*T,paraml2,y);
+    
     paraml1.verbose = 0;
     f2.eval = @(x) norm(x,1);
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
+    f2.L =A;
+
     param.maxit = 1000;
     param.tol = 0;
     param.verbose = 0;
-    param.L =A;
     
     p2 = admm(x0,f1,f2, param);
     
@@ -1035,4 +1082,202 @@ function [errors] = test_chambolle_pock_simple()
         fprintf('  Test chambolle pock simple 2 Pas OK!!!!!!!!!!!!!!!!\n')
         errors= errors +1;
     end
+end
+
+
+
+function [errors] = test_fb_based_primal_dual()
+    errors = 0;
+    
+    N =10;
+    
+    y = 3*rand(N,1);
+    x0 = rand(N,1);
+    
+    f1.eval = @(x) 1/2*norm(x-y)^2;
+    paraml2.y = y;
+    paraml2.verbose = 0;
+    f1.prox = @(x,T) prox_l2(x,0.5*T,paraml2);
+    f1.grad = @(x) x-y;
+    f1.beta = 1;
+    
+    paraml1.verbose = 0;
+    f2.eval = @(x) norm(x,1);
+    f2.prox = @(x,T) prox_l1(x,T,paraml1);
+    
+    param.tol = 100*eps;
+    param.verbose = 0;
+    param.gamma = 1;
+
+%     
+    f3.prox = @(x,T) x;
+    f3.eval = @(x) eps;
+    
+    [p2] = fb_based_primal_dual(x0,f1,f2,f3, param);
+    p3 = prox_l1(y,1,paraml1);
+
+    
+    if norm(p3-p2)/norm(p3)<1e-6
+        fprintf('  Test fb_based_primal_dual simple 1 OK\n')
+    else
+        fprintf('  Test fb_based_primal_dual  simple Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3-p2)/norm(p3)
+        errors= errors +1;
+    end
+    
+end
+
+
+
+
+function [errors] = test_fb_based_primal_dual2()
+    errors = 0;
+    
+    N =10;
+    
+    y = 3*rand(N,1);
+    x0 = rand(N,1);
+    
+    f1.eval = @(x) 1/2*norm(x-y)^2;
+    paraml2.y = y;
+    paraml2.verbose = 0;
+    f1.prox = @(x,T) prox_l2(x,0.5*T,paraml2);
+    f1.grad = @(x) x-y;
+    f1.beta = 1;
+    
+    paraml1.verbose = 0;
+    f2.eval = @(x) norm(x,1);
+    f2.prox = @(x,T) prox_l1(x,T,paraml1);
+    
+    param.tol = 100*eps;
+    param.verbose = 0;
+    param.gamma = 0.1;
+    param.maxit = 1000;
+     
+    paramb2.verbose = 0;
+    paramb2.y = 5*rand(N,1);
+    paramb2.epsilon = 2;
+    f3.prox = @(x,T) proj_b2(x,T,paramb2);
+    f3.eval = @(x) eps;
+
+    
+    p2 = fb_based_primal_dual(x0,f1,f2,f3, param);
+
+    p3 = ppxa(x0,{f1,f2,f3},param);
+    
+    if norm(p3-p2)/norm(p3)<1e-6
+        fprintf('  Test fb_based_primal_dual 2 OK\n')
+    else
+        fprintf('  Test fb_based_primal_dual  2 Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3-p2)/norm(p3)
+        errors= errors +1;
+    end
+    
+end
+
+
+function [errors] = test_fb_based_primal_dual3()
+    errors = 0;
+    
+    N =10;
+    
+    y = 3*rand(N,1);
+    x0 = rand(N,1);
+    A =@(x) 1/sqrt(N) * dct(x);
+    At = @(x) sqrt(N) * idct(x);
+    f1.eval = @(x) 1/2*norm(x-y)^2;
+    paraml2.y = y;
+    paraml2.verbose = 0;
+    f1.prox = @(x,T) prox_l2(x,0.5*T,paraml2);
+    f1.grad = @(x) x-y;
+    f1.beta = 1;
+    
+    paraml11.verbose = 0;
+    f21.eval = @(x) norm(x,1);
+    f21.prox = @(x,T) prox_l1(x,T,paraml11);    
+    f21.L = A;
+    f21.Lt = At;
+    
+    paraml12.verbose = 0;
+    paraml12.A = A;
+    paraml12.At = At;
+    f22.eval = @(x) norm(A(x),1);
+    f22.prox = @(x,T) prox_l1(x,T,paraml12);
+    
+    param.tol = 100*eps;
+    param.verbose = 0;
+    param.gamma = 0.1;
+    param.maxit = 1000;
+     
+
+    f3.prox = @(x,T) x;
+    f3.eval = @(x) eps;
+    
+    p2 = fb_based_primal_dual(x0,f1,f21,f3, param);
+
+    p3 = f22.prox(y,1);
+    
+    if norm(p3-p2)/norm(p3)<1e-6
+        fprintf('  Test fb_based_primal_dual 3 OK\n')
+    else
+        fprintf('  Test fb_based_primal_dual  3 Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3-p2)/norm(p3)
+        errors= errors +1;
+    end
+    
+end
+
+
+
+function [errors] = test_fb_based_primal_dual4()
+    errors = 0;
+    
+    N =10;
+    
+    y = 3*rand(N,1);
+    x0 = rand(N,1);
+    A =@(x) 1/sqrt(N) * dct(x);
+    At = @(x) sqrt(N) * idct(x);
+    f1.eval = @(x) 1/2*norm(x-y)^2;
+    paraml2.y = y;
+    paraml2.verbose = 0;
+    f1.prox = @(x,T) prox_l2(x,0.5*T,paraml2);
+    f1.grad = @(x) x-y;
+    f1.beta = 1;
+    
+    paraml11.verbose = 0;
+    f21.eval = @(x) norm(x,1);
+    f21.prox = @(x,T) prox_l1(x,T,paraml11);    
+    f21.L = A;
+    f21.Lt = At;
+    
+    paraml12.verbose = 0;
+    paraml12.A = A;
+    paraml12.At = At;
+    f22.eval = @(x) norm(A(x),1);
+    f22.prox = @(x,T) prox_l1(x,T,paraml12);
+    
+    param.tol = 100*eps;
+    param.verbose = 0;
+    param.gamma = 0.1;
+    param.maxit = 1000;
+     
+    paramb2.verbose = 0;
+    paramb2.y = 5*rand(N,1);
+    paramb2.epsilon = 2;
+    f3.prox = @(x,T) proj_b2(x,T,paramb2);
+    f3.eval = @(x) eps;
+    
+    p2 = fb_based_primal_dual(x0,f1,f21,f3, param);
+
+	p3 = ppxa(x0,{f1,f22,f3},param);
+    
+    if norm(p3-p2)/norm(p3)<1e-6
+        fprintf('  Test fb_based_primal_dual 4 OK\n')
+    else
+        fprintf('  Test fb_based_primal_dual  4 Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3-p2)/norm(p3)
+        errors= errors +1;
+    end
+    
 end

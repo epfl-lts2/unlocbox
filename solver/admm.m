@@ -22,10 +22,15 @@ function [sol, info,objective] = admm(x_0,f1, f2, param)
 %   
 %   where  $x$ is the optimization variable.
 %
+%	Please read the paper of Boyd "Distributed Optimization and Statistical
+%	Learning via the Alternating Direction Method of Multipliers" to be
+%	able to understand this demonstration file. 
+%
 %   *f1* is a structure representing a convex function. Inside the structure, there
-%   have to be the prox of the function that can be called by *f1.prox* and 
+%   have to be the prox of the function that can be called by *f1.proxL* and 
 %   the function itself that can be called by *f1.eval*. 
-%   WARNING !!!  The prox of *f1* is not the usual prox! But the solution to this problem:
+%   WARNING !!!  The proxL of *f1* is not the usual prox! But the solution
+%   to this problem: 
 %
 %   .. prox_{f1, gamma }^L(z)=min_x  1/2 ||Lx-z||_2^2 + gamma f1(x)
 %
@@ -52,11 +57,11 @@ function [sol, info,objective] = admm(x_0,f1, f2, param)
 %
 %   Demos:  demo_admm
 %
-%   References: combettes2011proximal
+%   References: boyd2011distributed combettes2011proximal
  
 % Author: Nathanael Perraudin
 % Date: 23 May 2013
-% Testing: test_solver
+% Testing: test_solvers
 
 param.algo = 'ADMM';
 [sol, info,objective] = solvep(x_0,{f1,f2},param);

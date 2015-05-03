@@ -35,9 +35,12 @@ switch lower(name)
     case 'pocs'
         algo = pocs_alg();
     case 'chambolle_pock'
-        algo = chambolle_pock_alg();  
+        algo = chambolle_pock_alg();      
+    case 'fb_based_primal_dual'
+        algo = fb_based_primal_dual_alg();  
     otherwise
         error('Unknown algorithm name')
+        
 end
 
 end

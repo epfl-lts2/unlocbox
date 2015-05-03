@@ -103,6 +103,8 @@ function [sol,info,objective] = solve_bpdn(y, epsilon, A, At, Psi, Psit, param)
 
 % Optional input arguments
 if nargin<7, param=struct; end
+if nargin < 5; Psi = @(x) x; end
+if nargin < 6; Psit = Psi; end
 
 % Optional input arguments
 if ~isfield(param, 'verbose'), param.verbose = 1; end

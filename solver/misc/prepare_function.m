@@ -28,6 +28,12 @@ for ii = 1:m
             warning('Please specify a lipshitz constant of the gradient. 1 will be used instead')
         end
         Fg{length(Fg)+1,1} = F{ii};         %#ok<AGROW>
+    elseif isfield(F{ii},'proxL')
+        F{ii}.prox_adL = @(x,T) prox_adL(x,T,F{ii},param);
+        Fp{length(Fp)+1,1} = F{ii};         %#ok<AGROW>
+        if isfield(F{ii},'prox')
+            F{ii}.prox_ad = @(x,T) prox_ad(x,T,F{ii},param);
+        end
     elseif isfield(F{ii},'prox')
         F{ii}.prox_ad = @(x,T) prox_ad(x,T,F{ii},param);
         Fp{length(Fp)+1,1} = F{ii};         %#ok<AGROW>
@@ -55,6 +61,18 @@ if param.fast_eval
 else
     s = {};
     [s{1}] = f.prox(x,T);
+end
+
+end
+
+function s = prox_adL(x,T,f,param)
+
+if param.fast_eval
+    s = {};
+    [s{1:2}] = f.proxL(x,T);
+else
+    s = {};
+    [s{1}] = f.proxL(x,T);
 end
 
 end

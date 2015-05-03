@@ -14,16 +14,20 @@ function [sz] = soft_threshold(z,T)
 % Date: 14 May 2013
 
     % handle the size
-    size_z=size(z);
-    z=z(:);
-    T=T(:);
+    if T>0
+        size_z=size(z);
+        z=z(:);
+        T=T(:);
 
-    % This soft thresholding function only supports real signal
-    % sz= sign(z).*max(abs(z)-T, 0);
+        % This soft thresholding function only supports real signal
+        % sz= sign(z).*max(abs(z)-T, 0);
 
-    % This soft thresholding function supports complex numbers
-    sz = max(abs(z)-T,0)./(max(abs(z)-T,0)+T).*z;
-    
-    % Handle the size
-    sz=reshape(sz,size_z);
+        % This soft thresholding function supports complex numbers
+        sz = max(abs(z)-T,0)./(max(abs(z)-T,0)+T).*z;
+
+        % Handle the size
+        sz=reshape(sz,size_z);
+    else
+        sz = z;
+    end
 end

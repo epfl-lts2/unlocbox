@@ -36,14 +36,17 @@ errors=errors+test_proxl2grad();
 
 % Test proj_b2
 errors=errors+test_proj_b2();
+
 % Test proj_b1
 errors=errors+test_proj_b1();
 
-% Test TV
-errors=errors+test_tv();
+
 
 % Test prox l1
 errors=errors+test_prox_l1();
+
+% Test TV
+errors=errors+test_tv();
 
 % Test solvers
 errors=errors+test_solvers();
@@ -53,6 +56,8 @@ errors=errors+test_proxlp();
 
 % Test proj nuclear norm
 errors=errors+test_proj_nuclear();
+
+errors=errors+test_prox_functions();
 
 
 %% Error in testbench
@@ -66,7 +71,6 @@ end
 %% Lanch the demos
 if demos
     demo_unlocbox
-    demo_gradient_descent
     demo_admm
     demo_compress_sensing
     demo_compress_sensing2
@@ -75,12 +79,9 @@ if demos
     demo_deconvolution
     demo_douglas_rachford
     demo_forward_backward
-    demo_generalized_forward_backward
     demo_graph_reconstruction
     demo_overlaping_groups_structured_sparsity
-    demo_ppxa
-    demo_prox_multi_functions
-    demo_rlr
+
     demo_sdmm
     demo_sound_reconstruction
     demo_tvdn

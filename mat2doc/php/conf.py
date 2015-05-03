@@ -1,5 +1,5 @@
 fext='.php'
-urlbase='/unlocbox/doc'
+urlbase='/doc'
 urlext='.php'
 widthstr=''
 imagetype='png'

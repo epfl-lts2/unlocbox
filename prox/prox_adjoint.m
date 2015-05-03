@@ -1,4 +1,4 @@
-function sol  = prox_adjoint( x,gamma,f )
+function [sol]  = prox_adjoint( x,gamma,f )
 %PROX_ADJOINT Proximal operator of the adjoint function of f
 %   Usage:   sol=prox_adjoint(x, gamma, f);
 %
@@ -25,7 +25,7 @@ function sol  = prox_adjoint( x,gamma,f )
 
 % Author: Nathanael Perraudin
 % Date: 31 May 2013
-%
+% Testing: test_prox_functions
 
 if gamma==0
     warning(['gamma = 0. This is problably not correct.' ...
@@ -38,9 +38,13 @@ if nargin<3,
     error('Two few input arguments!');
 end
 
-sol_a = f.prox(x/gamma,1/gamma);
-
-sol= x-sol_a;
+% if nargout>1
+%     [sol_a, info] = gamma*f.prox(x/gamma,1/gamma);
+%     info.adjoint = 1;
+% else
+    sol_a = gamma*f.prox(x/gamma,1/gamma);
+% end
+sol= x - sol_a;
 
 
 end

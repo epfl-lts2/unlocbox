@@ -11,11 +11,11 @@ function gamma = log_decreasing_ts(x, gamma_in, gamma_fin, nit)
 %   Output parameters:
 %         gamma     : Timestep at iteration t
 %
-%   This plugin compute a new timestep at each iteration. It make a log
+%   This plug-in computes a new timestep at each iteration. It makes a log
 %   decreasing timestep from *gamma_in* to *gamma_fin* in *nit* iterations.
 %   To use this plugin, define::
 %
-%       param.do_ts=@(x) log_decreasing_ts(x, gamma_in, gamma_fin, nit);
+%       param.do_ts = @(x) log_decreasing_ts(x, gamma_in, gamma_fin, nit);
 %
 %   in the structure of optional argument of the solver.
 %
