@@ -136,6 +136,9 @@ if iter
     end
 end
 
+if numel(curr_norm)>1
+    error('One of your evaluation functions .eval returns a vector and not a scalar');
+end
 
 if (curr_norm < param.tol) && logical(param.abs_tol)
     crit = 'CURR_NORM';

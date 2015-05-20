@@ -1,5 +1,5 @@
 function [im] = checkerboard()
-%LENA  Load the 'checkerboard' test signal
+%CHECKERBOARD Load the 'checkerboard' test signal
 %   Usage: im = checkerboard();
 %
 %   Input parameters:

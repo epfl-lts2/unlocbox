@@ -22,9 +22,9 @@ function [sol, info,objective] = admm(x_0,f1, f2, param)
 %   
 %   where  $x$ is the optimization variable.
 %
-%	Please read the paper of Boyd "Distributed Optimization and Statistical
-%	Learning via the Alternating Direction Method of Multipliers" to be
-%	able to understand this demonstration file. 
+%   Please read the paper of Boyd "Distributed Optimization and Statistical
+%   Learning via the Alternating Direction Method of Multipliers" to be
+%   able to understand this demonstration file. 
 %
 %   *f1* is a structure representing a convex function. Inside the structure, there
 %   have to be the prox of the function that can be called by *f1.proxL* and 

@@ -58,7 +58,7 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %
 %   Demos:  demo_admm
 %
-%   References: 
+%   References: komodakis2014playing
  
 % Author: Nathanael Perraudin
 % Date: 2 May 2015

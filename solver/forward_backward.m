@@ -40,6 +40,7 @@ function [sol, info,objective] = forward_backward(x_0,f1, f2, param)
 %     confused with *gamma*, the time step for gradient descent part). By
 %     default it is set to 1. Do not change this parameter unless you know
 %     what you do.
+%
 %   * *param.method* : is the method used to solve the problem. It can be
 %     'FISTA' or 'ISTA'. By default, it's 'FISTA'. 
 %
@@ -47,7 +48,7 @@ function [sol, info,objective] = forward_backward(x_0,f1, f2, param)
 %   See also:  solvep douglas_rachford admm generalized_forward_backward
 %
 %   References: beck2009fast combettes2007douglas
-
+%
 
 % Author: Nathanael Perraudin
 % Date: 24 oct 2012
