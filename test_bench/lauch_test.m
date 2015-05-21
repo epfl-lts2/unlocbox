@@ -58,6 +58,7 @@ errors=errors+test_proxlp();
 errors=errors+test_proj_nuclear();
 
 errors=errors+test_prox_functions();
+errors=errors+test_utils();
 
 
 %% Error in testbench

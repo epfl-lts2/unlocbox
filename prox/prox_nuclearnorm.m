@@ -110,18 +110,19 @@ svds_opts.tol = param.tol;
 
 if param.svds
     % use upper bound for rank! don't compute everything...
-    [U, S, V] = svds(double(x), param.max_rank, 'L', svds_opts);
+    [U, S, V] = svdsecon(double(x), param.max_rank, 'L', svds_opts);
     %[U, Sigma, V] = svds(x, min(size(x)));
+    %% TODO THis should be changed
     while S(end) > gamma
         param.max_rank = 2 * param.max_rank;
-        [U, S, V] = svds(double(x), param.max_rank, 'L', svds_opts);
+        [U, S, V] = svdsecon(double(x), param.max_rank, 'L', svds_opts);
     end
 else
     try
         if param.single
-            [U, S, V] = svd(single(full(x)), 'econ');       % good for small, dense matrices!!
+            [U, S, V] = svdecon(single(full(x)));       % good for small, dense matrices!!
         else
-            [U, S, V] = svd(full(x), 'econ');       % good for small, dense matrices!!
+            [U, S, V] = svdecon(full(x));       % good for small, dense matrices!!
         end
     catch %err
         % This can save you sometimes
@@ -163,5 +164,6 @@ info.time = toc(t1);
 info.rank = r;
 
 end
+
 
 
