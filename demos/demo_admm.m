@@ -121,7 +121,7 @@ p = 50;
 im_original = barbara();
 
 % Depleted image
-mask = rand(size(im_original))>p*100;
+mask = rand(size(im_original))>p/100;
 z = mask .* im_original + sigma * rand(size(im_original));
 
 
