@@ -56,7 +56,7 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %
 %   See also: solvep sdmm admm
 %
-%   Demos:  demo_admm
+%   Demos:  demo_fbb_primal_dual
 %
 %   References: komodakis2014playing
  

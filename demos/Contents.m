@@ -24,6 +24,7 @@
 %    DEMO_SDMM          -  Demonstration of the use of the SDMM solver
 %    DEMO_WEIGHTED_L1  -  Demonstration of the use of the bpdn solver
 %    DEMO_TVDN         -  Demonstration of the use of the tvdn solver
+%    DEMO_FBB_PRIMAL_DUAL -  Demonstration for forward bacward based primal dual
 %
 %  For help, bug reports, suggestions etc. please send email to
 %  unlocbox-help@lists.sourceforge.net

@@ -104,10 +104,6 @@ param_solver.tol = 1e-6;        % Tolerance to stop iterating
 t1 = tic;
 sol = forward_backward(b,f1,f2,param_solver);
 time1 = toc(t1);
-%%
-t1 = tic;
-sol2 = solvep(b,{f1, f2},param_solver);
-time2 = toc(t1);
 
 
 %% displaying the result
