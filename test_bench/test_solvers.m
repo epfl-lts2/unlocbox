@@ -48,7 +48,7 @@ errors = errors+ test_fb_based_primal_dual3();
 
 errors = errors+ test_fb_based_primal_dual4();
 
-
+errors = errors+ test_fb_based_primal_dual_fista();
 
 
 
@@ -1281,3 +1281,59 @@ function [errors] = test_fb_based_primal_dual4()
     end
     
 end
+
+
+
+function [errors] = test_fb_based_primal_dual_fista()
+    errors = 0;
+    
+    N =10;
+    
+    y = 3*rand(N,1);
+    x0 = rand(N,1);
+    A =@(x) 1/sqrt(N) * dct(x);
+    At = @(x) sqrt(N) * idct(x);
+    f1.eval = @(x) 1/2*norm(x-y)^2;
+    paraml2.y = y;
+    paraml2.verbose = 0;
+    f1.prox = @(x,T) prox_l2(x,0.5*T,paraml2);
+    f1.grad = @(x) x-y;
+    f1.beta = 1;
+    
+    paraml11.verbose = 0;
+    f21.eval = @(x) norm(x,1);
+    f21.prox = @(x,T) prox_l1(x,T,paraml11);    
+    f21.L = A;
+    f21.Lt = At;
+    
+    paraml12.verbose = 0;
+    paraml12.A = A;
+    paraml12.At = At;
+    f22.eval = @(x) norm(A(x),1);
+    f22.prox = @(x,T) prox_l1(x,T,paraml12);
+    
+    param.tol = 100*eps;
+    param.verbose = 1;
+    param.gamma = 0.1;
+    param.maxit = 1000;
+     
+    paramb2.verbose = 0;
+    paramb2.y = 5*rand(N,1);
+    paramb2.epsilon = 2;
+    f3.prox = @(x,T) proj_b2(x,T,paramb2);
+    f3.eval = @(x) eps;
+    param.method = 'FISTA';
+    p2 = fb_based_primal_dual(x0,f1,f21,f3, param);
+    param.method = 'ISTA';
+	p3 = fb_based_primal_dual(x0,f1,f21,f3, param);
+    
+    if norm(p3-p2)/norm(p3)<1e-6
+        fprintf('  Test fb_based_primal_dual fista OK\n')
+    else
+        fprintf('  Test fb_based_primal_dual  fista Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3-p2)/norm(p3)
+        errors= errors +1;
+    end
+    
+end
+

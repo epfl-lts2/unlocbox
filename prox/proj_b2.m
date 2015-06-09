@@ -12,16 +12,16 @@ function [sol, info] = proj_b2(x, ~, param)
 %
 %   `proj_b2(x,~,param)` solves:
 %
-%   .. sol = argmin_{z} ||x - z||_2^2   s.t.  ||y - A z||_2 < epsilon
+%   .. sol = argmin_{z} ||x - z||_2^2   s.t.  ||y - A z||_2 <= epsilon
 %
-%   .. math::  sol = \min_z ||x - z||_2^2 \hspace{1cm} s.t. \hspace{1cm}  \|y - A z\|_2 < \epsilon
+%   .. math::  sol = arg \min_z ||x - z||_2^2 \hspace{1cm} s.t. \hspace{1cm}  \|y - A z\|_2 <= \epsilon
 %
 %   Remark: the projection is the proximal operator of the indicative function of
 %   $||y - A z||_2 < \epsilon$. So it can be written:
 %
-%   .. prox_{f, gamma }(x)      where       f= i_c(||y - A z||_2 < epsilon)
+%   .. prox_{f, gamma }(x)      where       f= i_c(||y - A z||_2 <= epsilon)
 %
-%   .. math:: prox_{f, \gamma }(x) \hspace{1cm} where \hspace{1cm} f= i_c(\|y - A z\|_2 < \epsilon)
+%   .. math:: prox_{f, \gamma }(x) \hspace{1cm} where \hspace{1cm} f= i_c(\|y - A z\|_2 <= \epsilon)
 %
 %
 %   param is a Matlab structure containing the following fields:
@@ -156,7 +156,7 @@ else % NON TIGHT FRAME CASE
         end
         
         % Stopping criterion
-        if (norm_res>=epsilon_low && norm_res<=epsilon_up)
+        if (norm_res>=epsilon_low && norm_res<=epsilon_up && iter >1)
             crit = 'TOL_EPS'; break;
         elseif iter >= param.maxit
             crit = 'MAX_IT'; break;

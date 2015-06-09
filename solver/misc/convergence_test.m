@@ -140,10 +140,10 @@ if numel(curr_norm)>1
     error('One of your evaluation functions .eval returns a vector and not a scalar');
 end
 
-if (curr_norm < param.tol) && logical(param.abs_tol)
+if (curr_norm < param.tol) && logical(param.abs_tol) && iter>1
     crit = 'CURR_NORM';
     stop=1;
-elseif (abs(rel_norm) < param.tol) && (~param.abs_tol)
+elseif (abs(rel_norm) < param.tol) && (~param.abs_tol) && iter>1
     crit = 'REL_NORM';
     stop=1;
 elseif iter >= param.maxit

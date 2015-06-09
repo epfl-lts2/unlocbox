@@ -5,12 +5,12 @@ function [sol, info,objective]  = prox_fax( z,gamma,param )
 %   Input parameters:
 %         x     : Input signal.
 %         gamma : Regularization parameter (ususally it should be 1)
-%         f     : Function
+%         param : Parameter (Please see: param.f)
 %   Output parameters:
 %         sol   : Solution.
 %         infos : Structure summarizing informations at convergence
 %
-%   ` prox_fax( x,gamma,f )` solves:
+%   ` prox_fax( x,gamma,param )` solves:
 %
 %   .. sol = argmin_{z} 0.5*||x - z||_2^2 + gamma * f(Ax)
 %

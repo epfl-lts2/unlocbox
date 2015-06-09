@@ -196,11 +196,11 @@ if param.verbose >= 1
 end
 
 
-info.algo=mfilename;
-info.iter=iter;
-info.final_eval=norm_l1;
-info.crit=crit;
-info.time=toc(t1);
+info.algo = mfilename;
+info.iter = iter;
+info.final_eval = norm_l1;
+info.crit = crit;
+info.time = toc(t1);
 end
 
 

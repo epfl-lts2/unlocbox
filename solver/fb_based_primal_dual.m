@@ -50,9 +50,26 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %
 %       Warning! This stopping criterion is different from other solver!
 %
-%   * *param.sigma* : second timestep. By default equal to *param.gamma*.
+%   * *param.nu* : bound on the norm of the operator L (default: 1), i.e.
+%
+%   .. ` ||A x||^2 <= nu * ||x||^2 
+%
+%   .. math::  \|A x\|^2 \leq \nu \|x\|^2 
+%
+%   * *param.tau* : first timestep.   
+%
+%   * *param.sigma* : second timestep. The timesteps should satisfy the
+%     following relationship (\beta is the lipschitz constant of the smooth
+%     term):
+%     
+%     .. 1/tau - sigma * nu >= beta/2
+%
+%   .. math::  \frac{1}{\tau} - \sigma \nu \geq \frac{\beta}{2}
 %
 %   * *param.rescale* : Use the rescale version of the algorithm (default 0)
+%
+%   * *param.method* : is the method used to solve the problem. It can be
+%     'FISTA' or 'ISTA'. By default, it's 'FISTA'. 
 %
 %   See also: solvep sdmm admm
 %
