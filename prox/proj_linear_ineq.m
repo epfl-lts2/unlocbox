@@ -18,15 +18,25 @@ function [ sol ] = proj_linear_ineq( x,~, param )
 %
 %   param is a Matlab structure containing the following fields:
 %
-%   * *param.y* : measurements (default: 0).
+%   * *param.y* : vector (default: 0).
 %
-%   * *param.A* : Matrix A (default: Id).
+%   * *param.method* : method used 'quadprog' or 'iterative' (default:
+%     'quadprog').
 %
-%   * *param.AAtinv* : $(A A^*)^(-1)$ Define this parameter to speed up
-%     computation. 
+%   * *param.A* : Matrix A (default: Id) (Or operator for the 'iterative'
+%     method) 
+%
+%   * *param.At* : Matrix or operator At (Only for the 'iterative' method) 
 %
 %   * *param.verbose* : 0 no log, 1 a summary at convergence, 2 print main
 %     steps (default: 1)
+%
+%   * *param.nu* : (only for iterative method) bound on the norm of the
+%     operator A (default: 1), i.e.
+%
+%     .. ` ||A x||^2 <= nu * ||x||^2 
+%
+%     .. math::  \|A x\|^2 \leq \nu  \|x\|^2 
 %
 %
 %   infos is a Matlab structure containing the following fields:
@@ -40,8 +50,6 @@ function [ sol ] = proj_linear_ineq( x,~, param )
 %   * *infos.final_eval* : Final evaluation of the function
 %
 %   * *infos.crit* : Stopping critterion used 
-%
-%   * *infos.residue* : Final residue  
 %
 %
 %   Rem: The input "~" is useless but needed for compatibility issue.
@@ -83,7 +91,6 @@ if sum(tmp-param.y > 0)
         b = param.y;
         [sol] = quadprog(H,f,A,b);
     elseif strcmp(param.method,'iterative')
-        warning('The help for this method has not been done')
         if ~isfield(param, 'At'), param.At = param.A; end
         if ~isfield(param, 'y'), param.y = zeros(size(tmp)); end
         

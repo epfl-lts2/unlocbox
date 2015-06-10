@@ -18,16 +18,28 @@ function [ sol ] = proj_linear_eq( x,~, param )
 %
 %   param is a Matlab structure containing the following fields:
 %
-%   * *param.y* : measurements (default: 0).
+%   * *param.y* : vector (default: 0).
 %
-%   * *param.A* : Matrix A (default: Id).
+%   * *param.method* : method used 'exact' or 'iterative' (default:
+%     'exact').
 %
-%   * *param.pinvA* : $A*(A A^*)^(-1)$ Pseudo inverse of A Define this
-%     parameter to speed up computation.  
+%   * *param.A* : Matrix A (default: Id) (Or operator for the 'iterative'
+%     method) 
+%
+%   * *param.At* : Matrix or operator At (Only for the 'iterative' method) 
 %
 %   * *param.verbose* : 0 no log, 1 a summary at convergence, 2 print main
 %     steps (default: 1)
 %
+%   * *param.nu* : (only for iterative method) bound on the norm of the
+%     operator A (default: 1), i.e.
+%
+%     .. ` ||A x||^2 <= nu * ||x||^2 
+%
+%     .. math::  \|A x\|^2 \leq \nu  \|x\|^2 
+%
+%   * *param.pinvA* : $A*(A A^*)^(-1)$ Pseudo inverse of A Define this
+%     parameter to speed up computation (Only for 'exact').  
 %
 %   infos is a Matlab structure containing the following fields:
 %
@@ -76,10 +88,11 @@ if strcmp(param.method,'exact')
 
     crit = 'TOL_EPS'; iter = 0; 
 else
-    warning('The help for this method has not been done')
     if ~isfield(param, 'A'), param.A = @(x) x; end
     if ~isfield(param, 'At'), param.At = param.A; end
-    if ~isfield(param, 'y'), param.y = zeros(size(tmp)); end
+    
+
+    
     
     if isnumeric(param.A)
         A = @(x) param.A*x;
@@ -92,9 +105,9 @@ else
     else
         At = param.At;
     end
+    if ~isfield(param, 'y'), param.y = zeros(size(A(x))); end
 
-
-% Working fb_based_primal_dual
+    % Working fb_based_primal_dual
     f1.prox = @(z,T) param.y;
     f1.eval = @(z) eps;
     f1.L = A;
