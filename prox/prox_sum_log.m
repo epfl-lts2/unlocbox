@@ -20,7 +20,8 @@ function [sol,info] = prox_sum_log(x, gamma, param)
 %
 %   param is a Matlab structure containing the following fields:
 %
-%   * *param.verbose* : 0 no log, 1 a summary at convergence
+%   * *param.verbose* : 0 no log, (1) print -sum(log(z)), 2 additionally
+%       report negative inputs.
 %
 %   info is a Matlab structure containing the following fields:
 %
@@ -51,21 +52,8 @@ if nargin < 3, param = struct; end
 if ~isfield(param, 'verbose'), param.verbose = 1; end
 
 
-if any(x(:) <= 0)
-    % TODO: check validity
-    warning('prox_sum_log:   Negative input. Proximal still defined (and positive) but log itself is not!');
-end
-stop_error = 0;
-
-% if any(x(:) <= 0)
-%     warning('prox_sum_log:   Trying to find proximal for logarithm of negative numbers! ABORTING.');
-%     stop_error = 1;
-% else
-%     stop_error = 0;
-% end
-
-
 % test the parameters
+stop_error = 0;
 stop_error = stop_error | test_gamma(gamma);
 
 if stop_error
@@ -83,14 +71,22 @@ end
 sol = (x + sqrt(x.^2 + 4*gamma)) /2;
 info.algo = mfilename;
 info.iter = 0;
-info.final_eval = gamma * sum(log(x(:)));
+info.final_eval = -gamma * sum(log(x(:)));
 info.crit = '--';
 info.time = toc(t1);
     
 % Log after the prox
 if param.verbose >= 1
-    fprintf('  prox_sum_log: sum(log(x)) = %e\n', info.final_eval);
+    fprintf('  prox_sum_log: - sum(log(x)) = %e', info.final_eval / gamma);
+    if param.verbose > 1
+        n_neg = nnz(x(:) <= 0);
+        if n_neg > 0
+            fprintf(' (%d negative elements, log not defined, check stability)', n_neg);
+        end
+    end
+    fprintf('\n');
 end
+
 
 end
 

@@ -134,7 +134,7 @@ if ~isfield(param, 'algo'), param.algo = select_solver(Fg,Fp)  ; end
 
 algo = get_algo(param.algo);
 
-% Transform all smooth function into one function.
+% Transform all smooth functions into one function.
 fg = add_smooth_function(Fg);
 
 if param.verbose>=1, 

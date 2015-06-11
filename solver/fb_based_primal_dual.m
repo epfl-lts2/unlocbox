@@ -66,7 +66,7 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %
 %   .. math::  \frac{1}{\tau} - \sigma \nu \geq \frac{\beta}{2}
 %
-%   * *param.rescale* : Use the rescale version of the algorithm (default 0)
+%   * *param.rescale* : Use the rescaled version of the algorithm (default 0)
 %
 %   * *param.method* : is the method used to solve the problem. It can be
 %     'FISTA' or 'ISTA'. By default, it's 'FISTA'. 

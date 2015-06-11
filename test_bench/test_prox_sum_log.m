@@ -13,8 +13,9 @@ function errors = errors_positive_input()
 x = rand(100);
 
 gamma = 0.1;
+params.verbose = 2;
 
-y = prox_sum_log(x, gamma);
+y = prox_sum_log(x, gamma, params);
 
 errors = 0;
 if not( all( y > x ))
@@ -38,8 +39,9 @@ function errors = errors_negative_input()
 x = randn(100);
 
 gamma = 0.1;
+params.verbose = 2;
 
-y = prox_sum_log(x, gamma);
+y = prox_sum_log(x, gamma, params);
 
 errors = 0;
 if not( all( y > x ))
