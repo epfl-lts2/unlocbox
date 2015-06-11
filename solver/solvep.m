@@ -135,7 +135,7 @@ if ~isfield(param, 'algo'), param.algo = select_solver(Fg,Fp)  ; end
 algo = get_algo(param.algo);
 
 % Transform all smooth functions into one function.
-fg = add_smooth_function(Fg);
+fg = add_smooth_functions(Fg);
 
 if param.verbose>=1, 
     fprintf(['Algorithm selected:', algo.name,' \n']);

@@ -1,13 +1,13 @@
-function fg = add_smooth_function(Fg)
-%ADD_SMOOTH_FUNCTION sum of smooth function
-%   Usage: fg = add_smooth_function(Fg);
+function fg = add_smooth_functions(Fg)
+%ADD_SMOOTH_FUNCTIONS sum of smooth function
+%   Usage: fg = add_smooth_functions(Fg);
 %    
 %   Input parameters:
 %       Fg  : cell array of function (cell array of struct)
 %   Output parameters:
 %       fg  : function (struct)
 %
-%   This function takes a cell array of smooth function and transform into
+%   This function takes a cell array of smooth functions and transform into
 %   a single smooth function. The array can be empty.
 %
 

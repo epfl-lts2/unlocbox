@@ -52,9 +52,9 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %
 %   * *param.nu* : bound on the norm of the operator L (default: 1), i.e.
 %
-%   .. ` ||A x||^2 <= nu * ||x||^2 
+%     .. ` ||L x||^2 <= nu * ||x||^2 
 %
-%   .. math::  \|A x\|^2 \leq \nu \|x\|^2 
+%     .. math::  \|L x\|^2 \leq \nu \|x\|^2 
 %
 %   * *param.tau* : first timestep.   
 %
@@ -64,7 +64,7 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %     
 %     .. 1/tau - sigma * nu >= beta/2
 %
-%   .. math::  \frac{1}{\tau} - \sigma \nu \geq \frac{\beta}{2}
+%     .. math::  \frac{1}{\tau} - \sigma \nu \geq \frac{\beta}{2}
 %
 %   * *param.rescale* : Use the rescaled version of the algorithm (default 0)
 %
