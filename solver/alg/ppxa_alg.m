@@ -27,7 +27,8 @@ function [sol, s, param] = ppxa_initialize(x_0,fg,Fp,param)
 
     for ii = 1:length(Fp)
         s.y_n{ii} = x_0;    
-        s.x_n{ii}{1} = zeros(size(x_0));  
+%        s.x_n{ii}{1} = zeros(size(x_0));  
+        s.x_n{ii} = zeros(size(x_0));  
     end
         
     sol = x_0;
@@ -44,7 +45,8 @@ function [sol, s] = ppxa_algorithm(Fp, sol, s, param)
 
     % proximal operator
     for ii = 1:length(Fp)
-        s.x_n{ii} = Fp{ii}.prox_ad(s.y_n{ii}, param.gamma);
+%        s.x_n{ii} = Fp{ii}.prox_ad(s.y_n{ii}, param.gamma);
+        s.x_n{ii} = Fp{ii}.prox(s.y_n{ii}, param.gamma);
     end
     
     pn = w_sum(s.W,s.x_n);
@@ -52,7 +54,8 @@ function [sol, s] = ppxa_algorithm(Fp, sol, s, param)
     % update y
 
     for ii = 1:length(Fp)
-        s.y_n{ii}  = s.y_n{ii} + param.lambda * (2*pn - sol - s.x_n{ii}{1}); 
+%        s.y_n{ii}  = s.y_n{ii} + param.lambda * (2*pn - sol - s.x_n{ii}{1}); 
+        s.y_n{ii}  = s.y_n{ii} + param.lambda * (2*pn - sol - s.x_n{ii}); 
     end
     
     % update sol

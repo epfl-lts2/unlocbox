@@ -2,8 +2,8 @@ function [ errors ] = test_lp( )
 errors=0;
 
 gsp_reset_seed(1);
-errors=errors+test_ineq();
 errors=errors+test_eq();
+errors=errors+test_ineq();
 
 
 

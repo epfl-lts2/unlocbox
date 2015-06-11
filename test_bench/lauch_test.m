@@ -57,9 +57,10 @@ errors=errors+test_proxlp();
 % Test proj nuclear norm
 errors=errors+test_proj_nuclear();
 
-errors=errors+test_prox_functions();
-errors=errors+test_utils();
-errors=errors+test_lp();
+errors = errors + test_prox_functions();
+errors = errors + test_utils();
+errors = errors + test_lp();
+errors = errors + test_prox_sum_log();
 
 
 %% Error in testbench

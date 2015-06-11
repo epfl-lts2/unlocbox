@@ -25,7 +25,8 @@ function [sol, s,param] = sdmm_initialize(fg,Fp,param)
         if ~isfield(Fp{ii}, 'Lt'), Fp{ii}.Lt = @(x) x; end
 %         if size(F{i}.L,1)==0, F{i}.L=eye(length(F{i}.x0)) ; end
 %         if size(F{i}.x0,2)>size(F{i}.x0,1), F{i}.x0=F{i}.x0'; end
-        s.x_n{ii}{1} = Fp{ii}.x0;
+%        s.x_n{ii}{1} = Fp{ii}.x0;
+        s.x_n{ii} = Fp{ii}.x0;
         s.dual_var{ii} = zeros(size(Fp{ii}.x0));
         
         % Check how the operator is given
@@ -45,7 +46,8 @@ function [sol, s,param] = sdmm_initialize(fg,Fp,param)
     % Initialization
     sol = 0;
     for ii = 1:length(Fp)
-        sol = sol +s.OpLt{ii}( s.x_n{ii}{1} );
+%        sol = sol +s.OpLt{ii}( s.x_n{ii}{1} );
+        sol = sol +s.OpLt{ii}( s.x_n{ii} );
     end
     
     sol = s.QinvOp(sol);     
@@ -63,13 +65,16 @@ function [sol, s] = sdmm_algorithm(Fp, sol, s, param)
 
     for ii = 1 : length(Fp)
         s_n = s.OpL{ii}(sol);
-        s.x_n{ii} = Fp{ii}.prox_ad(s_n + s.dual_var{ii},param.gamma);
-        s.dual_var{ii} = s.dual_var{ii} + s_n - s.x_n{ii}{1} ;
+%        s.x_n{ii} = Fp{ii}.prox_ad(s_n + s.dual_var{ii},param.gamma);
+       s.x_n{ii} = Fp{ii}.prox(s_n + s.dual_var{ii},param.gamma);
+%        s.dual_var{ii} = s.dual_var{ii} + s_n - s.x_n{ii}{1} ;        
+        s.dual_var{ii} = s.dual_var{ii} + s_n - s.x_n{ii} ;
     end
     
     sol = 0; 
     for ii = 1 : length(Fp)
-        sol = sol + s.OpLt{ii}(s.x_n{ii}{1} - s.dual_var{ii});
+%        sol = sol + s.OpLt{ii}(s.x_n{ii}{1} - s.dual_var{ii});
+        sol = sol + s.OpLt{ii}(s.x_n{ii} - s.dual_var{ii});
     end
     sol = s.QinvOp(sol);
        
