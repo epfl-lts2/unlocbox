@@ -41,9 +41,14 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
         error('Not implemented yet')
     end
     
-    if ~(numel(Fp)==2)
-        error('This solver needs 2 non-smooth functions')
+    if (numel(Fp)>2)
+        error('This solver needs at maximum 2 non-smooth functions')
     end
+    if (numel(Fp)==1)
+        Fp{2}.prox = @(x) x;
+        Fp{2}.eval = eps;
+    end
+    
     s = struct;
     s.method = param.method;
     
@@ -66,19 +71,22 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
     end
     
     % computes optimal timestep
-    if ~isfield(param, 'sigma') && ~isfield(param, 'tau')
+    if fg.beta
         beta = fg.beta;
+    else
+        beta = 1/param.gamma;
+    end
+    
+    if ~isfield(param, 'sigma') && ~isfield(param, 'tau')
         s.tau = 1/beta;
         s.sigma = beta/2/param.nu;
     elseif ~isfield(param, 'tau')
-        beta = fg.beta;
         s.tau = param.tau;
         s.sigma = (1/s.tau - beta/2)/param.nu;
         if s.sigma <0
             error('Tau is too big!')
         end
     elseif ~isfield(param, 'sigma')
-        beta = fg.beta;
         s.sigma = param.sigma;
         s.tau = 1/(s.sigma*param.nu+beta/2);
     else
@@ -104,7 +112,11 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
 end
 
 function [sol, s] = fb_based_primal_dual_algorithm(fg, Fp, sol, s, param)
-
+   
+    if (numel(Fp)==1)
+        Fp{2}.prox = @(x) x;
+        Fp{2}.eval = eps;
+    end
 % 	grad = fg.grad(sol);
 %     s.x_n{1} = Fp{s.ind(1)}.prox_ad(...
 %         sol - s.tau * (grad + s.OpLt(s.vn)), ...

@@ -59,7 +59,7 @@ Psit = @(x) frsyn(F,x);
 % setting the function f2 (l2 norm)
 f2.grad = @(x) 2*Psi(Mask.*(Mask.*Psit(x)-sound_depleted));
 f2.eval = @(x) norm(Mask.*Psit(x)-sound_depleted,'fro')^2;
-
+f2.beta = 2*GB^2;
 
 % setting the function f1 (l1 norm of the Gabor transform)
 
@@ -87,7 +87,7 @@ f1.eval=@(x) tau*norm(x,1);
 param.verbose = verbose; % display parameter
 param.maxit = 50; % maximum iteration
 param.tol = 10e-5; % tolerance to stop iterating
-param.gamma = 0.5/(GB^2); % stepsize (beta is equal to 2)
+%param.gamma = 0.5/(GB^2); % stepsize (beta is equal to 2)
 param.method = 'FISTA'; % desired method for solving the problem
 
 sol=Psit(forward_backward(Psi(sound_depleted),f1,f2,param));

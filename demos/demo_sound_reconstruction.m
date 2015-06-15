@@ -91,7 +91,7 @@ if writefile
 end
 
 tmax = 0.08;
-tmin = -0.3;
+tmin = -0.08;
 Mask = 1-(sound_part>tmax) - (sound_part<tmin);
 
 % Depleted sound
@@ -120,13 +120,13 @@ Psi = @(x) frana(F,x);
 Psit = @(x) frsyn(F,x);
 
 
-% % setting the function f2 (l2 norm)
-% f2.grad = @(x) 2*Psi(Mask.*(Mask.*(Psit(x)-sound_depleted)));
-% f2.eval = @(x) norm(Mask.*Psit(x)-sound_depleted,'fro')^2;
-
-% noiseless case
-f2.prox = @(x,T) Psi( Psit(x) .* (1-  Mask )+ Mask.* sound_depleted );
-f2.eval = @(x) eps;
+% setting the function f2 (l2 norm)
+f2.grad = @(x) 2*Psi(Mask.*(Mask.*(Psit(x)-sound_depleted)));
+f2.eval = @(x) norm(Mask.*Psit(x)-sound_depleted,'fro')^2;
+f2.beta = 2*GB^2;
+% % noiseless case
+% f2.prox = @(x,T) Psi( Psit(x) .* (1-  Mask )+ Mask.* sound_depleted );
+% f2.eval = @(x) eps;
 
 
 % setting the function f1 (l1 norm of the Gabor transform)
@@ -142,10 +142,10 @@ f1.eval=@(x) tau*norm(x,1);
 
 % setting different parameters  for the simulation
 param.verbose = verbose; % display parameter
-param.maxit = 100; % maximum iteration
+param.maxit = 30; % maximum iteration
 param.tol = 10e-5; % tolerance to stop iterating
+%param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
 
-param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
 sol=Psit(solvep(Psi(sound_part),{f1,f2},param));
 
 

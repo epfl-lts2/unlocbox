@@ -222,9 +222,17 @@ end
 
 
 function solver = select_solver(Fg,Fp)
+    n = numberofL(Fp);
     if numel(Fg)
+        if n>2
+            error('Sorry, no solver is able to solve your problem yet!')
+        end
         if numel(Fp)==0
             solver = 'GRADIENT_DESCENT';
+        elseif numel(Fp)==2
+            solver = 'FB_BASED_PRIMAL_DUAL';
+        elseif (numel(Fp)<=2) && n
+            solver = 'FB_BASED_PRIMAL_DUAL';            
         elseif numel(Fp)==1
             solver = 'FORWARD_BACKWARD';
         else
@@ -232,7 +240,11 @@ function solver = select_solver(Fg,Fp)
         end
     else
         if numel(Fp) == 1
-            error('Do you really want to minimize only one function?')
+            error('Do you really want to minimize only one function?')        
+        elseif (numel(Fp)<=2) && (n == 1)
+            solver = 'FB_BASED_PRIMAL_DUAL';    
+        elseif (n>1)
+            solver = 'SDMM';
         elseif numel(Fp) == 2
             solver = 'DOUGLAS_RACHFORD';
         else
@@ -294,4 +306,17 @@ function [rel_norm, x_old] =  eval_dual_var(x1,x2)
 
 
     x_old = x1;
+end
+
+function n = numberofL(Fp)
+% Return the number of functions with a linear opeartor inside
+n = 0;
+    for ii = 1:length(Fp)
+        if isfield(Fp{ii},'L') 
+            n = n + 1;
+            if ~isfield(Fp{ii},'Lt')
+                warning('You did not define the Lt operator!');
+            end
+        end
+    end
 end

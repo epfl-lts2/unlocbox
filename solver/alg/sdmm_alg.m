@@ -9,7 +9,10 @@ end
 function [sol, s,param] = sdmm_initialize(fg,Fp,param)
 
 
-    if ~isfield(param, 'Qinv'), param.Qinv=@(x) x./numel(Fp); end
+    if ~isfield(param, 'Qinv'), 
+        param.Qinv=@(x) x./numel(Fp); 
+        warning('The parameter Qinv is set automatically... It might be wrongly set')
+    end
 
     if isa(param.Qinv,'numeric')
         s.QinvOp= @(x) param.Qinv*x;
