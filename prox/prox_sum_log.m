@@ -53,8 +53,14 @@ if ~isfield(param, 'verbose'), param.verbose = 1; end
 
 
 % test the parameters
-stop_error = 0;
-stop_error = stop_error | test_gamma(gamma);
+% stop_error = test_gamma(gamma);
+if gamma < 0
+    error('Gamma can not be negative');
+elseif gamma == 0
+    stop_error = 1;
+else
+    stop_error = 0;
+end
 
 if stop_error
     sol = x;
