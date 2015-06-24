@@ -127,6 +127,10 @@ end
 %     curr_norm=eps;
 % end
 
+if ~(numel(curr_norm)==1)
+    error('One of your evaluation function does not return a scalar.')
+end
+
 rel_norm = abs(curr_norm - prev_norm)/(curr_norm + eps);
 if iter
     if isa(curr_norm,'gpuArray')

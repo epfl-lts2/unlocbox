@@ -1,4 +1,4 @@
-function [sol, info] = prox_tv1d(b, gamma, param)
+function [sol, info] = prox_tv1d(x, gamma, param)
 %PROX_TV1D Total variation proximal operator
 %   Usage:  sol=prox_tv1d(x, gamma)
 %           sol=prox_tv1d(x, gamma,param)
@@ -79,6 +79,7 @@ if nargin<3, param=struct; end
 if ~isfield(param, 'tol'), param.tol = 10e-4; end
 if ~isfield(param, 'verbose'), param.verbose = 1; end
 if ~isfield(param, 'maxit'), param.maxit = 200; end
+if ~isfield(param, 'use_fast'), param.use_fast = 0; end
 if ~isfield(param, 'useGPU'), param.useGPU = GLOBAL_useGPU; end
 
 % Test of gamma
@@ -92,75 +93,209 @@ if test_gamma(gamma)
     return; 
 end
 
-if param.useGPU
-    %gpuDevice(1);
-    gamma=gpuArray(gamma);
-    if isa(b,'gpuArray')
-        allGPU=1;
-    else
-        b=gpuArray(b);
-        allGPU=0;
+
+if param.use_fast
+
+
+    % CZ
+    % Tato funkce poèítá proximální operátor 1D tv normy, tj. øeší tento problém:
+    %    prox(x) := min_y 1/2 ||x - y||_2^2 + gamma ||y||_TV.
+    % Vstupní parametry jsou:
+    %     y ... vstupní signál
+    %     gamma ... konstanta pøed tv normou
+    %  Použití:  x = prox_tv1d(y, gamma)
+    % ------------------------------------------------------------------------------------------------------------------
+    % EN
+    % This function computes proximal operator of 1D tv norm, i.e. it solves this problem:
+    %    prox(x) := min_y 1/2 ||x - y||_2^2 + gamma ||y||_TV.
+    % Input parameters are:
+    %     y ... input parameter
+    %     gamma ... constant at tv norm
+    %  Use:  x = prox_tv1d(y, gamma)
+    %
+    % podle èlánku / according to article: CONDAT, Laurent. A Direct Algorithm for 1-D Total Variation Denoising. 
+    % IEEE Signal Processing Letters. 2013, vol. 20, issue 11. DOI: 10.1109/LSP.2013.2278339.
+    
+    sol = zeros(size(x));
+
+    
+    N = size(x,1);
+    for ii = 1:size(x,2)
+
+        % a)
+        k = 1; k0 = 1; kplus = 1; kminus = 1; 
+        vmin = x(1,ii) - gamma; vmax = x(1,ii) + gamma;
+        umin = gamma; umax = - gamma;
+
+        while 1
+            % b)
+            if k == N
+                sol(N,ii) = vmin + umin;
+                break;
+            end
+
+            % b1)
+            if x(k+1,ii) + umin < vmin - gamma
+                for jj = k0:kminus
+                    sol(jj,ii) = vmin;
+                end
+                k = kminus + 1; k0 = kminus + 1; kplus = kminus + 1; kminus = kminus + 1;
+                vmin = x(k,ii);
+                vmax = x(k,ii) + 2*gamma;
+                umin = gamma;
+                umax = - gamma;
+            else
+                % b2)
+                if x(k+1,ii) + umax > vmax + gamma
+                    for jj = k0:kplus
+                        sol(jj,ii) = vmax;
+                    end
+                    k = kplus + 1; k0 = kplus + 1; kminus = kplus + 1; kplus = kplus + 1;
+                    vmin = x(k,ii) - 2*gamma;
+                    vmax = x(k,ii);
+                    umin = gamma;
+                    umax = - gamma;
+                else
+                    % b3)
+                    k = k + 1;
+                    umin = umin + x(k,ii) - vmin;
+                    umax = umax + x(k,ii) - vmax;
+                    % b31)
+                    if umin >= gamma
+                        vmin = vmin + (umin - gamma)/(k - k0 + 1);
+                        umin = gamma;
+                        kminus = k;
+                    end
+                    % b32)
+                    if umax <= -gamma
+                        vmax = vmax + (umax + gamma)/(k - k0 + 1);
+                        umax = -gamma;
+                        kplus = k;
+                    end
+                end
+            end
+            % c)
+            if k >= N
+                % c1)
+                if umin < 0
+                    for jj = k0:kminus
+                        sol(jj,ii) = vmin;
+                    end
+                    k = kminus + 1; k0 = kminus +1; kminus = kminus + 1;
+                    vmin = x(k,ii);
+                    umin = gamma;
+                    umax = x(k,ii) + gamma - vmax;
+                else
+                    % c2)
+                    if umax > 0
+                        for jj = k0:kminus
+                            sol(jj,ii) = vmax;
+                        end
+                        k = kplus + 1;   k0 = kplus + 1; kplus = kplus + 1;
+                        vmax = x(k,ii);
+                        umax = - gamma;
+                        umin = x(k,ii) - gamma - vmin;
+                    else
+                        % c3)
+                        for jj = k0:N
+                            sol(jj,ii) = vmin + umin/(k - k0 + 1);
+                        end
+                        break;
+                    end
+                end
+            end
+        end
     end
-    % Initializations
-    r = gradient_op1d(b*0);
-    pold = r; 
-    told = gpuArray(1); prev_obj = gpuArray(0); 
-    verbose=gpuArray(param.verbose);
-    tol=gpuArray(param.tol);
+
+    obj = .5*norm(x(:)-sol(:), 2)^2 + gamma * sum(norm_tv1d(sol));
+    crit = 'ONE-SHOT';
+    rel_obj = 0;
+    iter = 1;
+    info.iter=iter;
+    info.final_eval=obj;
 else
-    % Initializations
-    r = gradient_op1d(b*0);
-    pold = r;
-    told = 1; prev_obj = 0;
-    verbose=param.verbose;
-    tol=param.tol;
-end
 
-% Main iterations
-if verbose > 1
-    fprintf('  Proximal TV operator:\n');
-end
-
-
-    
-    
-for iter = 1:param.maxit
-
-    % Current solution
-    sol = b - gamma*div_op1d(r);
-
-    % Objective function value
-    obj = .5*norm(b(:)-sol(:), 2)^2 + gamma * sum(norm_tv1d(sol));
-    rel_obj = abs(obj-prev_obj)/obj;
-    prev_obj = obj;
-
-    % Stopping criterion
-    if verbose>1
-        fprintf('   Iter %i, obj = %e, rel_obj = %e\n', ...
-            iter, obj, rel_obj);
-    end
-    if rel_obj < tol
-        crit = 'TOL_EPS'; break;
+    if param.useGPU
+        %gpuDevice(1);
+        gamma=gpuArray(gamma);
+        if isa(x,'gpuArray')
+            allGPU=1;
+        else
+            x=gpuArray(x);
+            allGPU=0;
+        end
+        % Initializations
+        r = gradient_op1d(x*0);
+        pold = r; 
+        told = gpuArray(1); prev_obj = gpuArray(0); 
+        verbose=gpuArray(param.verbose);
+        tol=gpuArray(param.tol);
+    else
+        % Initializations
+        r = gradient_op1d(x*0);
+        pold = r;
+        told = 1; prev_obj = 0;
+        verbose=param.verbose;
+        tol=param.tol;
     end
 
-    % Udpate divergence vectors and project
-    dx = gradient_op1d(sol);
-    r = r - 1/(4*gamma) * dx; 
-    weights = max(1, abs(r));
-    p = r./weights; 
+    % Main iterations
+    if verbose > 1
+        fprintf('  Proximal TV operator:\n');
+    end
 
-    % FISTA update
-    t = (1+sqrt(4*told.^2))/2;
-    r = p + (told-1)/t * (p - pold); pold = p;
-    told = t;
 
+
+
+    for iter = 1:param.maxit
+
+        % Current solution
+        sol = x - gamma*div_op1d(r);
+
+        % Objective function value
+        obj = .5*norm(x(:)-sol(:), 2)^2 + gamma * sum(norm_tv1d(sol));
+        rel_obj = abs(obj-prev_obj)/obj;
+        prev_obj = obj;
+
+        % Stopping criterion
+        if verbose>1
+            fprintf('   Iter %i, obj = %e, rel_obj = %e\n', ...
+                iter, obj, rel_obj);
+        end
+        if rel_obj < tol
+            crit = 'TOL_EPS'; break;
+        end
+
+        % Udpate divergence vectors and project
+        dx = gradient_op1d(sol);
+        r = r - 1/(4*gamma) * dx; 
+        weights = max(1, abs(r));
+        p = r./weights; 
+
+        % FISTA update
+        t = (1+sqrt(4*told.^2))/2;
+        r = p + (told-1)/t * (p - pold); pold = p;
+        told = t;
+
+    end
+
+    % Log after the minimization
+    if ~exist('crit', 'var'), crit = 'MAX_IT'; end
+    
+    if param.useGPU
+        if ~allGPU
+            sol=gather(sol);
+        end
+        info.iter=gather(iter);
+        info.final_eval=gather(obj);
+    else
+        info.iter=iter;
+        info.final_eval=obj;
+    end
 end
 
 
-% Log after the minimization
-if ~exist('crit', 'var'), crit = 'MAX_IT'; end
-
-if verbose >= 1
+if param.verbose >= 1
     if param.useGPU
         fprintf(['  GPU Prox_TV1D: obj = %e, rel_obj = %e,' ...
             ' %s, iter = %i\n'], obj, rel_obj, crit, iter);
@@ -172,16 +307,7 @@ end
 
 
 
-if param.useGPU
-    if ~allGPU
-        sol=gather(sol);
-    end
-    info.iter=gather(iter);
-    info.final_eval=gather(obj);
-else
-    info.iter=iter;
-    info.final_eval=obj;
-end
+
 
 info.algo=mfilename;
 info.crit=crit;

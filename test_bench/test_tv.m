@@ -4,6 +4,7 @@ errors=0;
 
 gsp_reset_seed(1)
 
+
 errors=errors+test_norm1d(eps(10));
 errors=errors+test_norm2d(eps(100));
 errors=errors+test_norm3d(eps(100));
@@ -19,6 +20,8 @@ errors=errors+test_prox_tv2d_mixed();
 errors=errors+test_prox_tv2d_weights();
 errors=errors+test_prox_tv3d_weights();
 errors=errors+test_prox_tv4d_weights();
+
+errors=errors+test_prox_tv1d_fast();
 
 
 
@@ -232,7 +235,7 @@ function [errors]=test_prox_tv1d(tol)
     end
     
     
-    s=rand(5, 2);
+    s=rand(100, 2);
     p2 = prox_tv1d(s,lambda,param);
     p31 = prox_tv1d(s(:,1),lambda,param); 
     p32 = prox_tv1d(s(:,2),lambda,param); 
@@ -866,3 +869,54 @@ function g = div4d_help(x,wx,wy,wz,wt)
     end
 end
 
+
+
+
+
+function [errors]=test_prox_tv1d_fast()
+    
+    errors=0;
+    
+    N = 100;
+    
+    s = rand(N,1);
+    lambda = 0.1;
+    param.use_fast = 0;
+    param.tol = 1e-10;
+    param.maxit = 1000;
+    param.verbose = 0;
+    p2 = prox_tv1d(s,lambda,param);
+    param.use_fast = 1;
+    p3 = prox_tv1d(s,lambda,param);
+   
+    
+     if norm(p3(:)-p2(:))/norm(p3(:))<1e-8
+        fprintf('  Test prox_tv1d fast OK\n')
+    else
+        fprintf('  Test prox_tv1d fast Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3(:)-p2(:))/norm(p3)
+        errors= errors +1;
+     end
+    
+     
+    s = rand(N,10);
+    lambda = 0.1;
+    param.use_fast = 0;
+    param.tol = 1e-10;
+    param.maxit = 1000;
+    p2 = prox_tv1d(s,lambda,param);
+    param.use_fast = 1;
+%     for ii = 1:10
+%         p3(:,ii) = prox_tv1d(s(:,ii),lambda,param);
+%     end
+   p3 = prox_tv1d(s,lambda,param);
+    
+     if norm(p3(:)-p2(:))/norm(p3(:))<1e-8
+        fprintf('  Test prox_tv1d fast Ndim 2OK\n')
+    else
+        fprintf('  Test prox_tv1d fast Ndim Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3(:)-p2(:))/norm(p3)
+        errors= errors +1;
+     end
+    
+end

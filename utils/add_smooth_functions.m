@@ -29,7 +29,9 @@ else
     fg.beta = beta;
 end
 
-    
+if ~(numel(fg.beta)==1)
+    error('f.beta must be a scalar!')
+end
 
 end
 
