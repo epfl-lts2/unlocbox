@@ -16,12 +16,11 @@ function [ sol ] = proj_linear_eq( x,~, param )
 %
 %   .. math::  sol = \min_z ||x - z||_2^2 \hspace{1cm} s.t. \hspace{1cm} A z = y  
 %
-%   param is a Matlab structure containing the following fields:
+%   *param* is a Matlab structure containing the following fields:
 %
 %   * *param.y* : vector (default: 0).
 %
-%   * *param.method* : method used 'exact' or 'iterative' (default:
-%     'exact').
+%   * *param.method* : method used 'exact' or 'iterative' (default: 'exact').
 %
 %   * *param.A* : Matrix A (default: Id) (Or operator for the 'iterative'
 %     method) 
@@ -39,8 +38,9 @@ function [ sol ] = proj_linear_eq( x,~, param )
 %     .. math::  \|A x\|^2 \leq \nu  \|x\|^2 
 %
 %   * *param.pinvA* : $A*(A A^*)^(-1)$ Pseudo inverse of A Define this
-%     parameter to speed up computation (Only for 'exact').  
-%
+%     parameter to speed up computation (Only for 'exact').
+%   
+%   
 %   infos is a Matlab structure containing the following fields:
 %
 %   * *infos.algo* : Algorithm used
@@ -51,15 +51,14 @@ function [ sol ] = proj_linear_eq( x,~, param )
 %
 %   * *infos.final_eval* : Final evaluation of the function
 %
-%   * *infos.crit* : Stopping critterion used 
+%   * *infos.crit* : Stopping critterion used
 %
 %
 %
 %   Rem: The input "~" is useless but needed for compatibility issue.
 %
-%   See also:  prox_l2 proj_b1
+%   See also:  proj_linear_ineq proj_b1
 %
-%   References: 
 
 %
 % Author: Nathanael Perraudin

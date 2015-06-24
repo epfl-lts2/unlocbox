@@ -42,7 +42,7 @@ function [sol, info,objective] = forward_backward(x_0,f1, f2, param)
 %     what you do.
 %
 %   * *param.method* : is the method used to solve the problem. It can be
-%     'FISTA' or 'ISTA'. By default, it's 'FISTA'. 
+%     the fast version 'FISTA' or 'ISTA'. By default, it's 'FISTA'. 
 %
 %
 %   See also:  solvep douglas_rachford admm generalized_forward_backward
