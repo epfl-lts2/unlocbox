@@ -1,29 +1,31 @@
 function [sol, info] = proj_box(x, ~, param)
-%PROJ_BOX Projection onto the box set
+%PROJ_BOX Projection onto the box set (multidimensional interval constraint)
 %
-%   Usage:  sol=proj_xlim(x, [])
-%           sol=proj_xlim(x)
-%           sol=proj_xlim(x, [], param)
-%           [sol, info]=proj_xlim(x, [], param)
+%   Usage:  sol = proj_box(x, [])
+%           sol = proj_box(x)
+%           sol = proj_box(x, [], param)
+%           [sol, info] = proj_box(x, [], param)
 %
 %   Input parameters:
 %         x     : Input signal.
 %         param : Structure of optional parameters.
 %   Output parameters:
 %         sol   : Solution.
-%         info  : Structure summarizing informations at convergence
+%         info  : Structure summarizing information at convergence
 %
-%   `prox_xlim(x, [], param)` solves:
+%   `prox_box(x, [], param)` solves:
 %
-%   .. sol = argmin_s< xmax and z > xmin 
+%   .. sol = argmin_{z} 0.5*||x - z||_2^2 s.t. z < zmax and z > zmin
 %
-%   .. math::  sol = arg\min_{z} \frac{1}{2} \|x - z\|_2^2 \text{ subject to } z < x_{max} \text{ and } z > x_{min}
+%   .. math::  sol = arg\min_{z} \frac{1}{2} \|x - z\|_2^2 \text{ subject to } z < z_{max} \text{ and } z > z_{min}
+%
+%   where `zmax' and `zmin' might be scalar or vector valued.
 %
 %   param is a Matlab structure containing the following fields:
 %
-%   * *param.xsup* : maximum value of x (default 1)
-%
-%   * *param.xinf* : minimum value of x (default 0).
+%   * *param.lower_lim* : lower bound(s) for z (default 0)
+%   * *param.upper_lim* : upper bound(s) for z (default 1)
+%   if these two are vector-valued, bounds apply entry-by-entry
 %
 %   * *param.verbose* : 0 no log, 1 a summary at convergence, 2 print main
 %     steps (default: 1)
@@ -33,13 +35,13 @@ function [sol, info] = proj_box(x, ~, param)
 %
 %   * *info.algo* : Algorithm used
 %
-%   * *info.iter* : Number of iteration
+%   * *info.iter* : Number of iterations (this function is not iterative)
 %
 %   * *info.time* : Time of exectution of the function in sec.
 %
 %   * *info.final_eval* : Final evaluation of the function
 %
-%   * *info.crit* : Stopping critterion used 
+%   * *info.crit* : Stopping critterion used (one shot here)
 %
 %
 %   Rem: The input "~" is useless but needed for compatibility issue.
@@ -47,14 +49,11 @@ function [sol, info] = proj_box(x, ~, param)
 %   See also:  proj_b2
 
 
-
 % Author: Pavel Rajmic
 % Date: June 2015
 %
 
-% x
-% param.lower_lim (default = 0)
-% param.upper_lim (default = 1)
+
 
 
 % Start the time counter
@@ -89,7 +88,6 @@ end
 if any(param.upper_lim < param.lower_lim)
     error('The feasible set is empty.');
 end
-
 
 
 %% Projection
