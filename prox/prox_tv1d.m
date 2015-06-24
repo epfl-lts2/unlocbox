@@ -1,7 +1,7 @@
 function [sol, info] = prox_tv1d(x, gamma, param)
 %PROX_TV1D Total variation proximal operator
 %   Usage:  sol=prox_tv1d(x, gamma)
-%           sol=prox_tv1d(x, gamma,param)
+%           sol=prox_tv1d(x, gamma, param)
 %           [sol, info]=prox_tv1d(...)
 %
 %   Input parameters:
@@ -10,18 +10,18 @@ function [sol, info] = prox_tv1d(x, gamma, param)
 %         param : Structure of optional parameters.
 %   Output parameters
 %         sol   : Solution.
-%         info  : Structure summarizing informations at convergence
+%         info  : Structure summarizing information at convergence
 %
-%   This function compute the 1 dimentional TV proximal operator evaluated
+%   This function computes the 1 dimensional TV proximal operator evaluated
 %   in b. If b is a matrix, this function will evaluate the TV proximal
-%   operator on each row of the matrix. For 2 dimention TV proximal
-%   operator the function prox_tv can be used.
+%   operator on each row of the matrix. For 2D, TV proximal
+%   operator `prox_tv' can be used.
 %
 %   `prox_tv(y, gamma, param)` solves:
 %
 %   .. sol = argmin_{z} 0.5*||x - z||_2^2 + gamma * ||x||_TV
 %
-%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \|x\|_{TV}
+%   .. math::  sol = arg\min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \|x\|_{TV}
 %
 %   param is a Matlab structure containing the following fields:
 %   
@@ -36,7 +36,7 @@ function [sol, info] = prox_tv1d(x, gamma, param)
 %
 %   * *param.maxit* : max. nb. of iterations (default: 200).
 %
-%   * *param.use_fast* : Use the fast algorithm of Condat.
+%   * *param.use_fast* : Use the fast algorithm of Laurent Condat.
 %
 %   * *param.useGPU* : Use GPU to compute the TV prox operator. Please prior 
 %     call init_gpu and free_gpu to launch and release the GPU library (default: 0).
@@ -64,8 +64,8 @@ function [sol, info] = prox_tv1d(x, gamma, param)
 %   References: condat2013direct beck2009fastTV
 
 
-% Author: Nathanael Perraudin, 
-% Date: Jan 2013
+% Author: Nathanael Perraudin, Marie Dankova
+% Date: Jan 2013, June 2015
 %
 
 % Start the time counter
@@ -98,28 +98,7 @@ end
 
 if param.use_fast
 
-
-    % CZ
-    % Tato funkce poèítá proximální operátor 1D tv normy, tj. øeší tento problém:
-    %    prox(x) := min_y 1/2 ||x - y||_2^2 + gamma ||y||_TV.
-    % Vstupní parametry jsou:
-    %     y ... vstupní signál
-    %     gamma ... konstanta pøed tv normou
-    %  Pouití:  x = prox_tv1d(y, gamma)
-    % ------------------------------------------------------------------------------------------------------------------
-    % EN
-    % This function computes proximal operator of 1D tv norm, i.e. it solves this problem:
-    %    prox(x) := min_y 1/2 ||x - y||_2^2 + gamma ||y||_TV.
-    % Input parameters are:
-    %     y ... input parameter
-    %     gamma ... constant at tv norm
-    %  Use:  x = prox_tv1d(y, gamma)
-    %
-    % podle èlánku / according to article: CONDAT, Laurent. A Direct Algorithm for 1-D Total Variation Denoising. 
-    % IEEE Signal Processing Letters. 2013, vol. 20, issue 11. DOI: 10.1109/LSP.2013.2278339.
-    
     sol = zeros(size(x));
-
     
     N = size(x,1);
     for ii = 1:size(x,2)
@@ -215,6 +194,7 @@ if param.use_fast
     iter = 1;
     info.iter=iter;
     info.final_eval=obj;
+    
 else
 
     if param.useGPU
@@ -306,7 +286,6 @@ if param.verbose >= 1
             ' %s, iter = %i\n'], obj, rel_obj, crit, iter);
     end
 end
-
 
 
 
