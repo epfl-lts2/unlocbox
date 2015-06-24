@@ -12,9 +12,9 @@ function [ sol]  = prox_add_2norm( x,gamma,param )
 %
 %   ` prox_add_2norm( x,gamma,param )` solves:
 %
-%   .. sol = argmin_{z} 0.5*||x - z||_2^2 + 0.5*||y - z||_2^2 + gamma * f
+%   .. sol = argmin_{z} 0.5*||x - z||_2^2 + 0.5*||y - z||_2^2 + gamma * f(z)
 %
-%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 +\frac{1}{2} \|y - z\|_2^2+ \gamma  f
+%   .. math::  sol = arg\min_{z} \frac{1}{2} \|x - z\|_2^2 +\frac{1}{2} \|y - z\|_2^2+ \gamma f(z)
 %
 %   This problem can be solved because we have the nice relationship
 %
