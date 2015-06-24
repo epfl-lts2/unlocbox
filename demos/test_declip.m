@@ -1,3 +1,60 @@
+%DEMO_SOUND_RECONSTRUCTION Sound time in painting demonstration
+%
+%   Here we solve a sound declipping problem. The problem can be
+%   expressed as this 
+%
+%   ..   argmin_x  ||A G^* x-b||^2 + tau * || x ||_1
+%
+%   .. math:: arg \min_x \|A G^*  x-b\|^2 + \tau \| x \|_{1}
+%  
+%   where $b$ is the signal at the non clipped part,  $A$ an operator
+%   representing the mask selecting the non clipped part of the signal and
+%   $G^*$ is the Gabor synthesis operation
+%
+%   Here the general assumption is that the signal is sparse in the Gabor
+%   domain!
+%
+%   Warning! Note that this demo requires the LTFAT toolbox to work.
+%
+%   We set 
+%
+%   * $f_1(x)=||x||_{1}$
+%     We define the prox of $f_1$ as: 
+%
+%     .. prox_{f1,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma  ||z||_1
+%
+%     .. math:: prox_{f1,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2  +  \gamma \|z\|_{1}
+%
+%   * $f_2(x)=||Ax-b||_2^2$
+%     We define the gradient as: 
+%
+%     .. grad_f(x) = 2 * G A^*( A G^*x - b )
+%
+%     .. math:: \nabla_f(x) = 2 * G A^*(AG^*x-b)
+%
+%   Results
+%   -------
+%
+%   .. figure::
+%
+%      Original spectrogram
+%
+%      This figure shows the original spectrogram.
+%
+%   .. figure::
+%
+%      Spectrogram of the depleted sound
+%
+%      This figure shows the spectrogram after the loss of the sample (We loos 75% of the samples.)
+%
+%   .. figure::
+%
+%      Spectrogram of the reconstructed sound
+%
+%      This figure shows the spectrogram of the reconstructed sound thanks to the algorithm.
+%
+%   References: combettes2007douglas
+
 
 % Author: Nathanael Perraudin
 % Date: sept 30 2011
@@ -20,6 +77,7 @@ writefile=0;    % writting wav sound
 
 % Original sound
 [sound_original, Fs]=gspi();
+sound_original = sound_original(1:2^18);
 
 
 
@@ -32,10 +90,16 @@ if writefile
     wavwrite(sound_part,Fs,'original.wav');
 end
 
-Mask=(sound_part<0.1)+(sound_part>-0.1);
+tmax = 0.08;
+tmin = -0.3;
+Mask = 1-(sound_part>tmax) - (sound_part<tmin);
 
 % Depleted sound
-sound_depleted=Mask.*sound_part;
+sound_depleted = sound_part;
+sound_depleted(sound_part>tmax) = tmax;
+
+sound_depleted(sound_part<tmin) = tmin;
+%sound_depleted=Mask.*sound_part;
 if writefile
     wavwrite(sound_depleted,Fs,'depleted.wav');
 end
@@ -57,23 +121,16 @@ Psit = @(x) frsyn(F,x);
 
 
 % setting the function f2 (l2 norm)
-f2.grad = @(x) 2*Psi(Mask.*(Mask.*Psit(x)-sound_depleted));
-f2.eval = @(x) norm(Mask.*Psit(x)-sound_depleted,'fro')^2;
-f2.beta = 2*GB^2;
+% f2.grad = @(x) 2*Psi(Mask.*(Mask.*(Psit(x)-sound_depleted)));
+% f2.eval = @(x) norm(Mask.*Psit(x)-sound_depleted,'fro')^2;
+% f2.beta = 2*GB^2;
+% % noiseless case
+f2.prox = @(x,T) Psi( Psit(x) .* (1-  Mask )+ Mask.* sound_depleted );
+f2.eval = @(x) eps;
+
 
 % setting the function f1 (l1 norm of the Gabor transform)
-
-
-
-
-
-% set parameters
 param_l1.verbose = verbose - 1;
-
-
-% Since the space of Gabor coefficient is bigger than the space of time
-% coefficient
-
 
 f1.prox=@(x, T) prox_l1(x, T*tau, param_l1);
 f1.eval=@(x) tau*norm(x,1);   
@@ -85,12 +142,11 @@ f1.eval=@(x) tau*norm(x,1);
 
 % setting different parameters  for the simulation
 param.verbose = verbose; % display parameter
-param.maxit = 50; % maximum iteration
+param.maxit = 30; % maximum iteration
 param.tol = 10e-5; % tolerance to stop iterating
-%param.gamma = 0.5/(GB^2); % stepsize (beta is equal to 2)
-param.method = 'FISTA'; % desired method for solving the problem
+param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
 
-sol=Psit(forward_backward(Psi(sound_depleted),f1,f2,param));
+sol=Psit(solvep(Psi(sound_depleted),{f1,f2},param));
 
 
 

@@ -1,6 +1,6 @@
 %DEMO_SOUND_RECONSTRUCTION Sound time in painting demonstration
 %
-%   Here we solve a sound declipping problem. The problem can be
+%   Here we solve a sound in-painting problem. The problem can be
 %   expressed as this 
 %
 %   ..   argmin_x  ||A G^* x-b||^2 + tau * || x ||_1
@@ -13,6 +13,11 @@
 %
 %   Here the general assumption is that the signal is sparse in the Gabor
 %   domain!
+%   The noiseless particular case of this problem can be epressed as 
+%
+%   ..   argmin_x  || x ||_1     s. t.   A G^* x = b
+%
+%   .. math:: arg \min_x  \| x \|_{1} \text{ s.t. } A G^*  x=b
 %
 %   Warning! Note that this demo requires the LTFAT toolbox to work.
 %
@@ -90,16 +95,11 @@ if writefile
     wavwrite(sound_part,Fs,'original.wav');
 end
 
-tmax = 0.08;
-tmin = -0.3;
-Mask = 1-(sound_part>tmax) - (sound_part<tmin);
+Mask = rand(size(sound_part))>0.3;
 
 % Depleted sound
-sound_depleted = sound_part;
-sound_depleted(sound_part>tmax) = tmax;
-
-sound_depleted(sound_part<tmin) = tmin;
-%sound_depleted=Mask.*sound_part;
+sound_depleted = Mask.*sound_part;
+sound_depleted(logical(1-Mask)) = randn(sum(1-Mask(:)),1)*mean(abs(sound_part(:)))/5;
 if writefile
     wavwrite(sound_depleted,Fs,'depleted.wav');
 end
@@ -124,7 +124,8 @@ Psit = @(x) frsyn(F,x);
 % f2.grad = @(x) 2*Psi(Mask.*(Mask.*(Psit(x)-sound_depleted)));
 % f2.eval = @(x) norm(Mask.*Psit(x)-sound_depleted,'fro')^2;
 % f2.beta = 2*GB^2;
-% % noiseless case
+
+% noiseless case
 f2.prox = @(x,T) Psi( Psit(x) .* (1-  Mask )+ Mask.* sound_depleted );
 f2.eval = @(x) eps;
 
@@ -144,9 +145,10 @@ f1.eval=@(x) tau*norm(x,1);
 param.verbose = verbose; % display parameter
 param.maxit = 30; % maximum iteration
 param.tol = 10e-5; % tolerance to stop iterating
-param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
+%param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
 
 sol=Psit(solvep(Psi(sound_depleted),{f1,f2},param));
+
 
 
 

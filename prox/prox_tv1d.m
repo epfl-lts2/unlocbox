@@ -36,6 +36,8 @@ function [sol, info] = prox_tv1d(x, gamma, param)
 %
 %   * *param.maxit* : max. nb. of iterations (default: 200).
 %
+%   * *param.use_fast* : Use the fast algorithm of Condat.
+%
 %   * *param.useGPU* : Use GPU to compute the TV prox operator. Please prior 
 %     call init_gpu and free_gpu to launch and release the GPU library (default: 0).
 %
@@ -59,10 +61,10 @@ function [sol, info] = prox_tv1d(x, gamma, param)
 %   See also:  prox_tv prox_l1 prox_tv3d 
 %
 %
-%   References: beck2009fastTV
+%   References: condat2013direct beck2009fastTV
 
 
-% Author: Nathanael Perraudin, Gilles Puy, Eyal Hirsch
+% Author: Nathanael Perraudin, 
 % Date: Jan 2013
 %
 
