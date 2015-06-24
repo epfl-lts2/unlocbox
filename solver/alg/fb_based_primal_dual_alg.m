@@ -34,7 +34,10 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
 
     % Handle optional parameter. Here we need a variable lambda.
     if ~isfield(param, 'rescale'), param.rescale = 0 ; end
-    if ~isfield(param, 'nu'), param.nu = 1 ; end
+    if ~isfield(param, 'nu')
+        param.nu = 1;
+        warning('You should give param.nu = ||L||^2. Setting it to 1!');
+    end
     if ~isfield(param, 'method'), param.method = 'ISTA'; end
     
     if param.rescale
