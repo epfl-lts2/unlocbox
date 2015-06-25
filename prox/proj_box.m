@@ -72,7 +72,13 @@ if ~isvector(x) | ~isvector(param.lower_lim) | ~isvector(param.upper_lim)
     error('The inputs must be scalars or vectors.')
 end
 
-lx = length(x);
+sx = size(x); %size (for future reshape)
+lx = max(sx); %length
+
+%make columns
+x = x(:);
+param.lower_lim = param.lower_lim(:);
+param.upper_lim = param.upper_lim(:);
 
 if ~(lx == length(param.lower_lim)) | ~(lx == length(param.upper_lim))
     if ~(length(param.lower_lim) == 1) & ~(length(param.upper_lim) == 1)
@@ -109,6 +115,7 @@ else %scalar limit
     sol(lower) = param.lower_lim;
 end
 
+sol = reshape(sol, sx);
 
 %% Rest
 norm_l2 = 0.5 * norm(x(:)-sol(:))^2;
