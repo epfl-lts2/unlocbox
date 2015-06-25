@@ -51,6 +51,7 @@ fig_coef = figure;
 bar(x);
 title('Original coefficients of sparse signal');
 
+
 %% Quantize signal
 %We determine the max and min value of the signal and the quantization
 %levels are spread uniformly betwen them
@@ -138,22 +139,19 @@ switch algorithm
         x_reconstructed = v - u;    %sparse vector is determined by subtracting the two non-negative
         z = A * x_reconstructed;    %reconstruct signal
         
-    case 'DR'  % dekvantizace pomocí Douglas-Rachfordova algoritmu s projekcí v oblasi signálu 
-        
+    case 'DR'  % Douglas-Rachford 
         
         param.lower_lim = lower_dec_bounds;
         param.upper_lim = upper_dec_bounds;
             
         f1.eval = @(x) norm(x,1);
         f1.prox = @(x, T) sign(x).*max(abs(x)-T, 0);
-        % Definice funkce mìkkého prahování
-%         soft = @(z, T) sign(z).*max(abs(z)-T, 0);
         
 %         f2.eval = @(x) 1 / (any(dct(x)>param.upper_lim) | any(dct(x)<param.lower_lim)) - 1; %zero if inside boundaries, Inf otherwise
 %         param.upper_lim = 65*ones(N,1);
 %         param.lower_lim = 0*ones(N,1);
-        f2.eval = @(x) 1 / (1 - ( any((x(:))>param.upper_lim) | any((x(:))<param.lower_lim) )) - 1; %zero if inside boundaries, Inf otherwise
-        f2.prox = @(x) proj_box(x,[],param);
+        f2.eval = @(x) 1 / (1 - ( any(dct(x(:))>param.upper_lim) | any(dct(x(:))<param.lower_lim) )) - 1; %zero if x is inside boundaries, Inf otherwise
+        f2.prox = @(x) idct(proj_box(dct(x),[],param)); %box projection in the signal space (thanks to DCT being orthogonal)
         
         % setting different parameter for the simulation
         paramsolver.verbose = 5;  % display parameter
