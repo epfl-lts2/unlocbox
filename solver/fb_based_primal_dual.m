@@ -69,7 +69,7 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %   * *param.rescale* : Use the rescaled version of the algorithm (default 0)
 %
 %   * *param.method* : is the method used to solve the problem. It can be
-%     'FISTA' or 'ISTA'. By default, it's 'FISTA'. 
+%     the fast version 'FISTA' or 'ISTA'. By default, it's 'ISTA'. 
 %
 %   See also: solvep sdmm admm
 %

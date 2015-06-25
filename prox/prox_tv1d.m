@@ -66,7 +66,7 @@ function [sol, info] = prox_tv1d(x, gamma, param)
 
 % Author: Nathanael Perraudin, Marie Dankova
 % Date: Jan 2013, June 2015
-%
+
 
 % Start the time counter
 t1 = tic;

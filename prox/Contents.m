@@ -26,6 +26,7 @@
 %    PROX_TV3D          -  Proximal operator of the 3D TV norm
 %    PROX_TV1D          -  Proximal operator of the 1D TV norm
 %    PROX_TV4D          -  Proximal operator of the 4D TV norm
+%    PROX_SUM_LOG       -  Proximal operor for the sum of logarithms.
 %
 %  Projection operators
 %    PROJ_B1            -  Projection on a B1-Ball
@@ -33,6 +34,8 @@
 %    PROJ_XLIM          -  Bound the value of x
 %    PROJ_NUCLEARNORM   -  Projection operator of the nuclear norm
 %    PROJ_SPSD          -  Projection onto the semi definite symetric positive set 
+%    PROJ_LINEAR_EQ     -  Projection onto a linear set of equalities
+%    PROJ_LINEAR_INEQ   -  Projection onto a linear set of inequalities
 %   
 %
 %  Proximal tools

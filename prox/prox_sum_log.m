@@ -38,7 +38,6 @@ function [sol,info] = prox_sum_log(x, gamma, param)
 %
 %   See also:  prox_l1 prox_l2 prox_tv
 %
-%   References:
 
 % Author: Vassilis Kalofolias
 % Date: June 2015

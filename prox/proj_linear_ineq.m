@@ -20,8 +20,7 @@ function [ sol ] = proj_linear_ineq( x,~, param )
 %
 %   * *param.y* : vector (default: 0).
 %
-%   * *param.method* : method used 'quadprog' or 'iterative' (default:
-%     'quadprog').
+%   * *param.method* : method used 'quadprog' or 'iterative' (default: 'quadprog').
 %
 %   * *param.A* : Matrix A (default: Id) (Or operator for the 'iterative'
 %     method) 
@@ -54,9 +53,8 @@ function [ sol ] = proj_linear_ineq( x,~, param )
 %
 %   Rem: The input "~" is useless but needed for compatibility issue.
 %
-%   See also:  prox_l2 proj_b1
+%   See also:  proj_linear_eq
 %
-%   References: 
 
 %
 % Author: Nathanael Perraudin
