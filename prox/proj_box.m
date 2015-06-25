@@ -80,8 +80,8 @@ x = x(:);
 param.lower_lim = param.lower_lim(:);
 param.upper_lim = param.upper_lim(:);
 
-if ~(lx == length(param.lower_lim)) | ~(lx == length(param.upper_lim))
-    if ~(length(param.lower_lim) == 1) & ~(length(param.upper_lim) == 1)
+if ~(lx == length(param.lower_lim)) || ~(lx == length(param.upper_lim))
+    if ~(length(param.lower_lim) == 1) && ~(length(param.upper_lim) == 1)
         error('Sizes not compatible. See the documentation.')
     end
 end

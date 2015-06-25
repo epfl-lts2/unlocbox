@@ -1,27 +1,21 @@
-% Toto je dávkový soubor, který zahrnuje vytvoøené funkce pro gererování øídkého signálu,
-% kvantizaci vygenerovaného sigálu a následou dekvantizaci.
+% This demo shows how a quantized signal, sparse in the DCT domain, can be dequantized
+% solving a convex problem using Douglas-Rachford algorithm
 
-%Pavel Rajmic, Pavel Záviška
+% 2015 Pavel Rajmic, Pavel Záviška
 
 clc
 clear
 close all
 
-%% Nastavení
-    % V tomto bloku probíhá celé nastavení. Lze nastavit délku 1D signálu
-    % (N), øídkost (k) a poèet kvantovacích hladin (d). 
-    % Další nastavení se týkají použité báze, ze které se bude signál 
-    % generovat (DCT nebo DWT). V pøípadì DWT lze dále nastavit typ 
-    % waveletu a hloubku dekompozice. 
-    % Nakonec lze nastavit požadovaný dekvantizaèní algoritmus
+%% Set parameters
 
 N = 64; %length of the signal
-k = 4; %sparsity of the signal in the dictionary
-d = 8; %number of quantization levels
+k = 5; %sparsity of the signal in the dictionary
+d = 10; %number of quantization levels
 
 % 'DR' ... Douglas-Rachford algorithm
 % 'LP' ... linear programming (requires Matlab optimization toolbox)
-algorithm = 'DR'; %'LP' 
+algorithm =  'DR' %'LP' %
                     
 
 
@@ -46,15 +40,15 @@ x(support) = x_support; %complete vector including zero coefs
 % synthesize signal
 y = A(:, support)*x_support;
 
-% show  MOVE?? no
+% show coefficients
 fig_coef = figure;
 bar(x);
 title('Original coefficients of sparse signal');
 
 
 %% Quantize signal
-%We determine the max and min value of the signal and the quantization
-%levels are spread uniformly betwen them
+%Determine the max and min value of the signal. The quantization
+%levels are spread uniformly between them
 min_y = min(min(y));
 max_y = max(max(y));
 range = max_y - min_y;
@@ -66,13 +60,12 @@ quant_levels = min_y : quant_step : max_y; %quantization levels
 min_quant_level = quant_levels(1);
 max_quant_level = quant_levels(end);
 
-
 %use Matlab function to quantize signal
 [index, y_quant] = quantiz(y, dec_bounds, quant_levels);
 y_quant = y_quant';
 
 
-%% Show & compare original vs. quantized signal
+%% Show original vs. quantized signal
 %define colors
 grey = [0.6,0.6,0.6];
 black = [0,0,0];
@@ -113,90 +106,78 @@ title('Quantization noise');
 
 
 %% Sparse dequantization
-%         s = (quant_step/2)-y_quant;   %constraints for the signal samples
-%         t = (quant_step/2)+y_quant;
 %constraints for the signal samples
 lower_dec_bounds = y_quant - (quant_step/2);
 upper_dec_bounds = y_quant + (quant_step/2);
 
-%the highest and lowest boundary coincide with the quantization levels!:
+%the highest and lowest boundary coincide precisely with the quantization levels!:
 upper_dec_bounds(upper_dec_bounds > max_quant_level) = max_quant_level;
 lower_dec_bounds(lower_dec_bounds < min_quant_level) = min_quant_level;
 
 switch algorithm
-    case 'LP'   %dequantization using linear programming (doubles the number of variables)
+    case 'LP'  %dequantization using linear programming (doubles the number of variables)
         f = (ones([1 2*N]));
         
-        b = [-low_constr; upp_constr];
+        b = [-lower_dec_bounds; upper_dec_bounds];
         A_ = [A -A; -A A];
         lb = zeros(2*N,1);  %all variables must be nonnegative
-                
-        w = linprog(f,A_,b,[],[],lb);   %l1-minimalizace pomocí lineárního programování
-                
+        
+        w = linprog(f,A_,b,[],[],lb);  %l1-minimization via lin. program
+        
         uv = reshape(w,N,2);      %split w into two
         u = uv(:, 1);
         v = uv(:, 2);
         x_reconstructed = v - u;    %sparse vector is determined by subtracting the two non-negative
         z = A * x_reconstructed;    %reconstruct signal
         
-    case 'DR'  % Douglas-Rachford 
+    case 'DR'  % Douglas-Rachford
         
         param.lower_lim = lower_dec_bounds;
         param.upper_lim = upper_dec_bounds;
-            
-        f1.eval = @(x) norm(x,1);
-        f1.prox = @(x, T) sign(x).*max(abs(x)-T, 0);
         
-%         f2.eval = @(x) 1 / (any(dct(x)>param.upper_lim) | any(dct(x)<param.lower_lim)) - 1; %zero if inside boundaries, Inf otherwise
-%         param.upper_lim = 65*ones(N,1);
-%         param.lower_lim = 0*ones(N,1);
+        f1.eval = @(x) norm(x,1);
+        f1.prox = @(x,T) sign(x).*max(abs(x)-T, 0);
+        
         f2.eval = @(x) 1 / (1 - ( any(dct(x(:))>param.upper_lim) | any(dct(x(:))<param.lower_lim) )) - 1; %zero if x is inside boundaries, Inf otherwise
-        f2.prox = @(x) idct(proj_box(dct(x),[],param)); %box projection in the signal space (thanks to DCT being orthogonal)
+        f2.prox = @(x,T) dct(proj_box(idct(x),[],param)); %box projection in the signal space (thanks to DCT being orthogonal)
         
         % setting different parameter for the simulation
         paramsolver.verbose = 5;  % display parameter
         paramsolver.maxit = 100;        % maximum iteration
         paramsolver.tol = 10e-7;        % tolerance to stop iterating
         % paramsolver.gamma = 0.1;        % stepsize
-  
-        [sol,info,objective] = douglas_rachford(dct(y_quant), f1, f2, paramsolver);
         
-        % Stanovení parametru lambda
+ %         [sol,info,objective] = douglas_rachford(dct(y_quant), f1, f2, paramsolver);
+        
+        % DR: lambda
         lambda = 1;
         
-        %startovaci body? neni to divne?
-        x_old = dct(y_quant-quant_step);
-        y_new = dct(y_quant-quant_step);
-
-        rel_odchylka = 1;
-
-        while rel_odchylka > 0.0005
-%             x = proj_signal_dct(y_quant, y_new, quant_step, min_level, max_level);
-            % x = proj_box()
-            y_new_idct = idct(y_new);
-            [sol, info] = proj_box(y_new_idct,[],param);
+        %starting point
+        DR_y = dct(y_quant);
+        DR_x_old = DR_y;
+        
+        relat_change = 1;
+        cnt = 1; %iteration counter
+        
+        while relat_change > 0.0001
+            % DR: gamma = 1
+            DR_x = f2.prox(DR_y,[]);
+            DR_y = DR_y + lambda*(f1.prox(2*DR_x-DR_y, 1)-DR_x);
+            if cnt > 1
+                relat_change = norm(DR_x-DR_x_old) / norm(DR_x_old);
+            end
+            fprintf('  relative change in coefficients: %e \n', relat_change);
+            DR_x_old = DR_x;
+            cnt = cnt + 1;
             
-            % Pøevedení zpìt do oblasti souøadnic
-            x = dct(sol);
-
-
-            koef = (2*x-y_new);
-            y_new = y_new + lambda*(soft(koef,1)-x);
-        
-            rel_odchylka = (norm(x-x_old)/norm(x_old));
-            x_old = x;
         end
-
-%         x = proj_signal_dct(y_quant, y_new, quant_step, min_level, max_level);
-        y_new_idct = idct(y_new);
-            [sol, info] = proj_box(y_new_idct,[],param);
-            x = dct(sol);
         
-        z = idct(x);        
+        DR_x = f2.prox(DR_y); %final projection into the constraints
+        z = idct(DR_x); %dequantized signal
+        
+        disp(['Finished after ' num2str(cnt) ' iterations.'])
         
 end
-
-% z_fixed = fix_dekvantizace(z, y_quant, dec_bounds);    % posunutí signálu od rozhodovacích úrovní
 
 
 %% Show results
@@ -227,8 +208,6 @@ legend([h1,h2,h3,h4,h5], 'original', 'quantized','reconstructed', 'quant. levels
 
 axis tight
 
-% demo_dekvantizace(y, z_fixed, d);             % zobrazení výsledku dekvantizace  
-
 %coefficients of recontructed signal
 figure(fig_coef)
 hold on
@@ -237,6 +216,3 @@ title('Coefficients of original and reconstructed signals');
 axis tight
 
 figure(fig_compar)
-
-
-%%%%%%%%%%%%
