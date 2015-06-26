@@ -20,8 +20,9 @@ algorithm =  'DR' %'LP' %
 
 
 %% Dictionary and the original sparse signal
-A = dctmtx(N)';  % dictionary in which the signal will be sparse = inverse DCT
-% A = @(x) idct(x);  % dictionary in which the signal will be sparse = inverse DCT
+% A = dctmtx(N)';  % dictionary in which the signal will be sparse = inverse DCT
+A = @(x) idct(x);  % dictionary in which the signal will be sparse = inverse DCT
+At = @(x) dct(x); %its inverse (= transpose)
 
 if k>N
     error('Sparsity cannot be greater then signal length/number of atoms');
@@ -38,11 +39,13 @@ x = zeros(N,1);
 x(support) = x_support; %complete vector including zero coefs
 
 % synthesize signal
-y = A(:, support)*x_support;
+% y = A(:, support)*x_support;
+y = A(x);
 
 % show coefficients
 fig_coef = figure;
-bar(x);
+h_coefs_orig = bar(x);
+hold on;
 title('Original coefficients of sparse signal');
 
 
@@ -57,69 +60,76 @@ quant_step = range / (d-1); %quantization step
 dec_bounds = (min_y+quant_step/2) : quant_step : (max_y-quant_step/2);  %decision boundaries lie in the middle
 quant_levels = min_y : quant_step : max_y; %quantization levels
 
-min_quant_level = quant_levels(1);
-max_quant_level = quant_levels(end);
-
 %use Matlab function to quantize signal
 [index, y_quant] = quantiz(y, dec_bounds, quant_levels);
 y_quant = y_quant';
 
+%constraints for the signal samples;
+%quantized signal lies on the quant. levels and the true signal cannot be outside the boundaries
+lower_dec_bounds = y_quant - (quant_step/2);
+upper_dec_bounds = y_quant + (quant_step/2);
+
+%the highest and lowest boundary coincide precisely with the quantization levels!:
+min_quant_level = quant_levels(1);
+max_quant_level = quant_levels(end);
+upper_dec_bounds(upper_dec_bounds > max_quant_level) = max_quant_level;
+lower_dec_bounds(lower_dec_bounds < min_quant_level) = min_quant_level;
+
 
 %% Show original vs. quantized signal
 %define colors
-grey = [0.6,0.6,0.6];
+grey = 0.6* ones(1,3);
+lightgrey = 0.8* ones(1,3);
 black = [0,0,0];
 blue = [0.251,0.584,0.808];
 orange = [0.851,0.325,0.098];
 green = [0 1 0];
 
 %plot of the signals
-figure
-h1 = plot(y, '--', 'Color', blue);
+fig_time = figure;
+h_orig = plot(y, '.-', 'Color', blue);
 hold on;
-h2 = plot(y_quant, 'Color', orange);
+h_quant = plot(y_quant, '.-', 'Color', orange);
 title('Original and quantized signal');
+
+%plot signal constraints
+h_signal_constr = plot(upper_dec_bounds, 'Color', lightgrey);
+plot(lower_dec_bounds, 'Color', lightgrey);
 
 for j=1:d %quantization levels
     yPos = quant_levels(j);
-    h3 = plot(get(gca,'xlim'), [yPos yPos], 'Color', grey);
+    h_q_lev = plot(ones(1,N) * yPos, 'Color', grey);
 end
 
 for j=1:(d-1) %decision boundaries
     yPos = dec_bounds(j);
-    h4 = plot(get(gca,'xlim'), [yPos yPos], '--', 'Color', grey); 
+    h_dec_b = plot(ones(1,N) * yPos, ':', 'Color', grey); 
 end
 
 axis tight
 
 %legend
-uistack(h1,'top');
-uistack(h2,'top');
-legend([h1,h2,h3,h4], 'original', 'quantized', 'quantiz. levels', 'decision bounds');
+uistack(h_orig,'top');
+uistack(h_quant,'top');
+h_legend_time = legend([h_orig, h_quant, h_q_lev, h_dec_b, h_signal_constr ], 'original', 'quantized', 'quantiz. levels', 'decision bounds', 'signal constraints');
 
 %quanization noise
-figure
+fig_quant_noise = figure;
 quant_noise = y - y_quant;
-hr = plot(quant_noise, 'Color', blue);
+h_quant_noise = plot(quant_noise, 'Color', blue);
 hold on;
 title('Quantization noise');
 
 
 %% Sparse dequantization
-%constraints for the signal samples
-lower_dec_bounds = y_quant - (quant_step/2);
-upper_dec_bounds = y_quant + (quant_step/2);
-
-%the highest and lowest boundary coincide precisely with the quantization levels!:
-upper_dec_bounds(upper_dec_bounds > max_quant_level) = max_quant_level;
-lower_dec_bounds(lower_dec_bounds < min_quant_level) = min_quant_level;
-
 switch algorithm
     case 'LP'  %dequantization using linear programming (doubles the number of variables)
         f = (ones([1 2*N]));
         
         b = [-lower_dec_bounds; upper_dec_bounds];
-        A_ = [A -A; -A A];
+        Amatrix = A(eye(N));
+        % A_ = [A -A; -A A];
+        A_ = [Amatrix -Amatrix; -Amatrix Amatrix];
         lb = zeros(2*N,1);  %all variables must be nonnegative
         
         w = linprog(f,A_,b,[],[],lb);  %l1-minimization via lin. program
@@ -128,91 +138,113 @@ switch algorithm
         u = uv(:, 1);
         v = uv(:, 2);
         x_reconstructed = v - u;    %sparse vector is determined by subtracting the two non-negative
-        z = A * x_reconstructed;    %reconstruct signal
+        y_dequant = A(x_reconstructed);    %reconstruct signal
+        
+        sol = x_reconstructed;
         
     case 'DR'  % Douglas-Rachford
         
         param.lower_lim = lower_dec_bounds;
         param.upper_lim = upper_dec_bounds;
         
+        indi_thr = 10e-5; % threshold for identifying the point to lie in the set
+        
         f1.eval = @(x) norm(x,1);
         f1.prox = @(x,T) sign(x).*max(abs(x)-T, 0);
         
-        f2.eval = @(x) 1 / (1 - ( any(dct(x(:))>param.upper_lim) | any(dct(x(:))<param.lower_lim) )) - 1; %zero if x is inside boundaries, Inf otherwise
-        f2.prox = @(x,T) dct(proj_box(idct(x),[],param)); %box projection in the signal space (thanks to DCT being orthogonal)
+        f2.eval = @(x) 1 / (1 - ( any((A(x(:))-param.upper_lim)>indi_thr)) || any((A(x(:))-param.lower_lim) < -indi_thr) ) - 1; %zero if x is inside boundaries, Inf otherwise
+        f2.prox = @(x,T) At(proj_box(A(x),[],param)); %box projection in the signal space (thanks to DCT being orthogonal)
         
+        %%%%%%%% UNLOCBOX version %%%%%%%%%%%%%
         % setting different parameter for the simulation
         paramsolver.verbose = 5;  % display parameter
-        paramsolver.maxit = 100;        % maximum iteration
+        paramsolver.maxit = 300;        % maximum iteration
         paramsolver.tol = 10e-7;        % tolerance to stop iterating
         % paramsolver.gamma = 0.1;        % stepsize
         
- %         [sol,info,objective] = douglas_rachford(dct(y_quant), f1, f2, paramsolver);
+        [sol, info, objective] = douglas_rachford(At(y_quant), f1, f2, paramsolver);
+        info
         
+        sol = f2.prox(sol,[]); %final projection into the constraints
+        
+        %%%%%%%% manual version %%%%%%%%%%%%%
         % DR: lambda
         lambda = 1;
         
         %starting point
-        DR_y = dct(y_quant);
+        DR_y = A(y_quant);
         DR_x_old = DR_y;
         
-        relat_change = 1;
+        relat_change_coefs = 1;
+        relat_change_obj = 1;
         cnt = 1; %iteration counter
+        obj_eval = [];
         
-        while relat_change > 0.0001
+%         while relat_change_coefs > 0.00001
+        while relat_change_obj > paramsolver.tol
             % DR: gamma = 1
             DR_x = f2.prox(DR_y,[]);
+            obj_eval = [obj_eval, f1.eval(DR_x) + f2.eval(DR_x)]; %record values of objective function
             DR_y = DR_y + lambda*(f1.prox(2*DR_x-DR_y, 1)-DR_x);
             if cnt > 1
-                relat_change = norm(DR_x-DR_x_old) / norm(DR_x_old);
+                relat_change_coefs = norm(DR_x-DR_x_old) / norm(DR_x_old);
+                relat_change_obj = norm(obj_eval(end) - obj_eval(end-1)) / norm(obj_eval(end-1));
+                if paramsolver.verbose > 1
+                    fprintf('  relative change in coefficients: %e \n', relat_change_coefs);
+                    fprintf('  relative change in objective fun: %e \n', relat_change_obj);
+                    fprintf('\n');
+                end
             end
-            fprintf('  relative change in coefficients: %e \n', relat_change);
             DR_x_old = DR_x;
             cnt = cnt + 1;
             
         end
         
         DR_x = f2.prox(DR_y); %final projection into the constraints
-        z = idct(DR_x); %dequantized signal
+        y_dequant = A(DR_x); %dequantized signal
         
         disp(['Finished after ' num2str(cnt) ' iterations.'])
         
+        
+        %compare UNLOCBOX with manual
+        figure
+        plot([y_dequant A(sol)])
+        norm(y_dequant - A(sol))
+        title('UNLOCBOX vs. manual solution')
+        
+        %behaviour of objective through iterations
+        figure
+        plot(obj_eval)
+        title('Objective function value (after projection into constraints)')
+    
 end
+
+
 
 
 %% Show results
-fig_compar = figure;
-%time plots of signals
-h1 = plot(y, '--', 'Color', blue);
-hold on;
-h2 = plot(y_quant, 'Color', orange);
-h3 = plot(z, 'Color', green);
-title('Original, quantized and reconstructed signals');
-hold on;
 
-for j=1:d %quantization levels
-    yPos = quant_levels(j);
-    h4 = plot(get(gca,'xlim'), [yPos yPos], 'Color', grey);
-end
+figure(fig_time)
+h_dequant = plot(y_dequant, '.-', 'Color', green);
+uistack(h_dequant,'top');
+delete(h_legend_time)
+h_legend_time = legend([h_orig, h_quant, h_dequant, h_q_lev, h_dec_b, h_signal_constr ], 'original', 'quantized', 'dequantized', 'quantiz. levels', 'decision bounds', 'signal constraints');
 
-for j=1:(d-1) %decision boundaries
-    yPos = dec_bounds(j);
-    h5 = plot(get(gca,'xlim'), [yPos yPos], '--', 'Color', grey); 
-end
-
-%legend
-uistack(h1,'top');
-uistack(h2,'top');
-uistack(h3,'top');
-legend([h1,h2,h3,h4,h5], 'original', 'quantized','reconstructed', 'quant. levels', 'decis. bounds.');
-
+%quantization and reconstruction errors
+figure(fig_quant_noise)
+h_dequant_error = plot(y-y_dequant, 'Color', green);
+title('Quantization error and error of reconstruction (i.e. original - reconstr.)');
 axis tight
+legend([h_quant_noise h_dequant_error], 'Quantizat. error', 'Error of reconstr.')
 
 %coefficients of recontructed signal
 figure(fig_coef)
 hold on
-bar(A'*z,'FaceColor',green);
+h_coefs_dequant = bar(sol,'FaceColor',green);
 title('Coefficients of original and reconstructed signals');
+legend([h_coefs_orig h_coefs_dequant], 'Coefs of orig. signal', 'Coefs of dequant. signal')
 axis tight
 
-figure(fig_compar)
+
+figure(fig_time)
+axis tight
