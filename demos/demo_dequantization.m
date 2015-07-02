@@ -7,7 +7,7 @@ clc
 clear
 close all
 
-%% Set parameters
+%% Parameters
 
 N = 64; %length of the signal
 k = 5; %sparsity of the signal in the dictionary
@@ -42,11 +42,16 @@ x(support) = x_support; %complete vector including zero coefs
 % y = A(:, support)*x_support;
 y = A(x);
 
+%or just load a fixed dataset
+clear
+load('dequantization_dataset_01')
+
 % show coefficients
 fig_coef = figure;
 h_coefs_orig = bar(x);
 hold on;
 title('Original coefficients of sparse signal');
+
 
 
 %% Quantize signal
@@ -127,7 +132,7 @@ switch algorithm
         f = (ones([1 2*N]));
         
         b = [-lower_dec_bounds; upper_dec_bounds];
-        Amatrix = A(eye(N));
+        Amatrix = A(eye(N)); %generate explicit dictionary matrix
         % A_ = [A -A; -A A];
         A_ = [Amatrix -Amatrix; -Amatrix Amatrix];
         lb = zeros(2*N,1);  %all variables must be nonnegative
@@ -160,17 +165,16 @@ switch algorithm
         paramsolver.verbose = 5;  % display parameter
         paramsolver.maxit = 300;        % maximum iteration
         paramsolver.tol = 10e-7;        % tolerance to stop iterating
-        % paramsolver.gamma = 0.1;        % stepsize
+        paramsolver.lambda = 1;   % step for DR algorithm (default 1)
+        paramsolver.gamma = 1e-2;        % here threshold for soft thresholding
         
         [sol, info, objective] = douglas_rachford(At(y_quant), f1, f2, paramsolver);
         info
         
         sol = f2.prox(sol,[]); %final projection into the constraints
+        pause
         
-        %%%%%%%% manual version %%%%%%%%%%%%%
-        % DR: lambda
-        lambda = 1;
-        
+        %%%%%%%% manual version %%%%%%%%%%%%%      
         %starting point
         DR_y = A(y_quant);
         DR_x_old = DR_y;
@@ -185,7 +189,7 @@ switch algorithm
             % DR: gamma = 1
             DR_x = f2.prox(DR_y,[]);
             obj_eval = [obj_eval, f1.eval(DR_x) + f2.eval(DR_x)]; %record values of objective function
-            DR_y = DR_y + lambda*(f1.prox(2*DR_x-DR_y, 1)-DR_x);
+            DR_y = DR_y + paramsolver.lambda*(f1.prox(2*DR_x-DR_y, paramsolver.gamma)-DR_x);
             if cnt > 1
                 relat_change_coefs = norm(DR_x-DR_x_old) / norm(DR_x_old);
                 relat_change_obj = norm(obj_eval(end) - obj_eval(end-1)) / norm(obj_eval(end-1));
@@ -229,6 +233,7 @@ h_dequant = plot(y_dequant, '.-', 'Color', green);
 uistack(h_dequant,'top');
 delete(h_legend_time)
 h_legend_time = legend([h_orig, h_quant, h_dequant, h_q_lev, h_dec_b, h_signal_constr ], 'original', 'quantized', 'dequantized', 'quantiz. levels', 'decision bounds', 'signal constraints');
+title('Original, quantized and dequantized signals')
 
 %quantization and reconstruction errors
 figure(fig_quant_noise)
