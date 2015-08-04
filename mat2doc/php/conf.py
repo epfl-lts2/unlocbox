@@ -1,6 +1,6 @@
 fext='.php'
 urlbase='/doc'
 urlext='.php'
-widthstr=''
+widthstr='600px'
 imagetype='png'
 includedir='../include'

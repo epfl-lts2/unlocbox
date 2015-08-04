@@ -48,7 +48,7 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
         error('This solver needs at maximum 2 non-smooth functions')
     end
     if (numel(Fp)==1)
-        Fp{2}.prox = @(x) x;
+        Fp{2}.prox = @(x,T) x;
         Fp{2}.eval = eps;
     end
     
@@ -117,7 +117,7 @@ end
 function [sol, s] = fb_based_primal_dual_algorithm(fg, Fp, sol, s, param)
    
     if (numel(Fp)==1)
-        Fp{2}.prox = @(x) x;
+        Fp{2}.prox = @(x,T) x;
         Fp{2}.eval = eps;
     end
 % 	grad = fg.grad(sol);
