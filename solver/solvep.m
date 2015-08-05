@@ -138,7 +138,7 @@ algo = get_algo(param.algo);
 fg = add_smooth_functions(Fg);
 
 if param.verbose>=1, 
-    fprintf(['Algorithm selected:', algo.name,' \n']);
+    fprintf(['Algorithm selected: ', algo.name,' \n']);
 end
 
 [sol,s,param] = algo.initialize(x_0, fg, Fp, param);
