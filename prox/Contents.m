@@ -31,7 +31,7 @@
 %  Projection operators
 %    PROJ_B1            -  Projection on a B1-Ball
 %    PROJ_B2            -  Projection on a B2-Ball
-%    PROJ_XLIM          -  Bound the value of x
+%    PROJ_BOX           -  Bound the value of x
 %    PROJ_NUCLEARNORM   -  Projection operator of the nuclear norm
 %    PROJ_SPSD          -  Projection onto the semi definite symetric positive set 
 %    PROJ_LINEAR_EQ     -  Projection onto a linear set of equalities

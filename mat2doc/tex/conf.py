@@ -1,6 +1,6 @@
 fext='.tex'
 urlbase='http://unlocbox.sourceforge.net/doc'
 urlext='php'
-widthstr='45ex'
+widthstr='50ex'
 imagetype='eps'
 includeoutput=False
