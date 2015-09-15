@@ -1,6 +1,6 @@
 fext='.php'
-urlbase='/doc'
+urlbase='https://lts2.epfl.ch/unlocbox/doc'
 urlext='.php'
 widthstr='600px'
 imagetype='png'
-includedir='../include'
+includedir='https://lts2.epfl.ch/unlocbox/include'
