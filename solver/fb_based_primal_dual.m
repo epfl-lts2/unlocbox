@@ -35,6 +35,18 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %   * `f2.L`  : linear operator, matrix or operator (default identity)
 %   * `f2.Lt` : adjoint of linear operator, matrix or operator (default identity)
 %
+%   The default choice for the time-step makes the following 
+%
+%     .. 1/tau - sigma * nu = beta/2
+%
+%     .. math::  \frac{1}{\tau} - \sigma \nu = \frac{\beta}{2}   
+%   
+%   with additionnaly
+%
+%     .. 1/(2*tau) = sigma * nu = beta/2
+%
+%     .. math::  \frac{1}{2\tau} = \sigma \nu = \frac{\beta}{2}  
+%
 %   *param* a Matlab structure containing solver paremeters. See the
 %   function |solvep| for more information. Additionally it contains those
 %   aditional fields:  

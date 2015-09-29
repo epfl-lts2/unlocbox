@@ -102,7 +102,7 @@ end
 if ~isfield(param, 'tol'), param.tol=10e-4 ; end
 if ~isfield(param, 'maxit'), param.maxit=200; end
 if ~isfield(param, 'verbose'), param.verbose=1 ; end
-if ~isfield(param, 'lambda'), param.lambda=1 ; end
+if ~isfield(param, 'lambda'), param.lambda=0.99 ; end
 if ~isfield(param, 'fast_eval'), param.fast_eval = 0  ; end
 if ~isfield(param, 'abs_tol'), param.abs_tol = 0  ; end
 if ~isfield(param, 'use_dual'), param.use_dual = 0  ; end

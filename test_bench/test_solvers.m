@@ -296,20 +296,49 @@ function [errors]=test_gefwbw_with_old()
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
     
     f3 = f2;
-    param.maxit = 30;
+    f4 = f2;
+    param.maxit = 1000;
     param.tol = 100*eps;
     param.verbose = 0;
-    p3 = solvep(x0, {f2,f3,f1}, param);
+    p3 = solvep(x0, {f2,f3,f1,f4}, param);
 
+
+
+
+    f5.eval = @(x) norm(3*x,1);
+    f5.prox = @(x,T) prox_l1(x,3*T,paraml1);
+    p4 = solvep(x0, {f5,f1}, param);
+    
+    f6.eval = @(x) norm(2*x,1);
+    f6.prox = @(x,T) prox_l1(x,2*T,paraml1);
+    param.algo = 'FB_BASED_PRIMAL_DUAL';
+    p5 = solvep(x0, {f1,f4,f6}, param);
+    
     param.gamma = 1/(2*norm(A)^2);
     
-    p2 = generalized_forward_backward_old(x0, {f2,f3},f1, param);
+    p2 = generalized_forward_backward_old(x0, {f2,f3,f4},f1, param);
     
     if norm(p3-p2)/norm(p3)<1e-6
         fprintf('  Test gefwbw with old 1 OK\n')
     else
         fprintf('  Test gefwbw with old 1 Pas OK!!!!!!!!!!!!!!!!\n')
         norm(p3-p2)/norm(p3)
+        errors= errors +1;
+    end
+    
+    if norm(p3-p4)/norm(p3)<1e-6
+        fprintf('  Test gefwbw with FISTA 1 OK\n')
+    else
+        fprintf('  Test gefwbw with FISTA 1 Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3-p4)/norm(p3)
+        errors= errors +1;
+    end
+    
+    if norm(p5-p4)/norm(p4)<1e-6
+        fprintf('  Test primal dual with FISTA 1 OK\n')
+    else
+        fprintf('  Test primal dual with FISTA 1 Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p5-p4)/norm(p4)
         errors= errors +1;
     end
     
