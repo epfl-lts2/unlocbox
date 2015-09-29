@@ -23,7 +23,7 @@ project=homefolder+'/'+projectname+'/'
 # outputdirweb= '~/work/git/website/unlocbox/'
 
 host='root@lts2srv1.epfl.ch'
-www='/var/www/html/unlocbox/ls'
+www='/var/www/html/unlocbox/'
 outputdirweb= '~/work/git/website/unlocbox/'
 
 # -------- Configuration of mat2doc ------------

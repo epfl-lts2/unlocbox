@@ -15,7 +15,7 @@ function [sol, info] = prox_tv1d(x, gamma, param)
 %   This function computes the 1 dimensional TV proximal operator evaluated
 %   in b. If b is a matrix, this function will evaluate the TV proximal
 %   operator on each row of the matrix. For 2D, TV proximal
-%   operator `prox_tv' can be used.
+%   operator `prox_tv` can be used.
 %
 %   `prox_tv(y, gamma, param)` solves:
 %
