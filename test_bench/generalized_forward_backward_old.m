@@ -10,7 +10,7 @@ if ~isfield(param, 'verbose'), param.verbose=1 ; end
 if ~isfield(param, 'maxit'), param.maxit=100 ; end
 if ~isfield(param, 'tol'), param.tol=1e-3 ; end
 if ~isfield(param, 'gamma'), param.gamma=1 ; end
-if ~isfield(param, 'lambda'), param.lambda=1 ; end
+if ~isfield(param, 'lambda'), param.lambda=0.99 ; end
 
 if nargin<3 
     f.grad=@(x) 2*x;

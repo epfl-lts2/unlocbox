@@ -19,12 +19,13 @@ function [sol, info] = proj_box(x, ~, param)
 %
 %   .. math::  sol = arg\min_{z} \frac{1}{2} \|x - z\|_2^2 \text{ subject to } z < z_{max} \text{ and } z > z_{min}
 %
-%   where `zmax' and `zmin' might be scalar or vector valued.
+%   where `zmax` and `zmin` might be scalar or vector valued.
 %
 %   param is a Matlab structure containing the following fields:
 %
 %   * *param.lower_lim* : lower bound(s) for z (default 0)
 %   * *param.upper_lim* : upper bound(s) for z (default 1)
+%
 %   if these two are vector-valued, bounds apply entry-by-entry
 %
 %   * *param.verbose* : 0 no log, 1 a summary at convergence, 2 print main

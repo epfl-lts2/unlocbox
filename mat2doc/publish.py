@@ -18,8 +18,12 @@ else:
 project=homefolder+'/'+projectname+'/'
 
 # Configure HTML placement at remote server
-host='nperraud,'+projectname+'@web.sourceforge.net'
-www='/home/project-web/unlocbox/htdocs/'
+# host='nperraud,'+projectname+'@web.sourceforge.net'
+# www='/home/project-web/unlocbox/htdocs/'
+# outputdirweb= '~/work/git/website/unlocbox/'
+
+host='root@lts2srv1.epfl.ch'
+www='/var/www/html/unlocbox/'
 outputdirweb= '~/work/git/website/unlocbox/'
 
 # -------- Configuration of mat2doc ------------
@@ -139,7 +143,10 @@ if 'package' in todo:
 
 
 if 'sendphp' in todo:
-    s='rsync -av '+outputdirphp+' '+host+':'+www+'doc/'
+
+    s="rsync -e 'ssh -p 10422' -av "+outputdirphp+' '+host+':'+www+'doc/'
+#    s='rsync -av '+outputdirphp+' '+host+':'+www+'doc/'
+    print s
     os.system(s)  
 
 
@@ -234,13 +241,15 @@ if 'noteshtml' in todo:
     
 
 if 'notesend' in todo:
-    os.system('rsync -av '+notehtml+' '+host+':'+noteswww);
+#    os.system('rsync -av '+notehtml+' '+host+':'+noteswww);
+    os.system("rsync -e 'ssh -p 10422' -av "+notehtml+' '+host+':'+noteswww);
 
 if 'sendweb' in todo:
-    s="rsync --verbose --archive --exclude '.git' "+outputdirweb+' '+host+':'+www
+#    s="rsync --verbose --archive --exclude '.git' "+outputdirweb+' '+host+':'+www
+    s="rsync -e 'ssh -p 10422' --verbose --archive --exclude '.git' "+outputdirweb+' '+host+':'+www
     os.system(s)  
 
-
+ 
 
 
 

@@ -69,9 +69,7 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
         s.ind = [1,2];
     end
     
-    if strcmp(s.method, 'FISTA')
-        s.tn = 1;
-    end
+
     
     % computes optimal timestep
     if fg.beta
@@ -97,7 +95,14 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
         s.sigma = param.sigma;
     end
    
-
+    if strcmp(s.method, 'FISTA')
+        s.tn = 1;
+    else
+        if param.lambda>=1
+            warning('Reducing param.lambda to 0.99');
+            param.lambda = 0.99;
+        end
+    end
     
     % All intern variables are stored into the structure s
     s.OpL = L;

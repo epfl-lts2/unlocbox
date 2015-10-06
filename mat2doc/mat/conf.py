@@ -1,3 +1,3 @@
 fext='.m'
-urlbase='http://unlocbox.sourceforge.net/doc'
+urlbase='https://lts2.epfl.ch/unlocbox/doc'
 urlext='.php'
