@@ -67,9 +67,9 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
     end
     
    if isfield(Fp{s.ind(2)}, 'norm_L')
-        s.nu = Fp{s.ind(2)}.norm_L;
+        s.norm_L = Fp{s.ind(2)}.norm_L;
    else
-       s.nu = 1;
+       s.norm_L = 1;
        warning('You should give f.norm_L = ||L||^2. Setting it to 1!');
    end
 
@@ -79,20 +79,21 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
         beta = fg.beta;
     else
         beta = 1/param.gamma;
+        warning('No ');
     end
     
     if ~isfield(param, 'sigma') && ~isfield(param, 'tau')
         s.tau = 1/beta;
-        s.sigma = beta/2/s.nu;
+        s.sigma = beta/2/s.norm_L;
     elseif ~isfield(param, 'tau')
         s.tau = param.tau;
-        s.sigma = (1/s.tau - beta/2)/s.nu;
+        s.sigma = (1/s.tau - beta/2)/s.norm_L;
         if s.sigma <0
             error('Tau is too big!')
         end
     elseif ~isfield(param, 'sigma')
         s.sigma = param.sigma;
-        s.tau = 1/(s.sigma*s.nu+beta/2);
+        s.tau = 1/(s.sigma*s.norm_L+beta/2);
     else
         s.tau = param.tau;
         s.sigma = param.sigma;
