@@ -143,6 +143,7 @@ f2.prox = @(x, T) prox_l1(x, T, param_l1);
 f2.eval = @(x) norm_l1(L(x));
 f2.L = L;
 f2.Lt = Lt;
+f2.norm_L = 1;
 
 
 %% solving the problem

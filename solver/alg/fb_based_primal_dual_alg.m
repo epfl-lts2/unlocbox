@@ -34,10 +34,7 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
 
     % Handle optional parameter. Here we need a variable lambda.
     if ~isfield(param, 'rescale'), param.rescale = 0 ; end
-    if ~isfield(param, 'nu')
-        param.nu = 1;
-        warning('You should give param.nu = ||L||^2. Setting it to 1!');
-    end
+
     if ~isfield(param, 'method'), param.method = 'ISTA'; end
     
     if param.rescale
@@ -69,6 +66,12 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
         s.ind = [1,2];
     end
     
+   if isfield(Fp{s.ind(2)}, 'norm_L')
+        s.nu = Fp{s.ind(2)}.norm_L;
+   else
+       s.nu = 1;
+       warning('You should give f.norm_L = ||L||^2. Setting it to 1!');
+   end
 
     
     % computes optimal timestep
@@ -80,16 +83,16 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
     
     if ~isfield(param, 'sigma') && ~isfield(param, 'tau')
         s.tau = 1/beta;
-        s.sigma = beta/2/param.nu;
+        s.sigma = beta/2/s.nu;
     elseif ~isfield(param, 'tau')
         s.tau = param.tau;
-        s.sigma = (1/s.tau - beta/2)/param.nu;
+        s.sigma = (1/s.tau - beta/2)/s.nu;
         if s.sigma <0
             error('Tau is too big!')
         end
     elseif ~isfield(param, 'sigma')
         s.sigma = param.sigma;
-        s.tau = 1/(s.sigma*param.nu+beta/2);
+        s.tau = 1/(s.sigma*s.nu+beta/2);
     else
         s.tau = param.tau;
         s.sigma = param.sigma;

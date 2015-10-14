@@ -73,6 +73,7 @@ fw.prox = @(x,T) prox_l1(x,tau*T,paraml1);
 fw.eval = @(x) tau*norm(W(x),1);
 fw.L =W;
 fw.Lt = Wt;
+fw.norm_L = 1;
 
 %% Solving the problem
 

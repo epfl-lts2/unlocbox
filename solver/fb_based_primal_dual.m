@@ -34,6 +34,11 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %
 %   * `f2.L`  : linear operator, matrix or operator (default identity)
 %   * `f2.Lt` : adjoint of linear operator, matrix or operator (default identity)
+%   * `f2.norm_L` : bound on the norm of the operator L (default: 1), i.e.
+%
+%     .. ` ||L x||^2 <= nu * ||x||^2 
+%
+%     .. math::  \|L x\|^2 \leq \nu \|x\|^2 
 %
 %   The default choice for the time-step makes the following 
 %
@@ -61,12 +66,6 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %     by default, `tol=10e-4`.
 %
 %       Warning! This stopping criterion is different from other solver!
-%
-%   * *param.nu* : bound on the norm of the operator L (default: 1), i.e.
-%
-%     .. ` ||L x||^2 <= nu * ||x||^2 
-%
-%     .. math::  \|L x\|^2 \leq \nu \|x\|^2 
 %
 %   * *param.tau* : first timestep.   
 %

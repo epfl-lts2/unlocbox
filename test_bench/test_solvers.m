@@ -1226,6 +1226,7 @@ function [errors] = test_fb_based_primal_dual3()
     f21.prox = @(x,T) prox_l1(x,T,paraml11);    
     f21.L = A;
     f21.Lt = At;
+    f22.norm_L = 1;
     
     paraml12.verbose = 0;
     paraml12.A = A;
@@ -1279,6 +1280,7 @@ function [errors] = test_fb_based_primal_dual4()
     f21.prox = @(x,T) prox_l1(x,T,paraml11);    
     f21.L = A;
     f21.Lt = At;
+    f21.norm_L = 1;
     
     paraml12.verbose = 0;
     paraml12.A = A;
@@ -1334,6 +1336,7 @@ function [errors] = test_fb_based_primal_dual_fista()
     f21.prox = @(x,T) prox_l1(x,T,paraml11);    
     f21.L = A;
     f21.Lt = At;
+    f21.norm_L = 1;
     
     paraml12.verbose = 0;
     paraml12.A = A;
