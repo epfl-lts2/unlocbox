@@ -11,7 +11,6 @@ function [sol, info] = solvep(x_0, F, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   `solvep` solves:
 %
@@ -43,25 +42,43 @@ function [sol, info] = solvep(x_0, F, param)
 %     continuous). By default, it is computed with the lipschitz constant
 %     of all smooth functions.
 %
-%   * *param.tol* : is stop criterion for the loop. The algorithm stops if
-%
-%       ..  (  n(t) - n(t-1) )  / n(t) < tol,
-%      
-%       .. math:: \frac{  n(t) - n(t-1) }{ n(t)} < tol,
-%
-%       where  $n(t) = f_1(x)+f_2(x)$ is the objective function at iteration *t*
-%       by default, `tol=10e-4`.
+%   * *param.tol* : Tolerance to stop iterating. Please see
+%     *param.stopping_criterion*. (Default 1e-4).
 %
 %   * *param.algo* : solver used for the problem. Determined
 %     automatically with the functions in *f*.
 %
-%   * *param.maxit* : is the maximum number of iteration. By default, it is 200.
+%   * *param.stopping_criterion* : is stopping criterion to end the
+%     algorithm. Possible values are:
+%
+%     * 'rel_norm_obj' : Relative norm of the objective function.
+%     * 'rel_norm_primal' : Relative norm of the primal variables. 
+%     * 'rel_norm_dual' : Relative norm of the dual variables. 
+%     * 'rel_norm_primal_dual' : Relative norm of the primal and the dual
+%       variables.  
+%     * 'obj_increase' : Stops when the objective function starts
+%       increasing or stay equal.
+%     * 'obj_threshold' : Stops when the objective function is below a
+%       threshold. The threshold is set in *param.tol*.
+%
+%     For the 'rel_norm' stopping criterion, the algorithm end if 
+%
+%       ..  ||  n(t) - n(t-1) ||_2  /  || n(t) ||_2 < tol,
+%      
+%       .. math:: \frac{ \| n(t) - n(t-1) \|_2 }{\| n(t)\|_2} < tol,
+%
+%       where  $n(t)$ is the objective function, the primal or the dual
+%       variable at iteration *t*. 
+%
+%   * *param.maxit* : is the maximum number of iteration. By default, it is
+%     200. 
 % 
 %   * *param.verbose* : 0 no log, 1 print main steps, 2 print all steps.
 %
-%   * *param.debug_mode* : Compute all internal convergence parameters
+%   * *param.debug_mode* : Compute all internal convergence parameters.
+%     Activate this option for debugging
 %
-%   info is a Matlab structure containing the following fields:
+%   *info* is a Matlab structure containing the following fields:
 %
 %   * *info.algo* : Algorithm used
 %
@@ -71,12 +88,27 @@ function [sol, info] = solvep(x_0, F, param)
 %
 %   * *info.crit* : Stopping critterion used 
 %
-
-
+%   Additionally, depending on the stopping critterion, the structure
+%   *info* also contains:
+%
+%   * *info.objective* : Value of the objective function
+%
+%   * *info.rel_norm_obj* : Relative norm of the objective function.
+%
+%   * *info.rel_norm_primal* : Relative norm of the primal variable.
+%
+%   If the flag *param.debug_mode* is activated, the previous quantity are
+%   always computed. Moreover, for solver using dual variable, *info* also
+%   contains:
+%
+%   * *info.rel_norm_dual* : Relative norm of the dual variable.
+%
+%   * *info.dual_var* : Final dual variables.
+%   
 
 
 % Author: Nathanael Perraudin
-% Date: 22 Feb 2015
+% Date: 16 oct 2015
 % Testing: test_solver
 
 % Start the time counter
@@ -94,7 +126,7 @@ if nargout>3
 end
 
 
-if ~isfield(param, 'tol'), param.tol=10e-4 ; end
+if ~isfield(param, 'tol'), param.tol=1e-4 ; end
 if ~isfield(param, 'maxit'), param.maxit=200; end
 if ~isfield(param, 'verbose'), param.verbose=1 ; end
 if ~isfield(param, 'lambda'), param.lambda=0.99 ; end
@@ -128,8 +160,8 @@ end
 if ~isfield(param, 'algo'), param.algo = select_solver(Fg,Fp)  ; end
 
 % Select the stopping critterion
-if ~isfield(param, 'test_type')
-    param.test_type = select_stopping_criterion(param.algo);
+if ~isfield(param, 'stopping_criterion')
+    param.stopping_criterion = select_stopping_criterion(param.algo);
 end;
 
 algo = get_algo(param.algo);

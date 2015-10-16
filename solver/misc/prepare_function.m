@@ -3,6 +3,10 @@ function [Fg,Fp] = prepare_function(F,param)
 %
 
 % Test if the algorithm requires only non smooth functions
+% This should be improved. Maybe put some flags inside the algorithms
+%   * number of smooth functions
+%   * number of non-smooth functions
+
 smooth = 1;
 if isfield(param, 'algo')
     name = lower(getname(param.algo));
@@ -29,13 +33,13 @@ for ii = 1:m
         end
         Fg{length(Fg)+1,1} = F{ii};         %#ok<AGROW>
     elseif isfield(F{ii},'proxL')
-        F{ii}.prox_adL = @(x,T) prox_adL(x,T,F{ii},param);
+%         F{ii}.prox_adL = @(x,T) prox_adL(x,T,F{ii},param);
         Fp{length(Fp)+1,1} = F{ii};         %#ok<AGROW>
-        if isfield(F{ii},'prox')
-            F{ii}.prox_ad = @(x,T) prox_ad(x,T,F{ii},param);
-        end
+%         if isfield(F{ii},'prox')
+%             F{ii}.prox_ad = @(x,T) prox_ad(x,T,F{ii},param);
+%         end
     elseif isfield(F{ii},'prox')
-        F{ii}.prox_ad = @(x,T) prox_ad(x,T,F{ii},param);
+%         F{ii}.prox_ad = @(x,T) prox_ad(x,T,F{ii},param);
         Fp{length(Fp)+1,1} = F{ii};         %#ok<AGROW>
     else
         if isfield(F{ii},'grad')
@@ -52,30 +56,30 @@ end
 
 
 end
-
-function s = prox_ad(x,T,f,param)
-
-if param.fast_eval
-    s = {};
-    [s{1:2}] = f.prox(x,T);
-else
-    s = {};
-    [s{1}] = f.prox(x,T);
-end
-
-end
-
-function s = prox_adL(x,T,f,param)
-
-if param.fast_eval
-    s = {};
-    [s{1:2}] = f.proxL(x,T);
-else
-    s = {};
-    [s{1}] = f.proxL(x,T);
-end
-
-end
+% 
+% function s = prox_ad(x,T,f,param)
+% 
+% if param.fast_eval
+%     s = {};
+%     [s{1:2}] = f.prox(x,T);
+% else
+%     s = {};
+%     [s{1}] = f.prox(x,T);
+% end
+% 
+% end
+% 
+% function s = prox_adL(x,T,f,param)
+% 
+% if param.fast_eval
+%     s = {};
+%     [s{1:2}] = f.proxL(x,T);
+% else
+%     s = {};
+%     [s{1}] = f.proxL(x,T);
+% end
+% 
+% end
 
 function name = getname(algo)
     if ischar(algo)

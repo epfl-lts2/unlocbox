@@ -1,19 +1,9 @@
 function [stop, crit, s, iter, info] = convergence_test(sol, s, iter, fg, Fp, info, param)
 %CONVERGENCE_TEST Test the convergence of an algorithm
 %   Usage: stop = convergence_test(curr_norm,prev_norm,objective,param);
-
-%
-%   Input parameters:
-
-%         iter      : Current iteration (positiv integer)
-%         param     : Optional parameter
-%
-%   Output parameters:
-%         stop      : Convergence (boolean)
-%         crit      : Convergence criterion
 %
 %   This function test the convergence of an algorithms and performs
-%   updates.
+%   some updates. Additionally, it handles verbosity during the iterations.
 %
 %   At convergence, the flag stop is set to one.
 %
@@ -21,7 +11,7 @@ function [stop, crit, s, iter, info] = convergence_test(sol, s, iter, fg, Fp, in
 %
 
 %   Nathanael Perraudin
-%   Date: 
+%   Date: 16 oct 2015
 
 global FS
 
@@ -30,10 +20,7 @@ global FS
 % Param
 if ~isfield(param, 'stop_box'), param.stop_box = 0; end
 
-if isfield(param, 'use_dual'), 
-    warning('You are using the old method... Please update')
-end
-if isfield(param, 'abs_tol'), 
+if isfield(param, 'use_dual') || isfield(param, 'abs_tol')
     warning('You are using the old method... Please update')
 end
 
@@ -64,7 +51,7 @@ end
 stop = 0;
 crit= 'NOT_DEFINED';
 
-switch lower(param.test_type)
+switch lower(param.stopping_criterion)
     case 'rel_norm_obj'
         curr_eval = eval_objective(fg,Fp,sol,s,param);
         info.objective(iter+1) = curr_eval;
@@ -123,7 +110,7 @@ end
 %% Handling debug mode
 % We compute what has not been computed yet
 if param.debug_mode
-    switch lower(param.test_type)
+    switch lower(param.stopping_criterion)
         case 'rel_norm_obj'
             rel_norm_primal = norm(sol(:)-s.prev_sol(:))/norm(sol(:));
             info.rel_norm_primal(iter) = rel_norm_primal;
@@ -206,7 +193,7 @@ if param.verbose >= 2
             	rel_norm_dual);  
         end
     else
-        switch lower(param.test_type)
+        switch lower(param.stopping_criterion)
             case 'rel_norm_obj'   
                 fprintf('  f(x^*) = %e, rel_eval = %e\n', ...
                     curr_eval, rel_eval);                   

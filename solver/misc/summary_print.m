@@ -1,7 +1,12 @@
 function [] = summary_print(s,info,iter,algo,crit,param)
+%SUMMARY_PRINT Print the summary at the end of the optimization
 %
-%
-%   Print the summary at the end of the optimization
+%   This function print a summary at the end of the optimization depending
+%   on the verbosity, the stopping critertion and the computed
+%   statistiques.
+
+%   Nathanael Perraudin
+%   Date: 16 oct 2015
 
 %% Handle verbosity
 if param.verbose >= 2
@@ -17,7 +22,7 @@ if param.verbose >= 2
             	info.rel_norm_dual(iter));  
         end
     else
-        switch lower(param.test_type)
+        switch lower(param.stopping_criterion)
             case 'rel_norm_obj'   
                 fprintf('  f(x^*) = %e, rel_eval = %e\n', ...
                     info.objective(iter+1), info.rel_eval(iter));                   
@@ -53,7 +58,7 @@ elseif param.verbose>=1
 %         fprintf([algo.name,': f(x^*) = %e, rel_eval = %e, it = %i, %s\n'], ...
 %                         curr_eval, rel_eval, iter,crit);
 %     end
-        switch lower(param.test_type)
+        switch lower(param.stopping_criterion)
             case 'rel_norm_obj'   
                 fprintf([algo.name,'  f(x^*) = %e, rel_eval = %e, it = %i, %s\n'], ...
                     info.objective(iter+1), info.rel_eval(iter), iter, crit);                   

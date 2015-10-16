@@ -1,9 +1,14 @@
 function [info, iter, s] = initialize_convergence_variable(sol, s, fg, Fp, param)
+%INITIALIZE_CONVERGENCE_VARIABLE Initialize all convergence variable
+%
+%   Handle the initialization of info depending on the stopping criterion.
 
+% Author: Nathanael Perraudin
+% Date: 16 oct 2015
 
 % Test if the the dual variables are present
-if strcmpi(param.test_type, 'rel_norm_primal_dual') ...
-    || strcmpi(param.test_type, 'rel_norm_dual');
+if strcmpi(param.stopping_criterion, 'rel_norm_primal_dual') ...
+    || strcmpi(param.stopping_criterion, 'rel_norm_dual');
     if ~isfield(s,'dual_var')
         error('The dual variable are not ignitialized. Put them in s.dual_var');
     end
@@ -23,7 +28,7 @@ if param.debug_mode
     end
 else
 
-    switch lower(param.test_type)
+    switch lower(param.stopping_criterion)
         case 'rel_norm_obj'
             info.objective = nan(param.maxit+1,1);
             info.rel_eval = nan(param.maxit,1);
