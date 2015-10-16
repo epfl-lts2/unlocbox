@@ -53,7 +53,13 @@ function [sol, s, param] = fbf_primal_dual_initialize(x_0,fg,Fp,param)
         Fp{2}.eval = eps;
     end
     
-    % keep all variables in a struct
+    % struct keeping the information of the different parts of the
+    % objective function
+    %
+    % ind: indexing so that the second one (the last one?) has the linear
+    %       operator L
+    % L:    linear operator used to go to the dual space
+    % Lt:   adjoint of L operator to go from dual to primal space
     s = struct;
     
     % Reorder functions so that second one is the one with transformation L
@@ -65,10 +71,9 @@ function [sol, s, param] = fbf_primal_dual_initialize(x_0,fg,Fp,param)
         s.ind = [1,2];
         L = Fp{2}.L;        
         Lt = Fp{2}.Lt;        
-    
     % add dummy if no L used
     else
-        L =@(x) x;
+        L = @(x) x;
         Lt = @(x) x;
         s.ind = [1,2];
     end
