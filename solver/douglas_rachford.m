@@ -2,7 +2,7 @@ function [sol,info,objective] = douglas_rachford(x_0,f1, f2, param)
 %DOUGLAS_RACHFORD Douglas-rachford proximal splitting algorithm
 %   Usage: sol = douglas_rachford(x_0,f1, f2, param);
 %          sol = douglas_rachford(x_0,f1, f2);
-%          [sol,info,objective] = douglas_rachford(...);
+%          [sol, info] = douglas_rachford(...);
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -12,7 +12,6 @@ function [sol,info,objective] = douglas_rachford(x_0,f1, f2, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objectiv: vector (evaluation of the objectiv function each iteration)
 %
 %   `douglas_rachford` algorithm solves:
 %
@@ -47,7 +46,7 @@ function [sol,info,objective] = douglas_rachford(x_0,f1, f2, param)
 
 
 param.algo = 'DOUGLAS_RACHFORD';
-[sol, info,objective] = solvep(x_0,{f2,f1},param);
+[sol, info] = solvep(x_0,{f2,f1},param);
 
 
 end

@@ -1,8 +1,8 @@
-function [sol, info,objective] = sdmm(F, param)
+function [sol, info] = sdmm(F, param)
 %SDMM Simultaneous-direction method of multipliers algorithm
 %   Usage: sol = sdmm(F,param);
 %          sol = sdmm(F);
-%          [sol,info,objective] = sdmm(...);
+%          [sol,info] = sdmm(...);
 %
 %   Input parameters:
 %         F     : Array of function to minimize
@@ -10,7 +10,6 @@ function [sol, info,objective] = sdmm(F, param)
 %   Output parameters:
 %         sol   : Solution
 %         info : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   `sdmm`, from simultaneous-direction method of multipliers solves:
 % 
@@ -72,7 +71,7 @@ function [sol, info,objective] = sdmm(F, param)
 %
 
 param.algo = 'SDMM';
-[sol, info,objective] = solvep(0,F,param);
+[sol, info] = solvep(0,F,param);
 
 end
 

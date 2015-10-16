@@ -1,8 +1,8 @@
-function [sol,info,objective] = rlr(x_0,f,A,At, param)
+function [sol, info] = rlr(x_0,f,A,At, param)
 %RLR Regularized Linear Regression 
 %   Usage: sol = rlr(x_0,f,A,At, param)
 %          sol = rlr(x_0,f,A,At)
-%          [sol,info,objective] = rlr(..,)
+%          [sol, info] = rlr(..,)
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -13,7 +13,6 @@ function [sol,info,objective] = rlr(x_0,f,A,At, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   This function solve minimization problem using forward-backward splitting
 %
@@ -74,7 +73,7 @@ f2.grad = @(x) 2*At((A(x)-x_0));
 f2.eval = @(x) (norm(A(x)-x_0,'fro'))^2;
 f2.beta = 2 * param.nu;
 
-[sol,info,objective] = solvep(x_0,{f,f2},param);
+[sol, info] = solvep(x_0,{f,f2},param);
 
 info.algo=mfilename;
 info.time=toc(t1);

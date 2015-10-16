@@ -52,6 +52,7 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
     s = struct;
     s.method = param.method;
     
+    isL = 1;
     if isfield(Fp{1},'L')
         s.ind = [2,1];
         L = Fp{1}.L;
@@ -64,14 +65,18 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
         L =@(x) x;
         Lt = @(x) x;
         s.ind = [1,2];
+        isL = 0;
     end
     
-   if isfield(Fp{s.ind(2)}, 'norm_L')
+     
+    if isfield(Fp{s.ind(2)}, 'norm_L')
         s.norm_L = Fp{s.ind(2)}.norm_L;
-   else
+    else
        s.norm_L = 1;
-       warning('You should give f.norm_L = ||L||^2. Setting it to 1!');
-   end
+       if isL
+           warning('You should give f.norm_L = ||L||^2. Setting it to 1!');
+       end
+    end
 
     
     % computes optimal timestep
@@ -118,8 +123,7 @@ function [sol, s, param] = fb_based_primal_dual_initialize(x_0,fg,Fp,param)
     % *sol* is set to the initial points
     sol = x_0;
     s.dual_var = s.vn;
-    param.abs_tol = 1;
-    param.use_dual = 1;
+
     
 end
 

@@ -45,10 +45,7 @@ function [sol, s, param] = admm_initialize(x_0,fg,Fp,param)
     sol = x_0;
     s.gamma = 1/param.gamma;
 
-    
-    param.abs_tol = 1;
-    param.use_dual = 1;
-   
+       
     
 end
 

@@ -12,7 +12,6 @@ function [sol, s, param] = pocs_initialize(x_0,fg,param)
 
     sol = x_0;
     s = {};
-    param.abs_tol = 1;
     if fg.beta
         error('Beta = 0! This solver requires only projections functions.');
     end

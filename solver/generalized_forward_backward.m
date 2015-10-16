@@ -1,8 +1,8 @@
-function [sol, info,objective] = generalized_forward_backward(x_0, F, f , param)
+function [sol, info] = generalized_forward_backward(x_0, F, f , param)
 %GENERALIZED_FORWARD_BACKWARD Generalized forward backward algorithm
 %   Usage: sol = generalized_forward_backward(x_0,F, f2, param);
 %          sol = generalized_forward_backward(x_0,F, f2);
-%          [sol,info,objective] = generalized_forward_backward(...);
+%          [sol, info] = generalized_forward_backward(...);
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -12,7 +12,6 @@ function [sol, info,objective] = generalized_forward_backward(x_0, F, f , param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 % 
 %   `generalized_forward_backward` solves:
 %
@@ -55,7 +54,7 @@ param.algo = 'GENERALIZED_FORWARD_BACKWARD';
 if ~iscell(f)
     f = {f};
 end
-[sol, info,objective] = solvep(x_0,{F{1:end},f{1:end}},param);
+[sol, info] = solvep(x_0,{F{1:end},f{1:end}},param);
 
 end
 

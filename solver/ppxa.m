@@ -1,8 +1,8 @@
-function [sol, info, objective] = ppxa(x_0, F, param)
+function [sol, info] = ppxa(x_0, F, param)
 %PPXA Parallel Proximal algorithm
 %   Usage: sol = ppxa(x_0, F, param);
 %          sol = ppxa(x_0, F);
-%          [sol, infos, objective] = ppxa(...); 
+%          [sol, infos] = ppxa(...); 
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -11,7 +11,6 @@ function [sol, info, objective] = ppxa(x_0, F, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objective function each iteration)
 %
 %   `ppxa`, derived from the Douglas-Rachford algorithm, solves
 % 
@@ -47,7 +46,7 @@ function [sol, info, objective] = ppxa(x_0, F, param)
 % Testing : test_solver
 
 param.algo = 'PPXA';
-[sol, info,objective] = solvep(x_0,F,param);
+[sol, info] = solvep(x_0,F,param);
 
 end
 

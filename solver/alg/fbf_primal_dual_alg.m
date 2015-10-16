@@ -91,9 +91,6 @@ function [sol, s, param] = fbf_primal_dual_initialize(x_0,fg,Fp,param)
     s.dual_var = L(sol);        % dual variable
     s.g_prox_adjoint = @(x,T) prox_adjoint(x,T,Fp{s.ind(2)});
     
-    % stopping criterion
-    param.abs_tol = 1;
-    param.use_dual = 1;
     
 end
 

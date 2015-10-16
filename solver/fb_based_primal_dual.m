@@ -1,8 +1,8 @@
-function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
+function [sol, info] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %FB_BASED_PRIMAL_DUAL forward backward based primal dual
 %   Usage: sol = fb_based_primal_dual(x_0,f1,f2, f3,param);
 %          sol = fb_based_primal_dual(x_0,f1,f2,f3);
-%          [sol,info,objective] = fb_based_primal_dual(...);
+%          [sol,info] = fb_based_primal_dual(...);
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -13,7 +13,6 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   `admm` (using alternating-direction method of multipliers) solves:
 %
@@ -93,6 +92,6 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 % Testing: test_solvers
 
 param.algo = 'FB_BASED_PRIMAL_DUAL';
-[sol, info,objective] = solvep(x_0,{f1, f2, f3},param);
+[sol, info] = solvep(x_0,{f1, f2, f3},param);
 
 end

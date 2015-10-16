@@ -1,4 +1,4 @@
-function [sol, info,objective] = fbf_primal_dual(x_0,f1, f2, f3, param)
+function [sol, info] = fbf_primal_dual(x_0,f1, f2, f3, param)
 %FBF_PRIMAL_DUAL forward backward forward primal dual
 %   Usage: sol = fbf_primal_dual(x_0,f1, f2, f3, param);
 %          sol = fbf_primal_dual(x_0,f1, f2, f3);
@@ -13,7 +13,6 @@ function [sol, info,objective] = fbf_primal_dual(x_0,f1, f2, f3, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   `fbf_primal_dual` (using forward backward forward based primal dual)
 %   solves:
@@ -68,6 +67,6 @@ function [sol, info,objective] = fbf_primal_dual(x_0,f1, f2, f3, param)
 % Testing: test_solvers
 
 param.algo = 'FBF_PRIMAL_DUAL';
-[sol, info,objective] = solvep(x_0,{f1, f2, f3},param);
+[sol, info] = solvep(x_0,{f1, f2, f3},param);
 
 end
