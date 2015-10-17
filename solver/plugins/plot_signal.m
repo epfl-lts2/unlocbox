@@ -30,7 +30,7 @@ if ~mod(x.iter-1,p)
     % display the signal
     plot(x.sol);
     title(['Current it: ', num2str(x.iter),'   Curr obj: ', ...
-        num2str(x.curr_norm)]);
+        num2str(x.info.objective(x.iter))]);
 
     drawnow;
 end

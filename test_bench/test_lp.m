@@ -33,7 +33,7 @@ function [errors]=test_eq()
         errors= errors +1;
     end
     
-    param.method = 'iterative';
+    param.method = 'proj_b2';
     param.At = A';
     param.maxit = 2000;
     param.verbose = 0;
@@ -42,9 +42,25 @@ function [errors]=test_eq()
     param.tight = 0;
     sol2 = proj_linear_eq(x,0,param);
     if norm(sol-sol2)/norm(sol)<1e-5
-        fprintf('  Test proj_linear_eq iterative OK\n')
+        fprintf('  Test proj_linear_eq proj_b2 OK\n')
     else
-        fprintf('  Test proj_linear_eq iterative Pas OK!!!!!!!!!!!!!!!!\n')
+        fprintf('  Test proj_linear_eq proj_b2 Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(sol-sol2)/norm(sol)
+        errors= errors +1;
+    end
+    
+    param.method = 'primal_dual';
+    param.At = A';
+    param.maxit = 2000;
+    param.verbose = 0;
+    param.tol = 1e-10;
+    param.nu = norm(A)^2;
+    param.tight = 0;
+    sol2 = proj_linear_eq(x,0,param);
+    if norm(sol-sol2)/norm(sol)<1e-5
+        fprintf('  Test proj_linear_eq primal_dual OK\n')
+    else
+        fprintf('  Test proj_linear_eq primal_dual Pas OK!!!!!!!!!!!!!!!!\n')
         norm(sol-sol2)/norm(sol)
         errors= errors +1;
     end

@@ -91,6 +91,7 @@ if sum(tmp-param.y > 0)
     elseif strcmp(param.method,'iterative')
         if ~isfield(param, 'At'), param.At = param.A; end
         if ~isfield(param, 'y'), param.y = zeros(size(tmp)); end
+        if ~isfield(param, 'nu'), param.nu = 1; end
         
         if isnumeric(param.At)
             At = @(x) param.At*x;
@@ -102,6 +103,7 @@ if sum(tmp-param.y > 0)
         f1.eval = @(z) eps;
         f1.L = A;
         f1.Lt = At;
+        f1.norm_L = param.nu;
 
         f2.eval = @(z) 0.5*norm(x-z,'fro')^2;
         f2.grad = @(z) z-x;
@@ -109,7 +111,7 @@ if sum(tmp-param.y > 0)
 
         f3.prox = @(x,T) x;
         f3.eval = 0;
-        param.method = 'FISTA';
+        param.method = 'ISTA';
 
         [sol,infos] = fb_based_primal_dual(x, f1,f2,f3,param);
     else

@@ -87,7 +87,7 @@ sound_part=sound_original(1:length_sig);
 
 % In oder to write the depleted sound somewhere
 if writefile
-    wavwrite(sound_part,Fs,'original.wav');
+    wavsave(sound_part,Fs,'original.wav');
 end
 
 tmax = 0.08;
@@ -101,7 +101,7 @@ sound_depleted(sound_part>tmax) = tmax;
 sound_depleted(sound_part<tmin) = tmin;
 %sound_depleted=Mask.*sound_part;
 if writefile
-    wavwrite(sound_depleted,Fs,'depleted.wav');
+    wavsave(sound_depleted,Fs,'depleted.wav');
 end
 
 %% Setting proximal operators
@@ -145,8 +145,10 @@ param.verbose = verbose; % display parameter
 param.maxit = 30; % maximum iteration
 param.tol = 10e-5; % tolerance to stop iterating
 param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
-
-sol=Psit(solvep(Psi(sound_depleted),{f1,f2},param));
+% Change the stopping criterion to avoid computing the objective function
+% every iteration.
+param.stopping_criterion = 'rel_norm_primal'; 
+sol = Psit(solvep(Psi(sound_depleted),{f1,f2},param));
 
 
 
@@ -162,7 +164,7 @@ fprintf('The SNR of the recovered (FB) signal is %g dB \n',snr_fin);
 
 % In order to write the restored sound somewhere
 if writefile
-    wavwrite(sol,Fs,'restored.wav');
+    wavsave(sol,Fs,'restored.wav');
 end
 %%
 dr=90;

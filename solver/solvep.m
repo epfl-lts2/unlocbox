@@ -182,7 +182,10 @@ end
 % Main loop
 while 1
 
-
+    if param.verbose >=2
+        fprintf('Iteration %i:\n', iter);
+    end
+    
     [sol, s] = algo.algorithm(x_0, fg, Fp, sol, s, param);
     
     [stop, crit, s, iter, info] = ...

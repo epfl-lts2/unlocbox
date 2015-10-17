@@ -1,4 +1,4 @@
-function [sol, info,objective]  = prox_fax( z,gamma,param )
+function [sol, info]  = prox_fax( z,gamma,param )
 %PROX_FAX Proximal operator of the adjoint function of f
 %   Usage:   sol=prox_adjoint(x, gamma, param);
 %
@@ -103,7 +103,7 @@ paramsolver.maxit = param.maxit;
 paramsolver.verbose = param.verbose;
 paramsolver.tol = param.tol;
 
-[sol, info,objective] = admm(z,f1, f2, paramsolver);
+[sol, info] = admm(z,f1, f2, paramsolver);
 
 
 end

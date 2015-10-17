@@ -37,7 +37,7 @@ sol(sol>1) = 1;
 imagesc(sol);
 colormap gray;
 title(['Current it: ', num2str(x.iter),'   Curr obj: ', ...
-    num2str(x.curr_eval)]);
+    num2str(x.info.objective(x.iter))]);
 axis off         
 axis image  
 drawnow;

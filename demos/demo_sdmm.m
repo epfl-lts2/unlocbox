@@ -124,6 +124,7 @@ g_l2.Lt=@(x) x;
 
 % Parameter for the sum of function: F
 F={g_l1,g_tv, g_l2};
+param_solver.Qinv = @(x) 1/3*x;
 param_solver.maxit=30;
 param_solver.verbose = verbose;
 % To see the image during the reconstruction

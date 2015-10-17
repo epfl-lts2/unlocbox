@@ -66,7 +66,7 @@ function [sol, info] = prox_sumg(x, gamma , param)
 
 % Author:  Nathanael Perraudin
 % Date: Mars 2015
-%
+% Testing: test_prox_functions
 
 % Optional input arguments
 if nargin<3, param=struct; end
@@ -82,12 +82,11 @@ if test_gamma(gamma)
     info.time=toc(t1);
     return; 
 end
-warning('This function was not tested!')
 
 if ~isfield(param, 'G'), param.G = cell(0); end
 % Definition of the gradient function
-f.grad = @(y) 1/gamma*(y-x);
-f.eval = @(y) 0.5/gamma*norm(y-x,'fro')^2;
+f.grad = @(y) 1/gamma * (y-x);
+f.eval = @(y) 0.5/gamma * norm(y-x,'fro')^2;
 f.beta = 1/gamma;
 
 [sol, info] = solvep(x,{f,param.G{1:end}},param);

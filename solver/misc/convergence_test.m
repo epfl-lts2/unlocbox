@@ -182,7 +182,6 @@ end
     
 %% Handle verbosity
 if param.verbose >= 2
-    fprintf('Iteration %i:\n', iter);
     if param.debug_mode
         fprintf('  f(x^*) = %e, rel_eval = %e\n', ...
             curr_eval, info.rel_eval(iter));       

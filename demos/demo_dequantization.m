@@ -1,12 +1,12 @@
 %DEMO_DEQUANTIZATION 
-%  This demo shows how a quantized signal, sparse in the DCT domain, can be dequantized
-%  solving a convex problem using Douglas-Rachford algorithm
+%   This demo shows how a quantized signal, sparse in the DCT domain, can be dequantized
+%   solving a convex problem using Douglas-Rachford algorithm
 %
-%  Suppose signal y has been quantized. In this demo we use quantization levels 
-%  that are uniformly spread between the min. and max. value of the
-%  signal. The resulting signal is y_Q.
+%   Suppose signal y has been quantized. In this demo we use quantization levels 
+%   that are uniformly spread between the min. and max. value of the
+%   signal. The resulting signal is y_Q.
 %
-%  The problem can be expressed as 
+%   The problem can be expressed as 
 %
 %   ..   argmin_x  || x ||_1     s.t.   ||Dx - y_Q||_infty <= alpha/2 
 %
@@ -34,6 +34,27 @@
 %
 %   As an alternative, setting algorithm = 'LP' switches to computing the
 %   result via linear programming (requires Matlab optimization toolbox).
+%
+%   Results
+%   -------
+%
+%   .. figure::
+%
+%      Figure 1
+%
+%       
+%
+%   .. figure::
+%
+%      Figure 2
+%
+%      
+%
+%   .. figure::
+%
+%      Figure 3
+%
+%      
 %
 %   References: combettes2007douglas
 
@@ -207,7 +228,7 @@ switch algorithm
         paramsolver.lambda = 1;   % step for DR algorithm (default 1)
         paramsolver.gamma = 1e-2;        % here threshold for soft thresholding
         
-        [sol, info, objective] = douglas_rachford(At(y_quant), f1, f2, paramsolver);
+        [sol, info] = douglas_rachford(At(y_quant), f1, f2, paramsolver);
         info
         
         sol = f2.prox(sol,[]); %final projection into the constraints
