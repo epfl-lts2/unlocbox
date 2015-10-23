@@ -58,9 +58,6 @@ function [sol, s,param] = sdmm_initialize(fg,Fp,param)
     if fg.beta
         error('SDMM needs only function with proximal operators')
     end
-    
-    param.abs_tol = 1;
-    param.use_dual = 1;
 end
 
 

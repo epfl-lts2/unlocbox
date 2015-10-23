@@ -1,8 +1,8 @@
-function [sol, info,objective] = chambolle_pock(x_0,f1, f2, param)
+function [sol, info] = chambolle_pock(x_0,f1, f2, param)
 %CHAMBOLLE_POCK A First-Order Primal-Dual Algorithm by Chambolle and Pock
 %   Usage: sol = chambolle_pock(x_0,f1,f2,param);
 %          sol = chambolle_pock(x_0,f1,f2);
-%          [sol,info,objective] = chambolle_pock(...);
+%          [sol, info] = chambolle_pock(...);
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -12,7 +12,6 @@ function [sol, info,objective] = chambolle_pock(x_0,f1, f2, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   `chambolle_pock` solves:
 %
@@ -64,7 +63,7 @@ function [sol, info,objective] = chambolle_pock(x_0,f1, f2, param)
 % Testing: test_solver
 
 param.algo = 'CHAMBOLLE_POCK';
-[sol, info,objective] = solvep(x_0,{f1,f2},param);
+[sol, info] = solvep(x_0,{f1,f2},param);
 
 
 

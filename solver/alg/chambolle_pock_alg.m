@@ -44,8 +44,6 @@ function [sol, s, param] = chambolle_pock_initialize(x_0,fg,Fp,param)
         error('CHAMBOLLE POCK needs exactly 2 functions')
     end
     
-    param.abs_tol = 1;
-    param.use_dual = 1;
    
     
 end

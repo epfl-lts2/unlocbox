@@ -28,6 +28,12 @@ function s = demo_forward_backward_alg()
     %   param: The structure of optional parameter
     %   s   : Intern variables or the algorithm
     %   sol : Current solution
+    % Note that in s some field are protected: 
+    %   * s.dual_var : cell array or array for the dual variable
+    %   * s.dual_var_old : to store the variable of the previous iteration
+    %   * s.prev_sol : previous solution
+    % The field *s.dual_var* should be updated in this function. The other
+    % should not be modified.
 end
 
 function [sol, s, param] = forward_backward_initialize(x_0,fg,Fp,param)

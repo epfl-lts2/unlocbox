@@ -1,8 +1,8 @@
-function [sol, info,objective] = pocs(x_0,F, param)
+function [sol, info] = pocs(x_0,F, param)
 %POCS Projection onto convex sets
 %   Usage: sol = pocs(x_0,F, param);
 %          sol = pocs(x_0,F);
-%          [sol,info,objective] = pocs(...);
+%          [sol,info] = pocs(...);
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -11,7 +11,6 @@ function [sol, info,objective] = pocs(x_0,F, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objective function each iteration)
 %
 %   `pocs` solves:
 %
@@ -35,7 +34,7 @@ if ~iscell(F)
     F = {F};
 end
 
-[sol, info,objective] = solvep(x_0,F,param);
+[sol, info] = solvep(x_0,F,param);
 
 
 % Author: Nathanael Perraudin

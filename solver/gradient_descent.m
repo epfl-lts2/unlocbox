@@ -1,8 +1,8 @@
-function [sol, info,objective] = gradient_descent(x_0,F, param)
+function [sol, info] = gradient_descent(x_0,F, param)
 %GRADIENT_DESCENT Gradient descent using the forward backward algorithm
 %   Usage: sol = gradient_descent(x_0,F, param);
 %          sol = gradient_descent(x_0,F);
-%          [sol,info,objective] = gradient_descent(...);
+%          [sol,info] = gradient_descent(...);
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -11,7 +11,6 @@ function [sol, info,objective] = gradient_descent(x_0,F, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Cell array of functions
-%         objective: vector (evaluation of the objective function)
 %
 %   `gradient_descent` solves:
 %
@@ -44,7 +43,7 @@ if ~iscell(F)
     F = {F};
 end
 
-[sol, info,objective] = solvep(x_0,F{1:end},param);
+[sol, info] = solvep(x_0,F{1:end},param);
 
 end
 

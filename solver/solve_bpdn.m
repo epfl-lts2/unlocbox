@@ -1,8 +1,8 @@
-function [sol,info,objective] = solve_bpdn(y, epsilon, A, At, Psi, Psit, param)
+function [sol, info] = solve_bpdn(y, epsilon, A, At, Psi, Psit, param)
 %SOLVE_BPDN Solve BPDN (basis pursuit denoising) problem
 %   Usage: sol = solve_bpdn(y, epsilon, A, At, Psi, Psit, param)
 %          sol = solve_bpdn(y, epsilon, A, At, Psi, Psit)
-%          [sol,info,objective] = solve_bpdn(...)
+%          [sol, info] = solve_bpdn(...)
 %
 %   Input parameters:
 %         y     : Measurements
@@ -15,7 +15,6 @@ function [sol,info,objective] = solve_bpdn(y, epsilon, A, At, Psi, Psit, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   `sol = solve_BPDN(y, A, At, Psi, Psit, param)` solves:
 %
@@ -153,6 +152,6 @@ f1.prox = @(x,T) prox_l1(x,T,param_l1);
 f2.prox = @(x,T) proj_b2(x,T,param_b2);
 f2.eval = @(x) eps;
 
-[sol,info,objective] = douglas_rachford(At(y),f2, f1, param);
+[sol, info] = douglas_rachford(At(y),f2, f1, param);
 
 end
