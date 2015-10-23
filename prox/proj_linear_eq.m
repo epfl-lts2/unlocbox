@@ -70,79 +70,105 @@ t1 = tic;
 
 if ~isfield(param, 'method'), param.method = 'exact'; end
 
-if strcmp(param.method,'exact')
+switch lower(param.method)
+    case 'exact'
     % Optional input arguments
-    if ~isfield(param, 'A'), param.A = eye(length(x)); end
-    if ~isfield(param, 'pinvA'), param.pinvA = pinv(param.A); 
-        warning('You should pinv A before...')
-    end
-    if ~isfield(param, 'verbose'), param.verbose = 1; end
+        if ~isfield(param, 'A'), param.A = eye(length(x)); end
+        if ~isfield(param, 'pinvA'), param.pinvA = pinv(param.A); 
+            warning('You should pinv A before...')
+        end
+        if ~isfield(param, 'verbose'), param.verbose = 1; end
 
-    tmp = param.A*x;
-    if ~isfield(param, 'y'), param.y = zeros(size(tmp)); end
+        tmp = param.A*x;
+        if ~isfield(param, 'y'), param.y = zeros(size(tmp)); end
 
-    %Projection  
+        %Projection  
 
-    sol = x - param.pinvA*(tmp-param.y);
+        sol = x - param.pinvA*(tmp-param.y);
 
-    crit = 'TOL_EPS'; iter = 0; 
-else
-    if ~isfield(param, 'A'), param.A = @(x) x; end
-    if ~isfield(param, 'At'), param.At = param.A; end
-    
+        crit = 'TOL_EPS'; iter = 0; 
+    case 'primal_dual'
+        if ~isfield(param, 'A'), param.A = @(x) x; end
+        if ~isfield(param, 'At'), param.At = param.A; end
+        if ~isfield(param, 'nu'), param.nu = 1; end
 
-    
-    
-    if isnumeric(param.A)
-        A = @(x) param.A*x;
-    else
-        A = param.A;
-    end
-    
-    if isnumeric(param.At)
-        At = @(x) param.At*x;
-    else
-        At = param.At;
-    end
-    if ~isfield(param, 'y'), param.y = zeros(size(A(x))); end
 
-    % Working fb_based_primal_dual
-    f1.prox = @(z,T) param.y;
-    f1.eval = @(z) eps;
-    f1.L = A;
-    f1.Lt = At;
-    
-    f2.eval = @(z) 0.5*norm(x-z,'fro')^2;
-    f2.grad = @(z) z-x;
-    f2.beta = 1;
-    
-    f3.prox = @(x,T) x;
-    f3.eval = 0;
-    param.method = 'FISTA';
-    
-    [sol,infos] = fb_based_primal_dual(x, f1,f2,f3,param);
 
-%     paramb2 = param;
-%     paramb2.epsilon = 0;
-%     paramb2.A = A;
-%     paramb2.At = At;
-%     paramb2.method = 'FISTA';
-%     [sol,infos] = proj_b2(x,0,paramb2);
-    iter = infos.iter;
-    crit = infos.crit;
+
+        if isnumeric(param.A)
+            A = @(x) param.A*x;
+        else
+            A = param.A;
+        end
+
+        if isnumeric(param.At)
+            At = @(x) param.At*x;
+        else
+            At = param.At;
+        end
+        if ~isfield(param, 'y'), param.y = zeros(size(A(x))); end
+
+        % Working fb_based_primal_dual
+        f1.prox = @(z,T) param.y;
+        f1.eval = @(z) eps;
+        f1.L = A;
+        f1.Lt = At;
+        f1.norm_L = param.nu;
+
+        f2.eval = @(z) 0.5*norm(x-z,'fro')^2;
+        f2.grad = @(z) z-x;
+        f2.beta = 1;
+
+        f3.prox = @(x,T) x;
+        f3.eval = 0;
+        param.method = 'FISTA';
+
+        [sol,infos] = fb_based_primal_dual(x, f1,f2,f3,param);
+        iter = infos.iter;
+        crit = infos.crit;
+    case 'proj_b2'
+        if ~isfield(param, 'A'), param.A = @(x) x; end
+        if ~isfield(param, 'At'), param.At = param.A; end
+
+
+
+
+        if isnumeric(param.A)
+            A = @(x) param.A*x;
+        else
+            A = param.A;
+        end
+
+        if isnumeric(param.At)
+            At = @(x) param.At*x;
+        else
+            At = param.At;
+        end
+        if ~isfield(param, 'y'), param.y = zeros(size(A(x))); end
+        paramb2 = param;
+        paramb2.epsilon = 0;
+        paramb2.A = A;
+        paramb2.At = At;
+        paramb2.tight = 0;
+        paramb2.method = 'FISTA';
+        [sol,infos] = proj_b2(x,0,paramb2);
+        iter = infos.iter;
+        crit = infos.crit;
+    otherwise
+        error('Unknown method')
 end
 
 % Log after the projection
-error=norm(param.y-param.A *sol );
+err=norm(param.y-param.A *sol );
 if param.verbose >= 1
     fprintf(['  Proj. lin eq: ||y-Ax||_2 = %e,', ...
-        ' %s, iter = %i\n'],error , crit, iter);
+        ' %s, iter = %i\n'],err , crit, iter);
 end
 
 % Infos about algorithm
 infos.algo=mfilename;
 infos.iter=iter;
-infos.final_eval=error;
+infos.final_eval=err;
 infos.crit=crit;
 infos.time=toc(t1);
 

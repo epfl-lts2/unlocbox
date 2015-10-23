@@ -1,5 +1,6 @@
-clc
-clear 
+ 
+
+% This function need to be rewritten
 
 % scalar input and scalar constraints
 x = -5

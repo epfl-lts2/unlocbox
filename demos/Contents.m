@@ -17,6 +17,7 @@
 %    DEMO_SOUND_RECONSTRUCTION - Reconstructs missing part of a sound
 %    DEMO_DOUGLAS_RACHFORD -  Reconstruction of missing pixel in an image
 %    DEMO_PIERRE -  Solves a source separation problem
+%    DEMO_DEQUANTIZATION -  Solves a dequantization problem
 %
 %  Other demo
 %    DEMO_OVERLAPING_GROUPS_STRUCTURED_SPARSITY - Demonstration of the use of overlapping groups in structured sparsity

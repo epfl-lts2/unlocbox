@@ -140,7 +140,7 @@ f1.eval = @(x) tau * norm(mask .* x - z)^2;
 % the proximal
 param_l1.verbose = verbose - 1;
 f2.prox = @(x, T) prox_l1(x, T, param_l1);
-f2.eval = @(x) norm_l1(L(x));
+f2.eval = @(x) norm(L(x),1);
 f2.L = L;
 f2.Lt = Lt;
 f2.norm_L = 1;
@@ -153,6 +153,9 @@ paramsolver.verbose = verbose;     % display parameter
 paramsolver.maxit = 100;           % maximum number of iterations
 paramsolver.tol = 1e-3;            % tolerance to stop iterating
 paramsolver.gamma = 1;             % stepsize
+% Activate debug mode in order to compute the objective function at each
+% iteration.
+paramsolver.debug_mode = 1; 
 fig=figure(100);
 paramsolver.do_sol=@(x) plot_image(x,fig);  
 

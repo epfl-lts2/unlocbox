@@ -79,9 +79,12 @@ fw.norm_L = 1;
 
 % setting different parameter for the simulation
 param_solver.verbose = verbose; % display parameter
-param_solver.maxit = 50;        % maximum iteration
+param_solver.maxit = 30;        % maximum iteration
 %param_solver.gamma = 0.5;       % stepsize (beta is equal to 2)
 param_solver.tol = 1e-6;        % Tolerance to stop iterating
+% Activate debug mode in order to compute the objective function at each
+% iteration.
+param_solver.debug_mode = 1;   
 fig=figure(100);
 param_solver.do_sol=@(x) plot_image(x,fig);
 % solving the problem

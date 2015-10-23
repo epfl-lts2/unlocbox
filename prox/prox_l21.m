@@ -205,7 +205,7 @@ if param.multi_group==0
     end
 
 else % overlapping group
-    r=size(param.g_t,1);
+    r = size(param.g_t,1);
     
     % Parameter for the prox
 
@@ -222,7 +222,7 @@ else % overlapping group
     end
     
     param4.G=G;
-    param4.verbose=param.verbose-1;
+    param4.verbose=param.verbose;
     sol=prox_sumg(x,gamma,param4);
     
 end

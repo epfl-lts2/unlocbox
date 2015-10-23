@@ -93,7 +93,7 @@ sound_part=sound_original(1:length_sig);
 
 % In oder to write the depleted sound somewhere
 if writefile
-    wavwrite(sound_part,Fs,'original.wav');
+    wavsave(sound_part,Fs,'original.wav');
 end
 
 tmax = 0.08;
@@ -106,7 +106,7 @@ sound_depleted(sound_part>tmax) = tmax;
 
 sound_depleted(sound_part<tmin) = tmin;
 if writefile
-    wavwrite(sound_depleted,Fs,'depleted.wav');
+    wavsave(sound_depleted,Fs,'depleted.wav');
 end
 
 %% Setting proximal operators
@@ -167,15 +167,11 @@ param_l12.verbose = verbose - 1;
        end
     end
 
-
-
-
-    
-    
     % -------------------------------------------- %
   
 param_l12.g_t = g_t;
 param_l12.g_d = g_d;
+param_l12.maxit = 5;
 
 
 f1.prox=@(x, T) prox_l21(x, T*tau, param_l12);
@@ -212,7 +208,7 @@ fprintf('The SNR of the recovered (FB) signal is %g dB \n',snr_fin);
 
 % In order to write the restored sound somewhere
 if writefile
-    wavwrite(sol,Fs,'restored.wav');
+    wavsave(sol,Fs,'restored.wav');
 end
 %%
 dr=90;
