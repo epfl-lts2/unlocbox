@@ -34,12 +34,18 @@ function [sol, info] = fbf_primal_dual(x_0,f1, f2, f3, param)
 %
 %   * `f2.L`  : linear operator, matrix or operator (default identity)
 %   * `f2.Lt` : adjoint of linear operator, matrix or operator (default identity)
+%   * `f2.norm_L` : bound on the norm of the operator L (default: 1), i.e.
+%
+%     .. ` ||L x||^2 <= nu * ||x||^2 
+%
+%     .. math::  \|L x\|^2 \leq \nu \|x\|^2 
+%
 %
 %   *param* a Matlab structure containing solver paremeters. See the
 %   function |solvep| for more information. Additionally it contains those
 %   aditional fields:  
 %
-%   * *param.tol* : is stop criterion for the loop. The algorithm stops if
+%   * *param.tol* : is stopping criterion for the loop. The algorithm stops if
 %
 %     ..  max_i ||  y_i(t) - y_i(t-1) ||  / ||y(t) ||< tol,
 %      
@@ -50,11 +56,10 @@ function [sol, info] = fbf_primal_dual(x_0,f1, f2, f3, param)
 %
 %       Warning! This stopping criterion is different from other solvers!
 %
-%   * *param.norm_L* : bound on the norm of the operator L (default: 1), i.e.
-%
-%     .. ` ||L x||^2 <= norm_L^2 * ||x||^2 
-%
-%     .. math::  \|L x\|^2 \leq norm_L^2 \|x\|^2 
+%   * *param.mu* : parameter mu of paper [1]
+%   * *param.epsilon:   parameter epsilon of paper [1]
+%   * *param.normalized_timestep: from 0 to 1, mapping to [epsilon,
+%                               (1-epsilon)/mu]
 %
 %   See also: solvep fb_based_primal_dual
 %

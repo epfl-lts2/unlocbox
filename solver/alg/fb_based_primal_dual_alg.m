@@ -87,15 +87,18 @@ else
     warning('No ');
 end
 
+% timestep #1 & #2
 if ~isfield(param, 'sigma') && ~isfield(param, 'tau')
     s.tau = 1/beta;
     s.sigma = beta/2/s.norm_L;
+% timestep #2
 elseif ~isfield(param, 'tau')
     s.tau = param.tau;
     s.sigma = (1/s.tau - beta/2)/s.norm_L;
     if s.sigma <0
         error('Tau is too big!')
     end
+% timestep #1
 elseif ~isfield(param, 'sigma')
     s.sigma = param.sigma;
     s.tau = 1/(s.sigma*s.norm_L+beta/2);

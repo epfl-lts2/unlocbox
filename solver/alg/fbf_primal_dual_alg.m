@@ -27,21 +27,22 @@ s.finalize = @(x_0, fg, Fp, sol, s, param) sol;
 %   fg  : A single smooth function
 %         (if fg.beta == 0, no smooth function is specified)
 %   Fp  : The non smooth functions (a cell array of structure)
-%   param: The structure of optional parameter
+%   param: The structure of optional parameters
+%       .mu:        parameter mu of paper [1]
+%       .epsilon:   parameter epsilon of paper [1]
+%       .normalized_timestep: from 0 to 1, mapping to [epsilon,
+%                               (1-epsilon)/mu]
 %   s   : Intern variables or the algorithm
 %   sol : Current solution
+%
+%
+% [1] playing with duality, primal dual ... Komodakis, Pesquet.
 end
 
 
 
 
-function [sol, s, param] = fbf_primal_dual_initialize(x_0,fg,Fp,param)
-
-% Handle optional parameter. Here we need a variable lambda.
-if ~isfield(param, 'norm_L')
-    warning('You should give param.norm_L = ||L||^2. Setting it to 1!');
-    param.norm_L = 1;
-end
+function [sol, s, param] = fbf_primal_dual_initialize(x_0, fg, Fp, param)
 
 if (numel(Fp)>2)
     error('This solver needs at maximum 2 non-smooth functions')
@@ -78,14 +79,37 @@ else
     s.ind = [1,2];
 end
 
+
+if isfield(Fp{s.ind(2)}, 'norm_L')
+    s.norm_L = Fp{s.ind(2)}.norm_L;
+else
+    s.norm_L = 1;
+    if isL
+        warning('You should give f.norm_L = ||L||^2. Setting it to 1!');
+    end
+end
+
+
 % compute a timestep
 beta = fg.beta;
 
-s.mu = beta + param.norm_L;   % TODO: check that norm is not squared
-s.epsilon = 1/(1+s.mu)/2;       % in (0, 1/(1+mu) )
+if not(isfield(param, 'mu'))
+    s.mu = beta + s.norm_L;   % TODO: check that norm is not squared
+else
+    s.mu = param.mu;
+end
+if not(isfield(param, 'epsilon'))
+    s.epsilon = 0;       % in (0, 1/(1+mu) )
+else
+    s.epsilon = param.epsilon;
+end
 
-% TODO: this can be changed in each iteration!!
-s.tau =  (s.epsilon + (1-s.epsilon)/s.mu)/2;    % in [epsilon, (1-epsilon)/mu]
+% timestep
+if not(isfield(param, 'normalized_timestep'))
+    param.normalized_timestep = 0.5;
+end
+
+s.tau =  lin_map(param.normalized_timestep, [s.epsilon, (1-s.epsilon)/s.mu], [0, 1]);    % in [epsilon, (1-epsilon)/mu]
 
 
 % All internal variables are stored into the structure s

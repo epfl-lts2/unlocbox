@@ -5,6 +5,7 @@ gsp_reset_seed(1);
 
 % errors=errors+test_chambolle_pock_simple();
 % errors=errors+test_chambolle_pock_complex();
+errors = errors+ test_primal_dual();
 
 
 errors=errors+test_all_solver();
@@ -49,7 +50,6 @@ errors = errors+ test_fb_based_primal_dual4();
 
 errors = errors+ test_fb_based_primal_dual_fista();
 
-errors = errors+ test_primal_dual();
 
 errors=errors + test_verbosity();
 
