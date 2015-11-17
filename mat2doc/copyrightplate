@@ -10,3 +10,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+If you use this toolbox please kindly cite
+Perraudin, N., Shuman, D., Puy, G., & Vandergheynst, P. (2014). UNLocBoX A matlab convex optimization toolbox using proximal splitting methods. arXiv preprint arXiv:1402.0779.
+http://arxiv.org/abs/1402.0779

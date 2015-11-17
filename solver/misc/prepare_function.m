@@ -32,15 +32,24 @@ for ii = 1:m
             warning('Please specify a lipshitz constant of the gradient. 1 will be used instead')
         end
         Fg{length(Fg)+1,1} = F{ii};         %#ok<AGROW>
+        if ~isa(F{ii}.grad,'function_handle')
+            error('f.grad is not a funtion handle');
+        end
     elseif isfield(F{ii},'proxL')
 %         F{ii}.prox_adL = @(x,T) prox_adL(x,T,F{ii},param);
         Fp{length(Fp)+1,1} = F{ii};         %#ok<AGROW>
 %         if isfield(F{ii},'prox')
 %             F{ii}.prox_ad = @(x,T) prox_ad(x,T,F{ii},param);
 %         end
+        if ~isa(F{ii}.proxL,'function_handle')
+            error('f.proxL is not a funtion handle');
+        end
     elseif isfield(F{ii},'prox')
 %         F{ii}.prox_ad = @(x,T) prox_ad(x,T,F{ii},param);
         Fp{length(Fp)+1,1} = F{ii};         %#ok<AGROW>
+        if ~isa(F{ii}.prox,'function_handle')
+            error('f.prox is not a funtion handle');
+        end
     else
         if isfield(F{ii},'grad')
             error('This solver require only smooth function')

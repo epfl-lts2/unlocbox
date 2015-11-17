@@ -27,7 +27,10 @@ m = length(F);
 if m>1 || iscell(F)
 
     for ii=1:m
-        F{ii} = test_eval(F{ii}); 
+        F{ii} = test_eval(F{ii});
+        if ~isa(F{ii}.eval,'function_handle')
+            error('f.eval is not a funtion handle');
+        end
     end
     
 else
