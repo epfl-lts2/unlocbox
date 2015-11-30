@@ -23,5 +23,5 @@
 %    DEMO_FORWARD_BACKWARD_ALG - Example solver
 %
 %  For help, bug reports, suggestions etc. please send email to
-%  unlocbox-help@lists.sourceforge.net
+%  unlocbox (at) groupes (dot) epfl (dot) ch
 %
