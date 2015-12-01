@@ -169,7 +169,7 @@ algo = get_algo(param.algo);
 % Transform all smooth functions into one function.
 fg = add_smooth_functions(Fg);
 
-if param.verbose>=1, 
+if param.verbose>1, 
     fprintf(['Algorithm selected: ', algo.name,' \n']);
 end
 
@@ -182,7 +182,7 @@ end
 % Main loop
 while 1
 
-    if param.verbose >=2
+    if param.verbose >1
         fprintf('Iteration %i:\n', iter);
     end
     

@@ -15,12 +15,17 @@ function [sol,info] = prox_l21(x, gamma , param)
 %
 %   .. sol = argmin_{z} 0.5*||x - z||_2^2 + gamma * ||x||_21
 %
-%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \| x\|_{21}
+%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \| x\|_{2,1}
 %
-%   The easiest way to use this proximla operator is to give a matrix x as
-%   imput. In this case, the 2 norm will be computed over the lines (2nd
-%   dimention) and the one norm will be computed over the rows (1st
-%   dimention).
+%   where 
+%
+%   ..  '  || x ||_21 = sum_j ( sum_i |x(i,j)|^2 )^(1/2) 
+%
+%   .. math::  \| x \|_{2,1} = \sum_j \left| \sum_i |x(i,j)|^2  \right|^{1/2} 
+%
+%   The easiest way to use this proximal operator is to give a matrix $x$ as
+%   input. In this case, the $l_{2,1}$ norm is computed like in the
+%   expression above.
 %
 %   *param* is a Matlab structure containing the following fields: 
 %
@@ -201,7 +206,7 @@ if param.multi_group==0
     norm_L21=norm_l21(x,param.g_d,param.g_t,param.weights2,param.weights1);
     % Log after the calculous of the prox
     if param.verbose >= 1
-        fprintf('  prox_L21: ||x||_12 = %e\n', norm_L21);
+        fprintf('  prox_L21: ||x||_21 = %e\n', norm_L21);
     end
 
 else % overlapping group

@@ -1,3 +1,4 @@
 conf_local.py
 publish_local.py
 *ref*.txt
+*.pyc

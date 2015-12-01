@@ -28,5 +28,5 @@
 %    DEMO_FBB_PRIMAL_DUAL -  Demonstration for forward bacward based primal dual
 %
 %  For help, bug reports, suggestions etc. please send email to
-%  unlocbox-help@lists.sourceforge.net
+%  unlocbox (at) groupes (dot) epfl (dot) ch
 %
