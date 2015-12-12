@@ -13,9 +13,9 @@ function [sol,info] = prox_l12(x, gamma , param)
 %
 %   `prox_L12(x, gamma, param)` solves:
 %
-%   .. sol = argmin_{z} 0.5*||x - z||_2^2 + gamma * ||x||_12^2
+%   .. sol = argmin_{z} 0.5*||x - z||_2^2 + gamma * || z ||_12^2
 %
-%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \| x\|_{1,2}^2
+%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \| z\|_{1,2}^2
 %
 %   where 
 %
