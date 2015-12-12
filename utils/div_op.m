@@ -15,8 +15,8 @@ function I = div_op(dx, dy, wx, wy)
 %   Compute the 2-dimentional divergence of an image. If a cube is given,
 %   it will compute the divergence of all images in the cube.
 %
-%   Warning this function compute the divergence operator defined as minus
-%   the adjoint of the gradient
+%   Warning: computes the divergence operator defined as minus the adjoint
+%   of the gradient 
 %
 %   ..      div  = - grad'
 %
