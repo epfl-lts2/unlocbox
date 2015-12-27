@@ -27,6 +27,10 @@
 %  Other
 %    snr                -  Signal to noise ratio
 %    soft_threshold     -  Soft thresholding operation
+%    seet_seed          -  Set a new seed
+%    vec                -  Vectorize
+%    svdecon            -  Acceleleration of svd
+%    svdsecon           -  Acceleleration of svds
 %
 %  For help, bug reports, suggestions etc. please send email to
 %  unlocbox (at) groupes (dot) epfl (dot) ch

@@ -25,9 +25,11 @@
 %   * $f_1(x)=||x||_{1}$. Its respective prox is the soft thresholding operator.
 %
 %   * $f_2(x)=i_C$ is the indicator function of the set C, defined as
+%
 %     .. C = { x | ||Dx - y_Q||_infty <= alpha/2 } 
 %
 %     .. math:: C = \{ x | \|Dx - y_Q\|_\infty <= \frac{\alpha}{2} \}
+%d
 %   Its prox is the orthogonal projection onto that set, which is realized
 %   by entry-wise 1D projections onto the quantization stripes. This is
 %   realized for all the entries at once by function proj_box.
@@ -40,25 +42,25 @@
 %
 %   .. figure::
 %
-%      Figure 1
+%      Original, quantized and dequantized signals
 %
 %       
 %
 %   .. figure::
 %
-%      Figure 2
+%      Quantization error and error of reconstruction (i.e. original - reconstr.)
 %
 %      
 %
 %   .. figure::
 %
-%      Figure 3
+%      Coefficients of original and reconstructed signals
 %
 %      
 %
 %   References: combettes2007douglas
 
-% Authors: Pavel Rajmic, Pavel Záviška
+% Authors: Pavel Rajmic, Pavel ZÃ¡viÅ¡ka
 % Date: August 2015
 
 

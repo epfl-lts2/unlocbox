@@ -1,5 +1,18 @@
 function [U,S,V] = svdecon(X)
-%SVDECON Fast svd when n<<m
+%SVDECON Fast svds when n<<m
+%   Usage: [U,S,V] = svdecon(X);
+%
+%   Input parameters:
+%         X     : Input data (n x m)
+%   Output parameters:
+%         U     : Left singular vectors
+%         S     : Singular values
+%         U     : Right signular vectors
+%
+%   This function is an acceleration of svd. It is particularly efficient
+%   when n<<m
+%
+%   See also: svdsecon
 
     [m,n] = size(X);
 

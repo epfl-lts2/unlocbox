@@ -24,7 +24,7 @@ errors=0;
 test_proj_box; 
 
 % Mixed sparsity
-errors=errors+test_mixed_sparsity();
+test_proj_box; 
 
 % Prox L2
 errors=errors+test_prox_l2();

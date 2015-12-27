@@ -1,6 +1,5 @@
 function set_seed(my_seed)
 %SET_SEED sets the seed of the default random random generator
-%
 %   Usage:  set_seed(new_seed)
 %           set_seed
 %

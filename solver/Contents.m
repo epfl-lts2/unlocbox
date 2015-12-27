@@ -11,6 +11,7 @@
 %    PPXA               -  Parallel Proximal algorithm.
 %    SDMM               -  Simultaneous-direction method of multipliers algorithm.
 %    FB_BASED_PRIMAL_DUAL -  Forward Backard based Primal Dual
+%    FBF_PRIMAL_DUAL    -  Forward backward forward primal dual
 %    GRADIENT_DESCENT   -  Simple gradient descent solver.
 %    POCS               -  Projection onto convex sets.
 %

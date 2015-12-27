@@ -120,7 +120,7 @@ switch lower(param.method)
         f2.beta = 1;
 
         f3.prox = @(x,T) x;
-        f3.eval = 0;
+        f3.eval = @(x) 0;
         param.method = 'FISTA';
 
         [sol,infos] = fb_based_primal_dual(x, f1,f2,f3,param);
