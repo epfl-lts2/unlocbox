@@ -1,4 +1,4 @@
-%DEMO_DEQUANTIZATION 
+%DEMO_DEQUANTIZATION Dequantization demo
 %   This demo shows how a quantized signal, sparse in the DCT domain, can be dequantized
 %   solving a convex problem using Douglas-Rachford algorithm
 %
@@ -29,7 +29,7 @@
 %     .. C = { x | ||Dx - y_Q||_infty <= alpha/2 } 
 %
 %     .. math:: C = \{ x | \|Dx - y_Q\|_\infty <= \frac{\alpha}{2} \}
-%d
+%
 %   Its prox is the orthogonal projection onto that set, which is realized
 %   by entry-wise 1D projections onto the quantization stripes. This is
 %   realized for all the entries at once by function proj_box.

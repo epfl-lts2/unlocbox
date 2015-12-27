@@ -63,7 +63,7 @@ function [sol, info] = solvep(x_0, F, param)
 %
 %     For the 'rel_norm' stopping criterion, the algorithm end if 
 %
-%       ..  ||  n(t) - n(t-1) ||_2  /  || n(t) ||_2 < tol,
+%       .. '  ||  n(t) - n(t-1) ||_2  /  || n(t) ||_2 < tol,
 %      
 %       .. math:: \frac{ \| n(t) - n(t-1) \|_2 }{\| n(t)\|_2} < tol,
 %

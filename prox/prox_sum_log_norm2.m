@@ -1,7 +1,7 @@
 function [sol,info] = prox_sum_log_norm2(x, alpha, beta, gamma, param)
 %PROX_SUM_LOG_NORM2 Proximal operator of log-barrier  - sum(log(x))
-%   Usage:  sol = prox_sum_log(x, alpha, beta, gamma)
-%           sol = prox_sum_log(x, alpha, beta, gamma, param)
+%   Usage:  sol = prox_sum_log_norm2(x, alpha, beta, gamma)
+%           sol = prox_sum_log_norm2(x, alpha, beta, gamma, param)
 %           [sol, info] = prox_sum_log_norm2(x, alpha, beta, gamma, param)
 %
 %   Input parameters:
@@ -16,8 +16,7 @@ function [sol,info] = prox_sum_log_norm2(x, alpha, beta, gamma, param)
 %
 %   `prox_l1(x, gamma, param)` solves:
 %
-%   .. sol = argmin_{z} 0.5*||x - z||_2^2 - gamma * (alpha*sum(log(z)) +
-%      beta/2 ||z||^2)
+%   .. sol = argmin_{z} 0.5*||x - z||_2^2 - gamma * (alpha*sum(log(z)) + beta/2 ||z||^2)
 %
 %   .. math::  sol = \arg\min_{z} \frac{1}{2} \|x - z\|_2^2 - \gamma (\alpha \sum_i(log(z_i)) + \beta/2 \|z\|_2^2)
 %

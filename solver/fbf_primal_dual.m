@@ -57,9 +57,9 @@ function [sol, info] = fbf_primal_dual(x_0,f1, f2, f3, param)
 %       Warning! This stopping criterion is different from other solvers!
 %
 %   * *param.mu* : parameter mu of paper [1]
-%   * *param.epsilon:   parameter epsilon of paper [1]
-%   * *param.normalized_timestep: from 0 to 1, mapping to [epsilon,
-%                               (1-epsilon)/mu]
+%   * *param.epsilon*:   parameter epsilon of paper [1]
+%   * *param.normalized_timestep*: from 0 to 1, mapping to [epsilon,
+%     (1-epsilon)/mu]
 %
 %   See also: solvep fb_based_primal_dual
 %
