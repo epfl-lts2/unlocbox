@@ -169,7 +169,7 @@ if param.use_fast
                 else
                     % c2)
                     if umax > 0
-                        for jj = k0:kminus
+                        for jj = k0:kplus
                             sol(jj,ii) = vmax;
                         end
                         k = kplus + 1;   k0 = kplus + 1; kplus = kplus + 1;
