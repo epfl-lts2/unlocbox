@@ -20,7 +20,6 @@
 %    DEMO_DEQUANTIZATION -  Solves a dequantization problem
 %
 %  Other demo
-%    DEMO_OVERLAPING_GROUPS_STRUCTURED_SPARSITY - Demonstration of the use of overlapping groups in structured sparsity
 %    DEMO_ADMM          -  Demonstration of the use of the admm solver
 %    DEMO_SDMM          -  Demonstration of the use of the SDMM solver
 %    DEMO_WEIGHTED_L1  -  Demonstration of the use of the bpdn solver
@@ -30,3 +29,7 @@
 %  For help, bug reports, suggestions etc. please send email to
 %  unlocbox (at) groupes (dot) epfl (dot) ch
 %
+
+
+
+%    DEMO_OVERLAPING_GROUPS_STRUCTURED_SPARSITY - Demonstration of the use of overlapping groups in structured sparsity

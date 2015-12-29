@@ -70,6 +70,7 @@
 
 %% Initialisation
 
+error('Not working')
 clear;
 close all;
 
@@ -129,7 +130,7 @@ f2.eval = @(x) eps;
 
 % setting the function f1 (l1 norm of the Gabor transform)
 % set parameters
-param_l12.verbose = verbose - 1;
+param_l21.verbose = verbose - 1;
 
 
 
@@ -169,12 +170,12 @@ param_l12.verbose = verbose - 1;
 
     % -------------------------------------------- %
   
-param_l12.g_t = g_t;
-param_l12.g_d = g_d;
-param_l12.maxit = 5;
+param_l21.g_t = g_t;
+param_l21.g_d = g_d;
+param_l21.maxit = 5;
 
 
-f1.prox=@(x, T) prox_l21(x, T*tau, param_l12);
+f1.prox=@(x, T) prox_l21(x, T*tau, param_l21);
 f1.eval=@(x) tau*norm_l21(x,g_d, g_t);   
 
 

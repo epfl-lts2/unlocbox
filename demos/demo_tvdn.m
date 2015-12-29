@@ -21,17 +21,17 @@
 %
 %   .. figure::
 %
-%      First problem
+%      Measurements
+%
+%      
+%
+%
+%   .. figure::
 %
 %      In painting with 33% of known pixel and a SNR of 30dB
 %
-
-%   .. figure::
+%      
 %
-%      Second problem
-%
-%      Image reconstruction with 33% of the Fourier measurements and a SNR
-%      of 30dB.
 
 % Author: Gilles Puy, Nathanael Perraudin
 % Date: Nov. 1, 2012
@@ -72,7 +72,7 @@ y = A(im);
 sigma_noise = 10^(-input_snr/20)*std(im(:));
 y = y + randn(size(y))*sigma_noise;
 % Display the downsampled image
-imagesc_gray(At(y),2,'Measured image',121);
+imagesc_gray(At(y),2,'Measured image');
 % Parameters for TVDN
 param.verbose = 2; % Print log or not
 param.gamma = 0.1; % Stepsize
@@ -88,7 +88,7 @@ epsilon = sqrt(chi2inv(0.99, numel(ind)))*sigma_noise;
 % Solve TVDN problem
 sol = solve_tvdn(y, epsilon, A, At, param);
 % Show reconstructed image
-imagesc_gray(sol, 2, 'Reconstructed image',122);
+imagesc_gray(sol, 3, 'Reconstructed image');
 
 
 % %% Second problem: Reconstruct from 33% of Fourier measurements

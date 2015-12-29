@@ -80,7 +80,7 @@ function [sol,info] = prox_l12(x, gamma , param)
 %
 %   See also:  prox_l1 prox_linf1 prox_l21 prox_sumg
 %
-%   Demos: demo_compress_sensing3 demo_overlaping_groups_structured_sparsity
+%   Demos: demo_compress_sensing3
 %
 %   References: bach2011optimization kowalski2013social kowalski2009sparse kowalski2009sparsity
 %

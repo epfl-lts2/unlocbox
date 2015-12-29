@@ -84,8 +84,6 @@ function [sol,info] = prox_l21(x, gamma , param)
 %
 %   See also:  prox_l1 prox_linf1 prox_l12 prox_sumg
 %
-%   Demos: demo_compress_sensing3 demo_overlaping_groups_structured_sparsity
-%
 %   References: bach2011optimization kowalski2013social kowalski2009sparse kowalski2009sparsity
 
 % Author: Nathanael Perraudin
@@ -226,8 +224,8 @@ else % overlapping group
         G{k}=g;
     end
     
+    param4 = param;
     param4.G=G;
-    param4.verbose=param.verbose;
     sol=prox_sumg(x,gamma,param4);
     
 end
