@@ -183,7 +183,7 @@ end
 while 1
 
     if param.verbose >1
-        fprintf('Iteration %i:\n', iter);
+        fprintf('Iter %.3i:   ', iter);
     end
     
     [sol, s] = algo.algorithm(x_0, fg, Fp, sol, s, param);
