@@ -1,16 +1,16 @@
-function [ sol ] = proj_linear_eq( x,~, param )
+function [sol, info] = proj_linear_eq( x,~, param )
 %PROJ_LINEAR_EQ projection onto the space Az = y
 %   Usage:  sol = proj_linear_eq(x, ~, param)
-%           [sol, infos] = proj_linear_eq(x, ~, param)
+%           [sol, info] = proj_linear_eq(x, ~, param)
 %
 %   Input parameters:
 %         x     : Input signal.
 %         param : Structure of optional parameters.
 %   Output parameters:
 %         sol   : Solution.
-%         infos : Structure summarizing informations at convergence
+%         info : Structure summarizing informations at convergence
 %
-%   `proj_dual(x,~,param)` solves:
+%   `proj_linear_eq(x,~,param)` solves:
 %
 %   .. sol = argmin_{z} ||x - z||_2^2   s.t.  A z = y
 %
@@ -41,17 +41,17 @@ function [ sol ] = proj_linear_eq( x,~, param )
 %     parameter to speed up computation (Only for 'exact').
 %   
 %   
-%   infos is a Matlab structure containing the following fields:
+%   info is a Matlab structure containing the following fields:
 %
-%   * *infos.algo* : Algorithm used
+%   * *info.algo* : Algorithm used
 %
-%   * *infos.iter* : Number of iteration
+%   * *info.iter* : Number of iteration
 %
-%   * *infos.time* : Time of execution of the function in sec.
+%   * *info.time* : Time of execution of the function in sec.
 %
-%   * *infos.final_eval* : Final evaluation of the function
+%   * *info.final_eval* : Final evaluation of the function
 %
-%   * *infos.crit* : Stopping critterion used
+%   * *info.crit* : Stopping critterion used
 %
 %
 %
@@ -123,9 +123,9 @@ switch lower(param.method)
         f3.eval = @(x) 0;
         param.method = 'FISTA';
 
-        [sol,infos] = fb_based_primal_dual(x, f1,f2,f3,param);
-        iter = infos.iter;
-        crit = infos.crit;
+        [sol,info] = fb_based_primal_dual(x, f1,f2,f3,param);
+        iter = info.iter;
+        crit = info.crit;
     case 'proj_b2'
         if ~isfield(param, 'A'), param.A = @(x) x; end
         if ~isfield(param, 'At'), param.At = param.A; end
@@ -151,9 +151,9 @@ switch lower(param.method)
         paramb2.At = At;
         paramb2.tight = 0;
         paramb2.method = 'FISTA';
-        [sol,infos] = proj_b2(x,0,paramb2);
-        iter = infos.iter;
-        crit = infos.crit;
+        [sol,info] = proj_b2(x,0,paramb2);
+        iter = info.iter;
+        crit = info.crit;
     otherwise
         error('Unknown method')
 end
@@ -165,12 +165,12 @@ if param.verbose >= 1
         ' %s, iter = %i\n'],err , crit, iter);
 end
 
-% Infos about algorithm
-infos.algo=mfilename;
-infos.iter=iter;
-infos.final_eval=err;
-infos.crit=crit;
-infos.time=toc(t1);
+% info about algorithm
+info.algo=mfilename;
+info.iter=iter;
+info.final_eval=err;
+info.crit=crit;
+info.time=toc(t1);
 
 end
 
