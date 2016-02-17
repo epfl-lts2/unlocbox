@@ -60,7 +60,7 @@ function [sol, info] = chambolle_pock(x_0,f1, f2, param)
  
 % Author: Nathanael Perraudin
 % Date: 23 May 2013
-% Testing: test_solver
+% Testing: test_solvers
 
 param.algo = 'CHAMBOLLE_POCK';
 [sol, info] = solvep(x_0,{f1,f2},param);

@@ -1,5 +1,5 @@
 
-% Author : Nathanaël Perraudin
+% Author : NathanaÃ«l Perraudin
 %
 % This demo capture a image with the webcam and perform some inpainting
 % with it.

@@ -27,7 +27,7 @@ function [ sol]  = prox_add_2norm( x,gamma,param )
 %
 %   .. sol = prox_{gamma/2 * f} ((x+y)/2)
 %
-%   .. math:: sol = prox_{\gamma/2 * f} \left\( \frac{x+y}{2} \right)
+%   .. math:: sol = prox_{\gamma/2 f} \left( \frac{x+y}{2} \right)
 %
 %   *param* is a Matlab structure containing the following fields:
 %   

@@ -84,7 +84,7 @@ if fg.beta
     beta = fg.beta;
 else
     beta = 1/param.gamma;
-    warning('No ');
+    warning('To be done better');
 end
 
 % timestep #1 & #2

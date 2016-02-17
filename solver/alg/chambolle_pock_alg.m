@@ -8,30 +8,67 @@ end
 
 function [sol, s, param] = chambolle_pock_initialize(x_0,fg,Fp,param)
     
-    error('This solver contains a bug and is not working yet!')
+  %  error('This solver contains a bug and is not working yet!')
     
-    if ~isfield(param, 'tau'), param.tau=1 ; end
-    if ~isfield(param, 'rho'), param.rho=1 ; end
-    if ~isfield(param, 'L'), param.L=@(x) x; end
-    if ~isfield(param, 'Lt'), param.Lt=@(x) x; end
 
-    s.tau = param.tau;
-    s.rho = param.rho;
-    if isa(param.L,'numeric')
-       s.OpL= @(x) param.L*x;
-    else
-       s.OpL= param.L;
+
+    if (numel(Fp)==1)
+        Fp{2}.prox = @(x,T) x;
+        Fp{2}.eval = eps;
     end
 
-    if isa(param.Lt,'numeric')
-       s.OpLt= @(x) param.Lt*x;
+    s = struct;
+
+    isL = 1;
+    if isfield(Fp{1},'L')
+        s.ind = [2,1];
+        L = Fp{1}.L;
+        Lt = Fp{1}.Lt;
+    elseif isfield(Fp{2},'L')
+        s.ind = [1,2];
+        L = Fp{2}.L;
+        Lt = Fp{2}.Lt;
     else
-       s.OpLt= param.Lt;
+        L =@(x) x;
+        Lt = @(x) x;
+        s.ind = [1,2];
+        isL = 0;
     end
 
-
-
+    if isfield(Fp{s.ind(2)}, 'norm_L')
+        s.norm_L = Fp{s.ind(2)}.norm_L;
+    else
+        s.norm_L = 1;
+        if isL
+            warning('You should give f.norm_L = ||L||^2. Setting it to 1!');
+        end
+    end
+    
+    % timestep #1 & #2
+    if ~isfield(param, 'sigma') && ~isfield(param, 'tau')
+        s.tau = 1/sqrt(s.norm_L);
+        s.sigma = 1/sqrt(s.norm_L);
+    % timestep #2
+    elseif ~isfield(param, 'tau')
+        s.tau = param.tau;
+        s.sigma = 1/ (s.tau * s.norm_L);
+        if s.sigma <0
+            error('Tau is too big!')
+        end
+    % timestep #1
+    elseif ~isfield(param, 'sigma')
+        s.sigma = param.sigma;
+        s.tau = 1/(s.sigma * s.norm_L);
+    else
+        s.tau = param.tau;
+        s.sigma = param.sigma;
+    end
+    
+    s.OpL = L;
+    s.OpLt = Lt;
     s.dual_var = s.OpL(x_0);
+
+
     sol = x_0;
     s.x_n = x_0;
 
@@ -40,9 +77,23 @@ function [sol, s, param] = chambolle_pock_initialize(x_0,fg,Fp,param)
         error('CHAMBOLLE POCK needs only function with proximal operators')
     end
     
-    if ~(numel(Fp)==2)
-        error('CHAMBOLLE POCK needs exactly 2 functions')
+    
+       if ~isfield(param, 'tau'), param.tau=1 ; end
+    if ~isfield(param, 'rho'), param.rho=1 ; end
+ 
+    
+
+
+
+
+
+    if param.lambda>=1
+        warning('Reducing param.lambda to 0.99');
+        param.lambda = 0.99;
     end
+
+
+
     
    
     
@@ -51,10 +102,14 @@ end
 
 function [sol, s] = chambolle_pock_algorithm(Fp, sol, s, param)
     
+    if (numel(Fp)==1)
+        Fp{2}.prox = @(x,T) x;
+        Fp{2}.eval = eps;
+    end
     % Algorithm
-    s.dual_var = prox_adjoint( s.dual_var + s.rho *s.OpL(sol), s.rho, Fp{2});
+    s.dual_var = prox_adjoint( s.dual_var + s.sigma *s.OpL(sol), s.sigma, Fp{s.ind(2)});
     x_n_old = s.x_n;
-    s.x_n = Fp{1}.prox( s.x_n + s.tau * s.OpLt(s.dual_var), s.tau);
-    sol = s.x_n + param.gamma*(s.x_n - x_n_old);
+    s.x_n = Fp{s.ind(1)}.prox( s.x_n - s.tau * s.OpLt(s.dual_var), s.tau);
+    sol = s.x_n + param.lambda*(s.x_n - x_n_old);
   
 end
