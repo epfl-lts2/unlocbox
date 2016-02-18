@@ -63,6 +63,8 @@ errors = errors + test_prox_functions();
 errors = errors + test_utils();
 errors = errors + test_lp();
 errors = errors + test_prox_sum_log();
+errors = errors + test_proj_simplex();
+errors = errors + test_prox_l2grad();
 
 
 %% Error in testbench

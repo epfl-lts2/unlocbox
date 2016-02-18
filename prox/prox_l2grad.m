@@ -121,7 +121,7 @@ p=param.deriveorder;
 
 if param.tight
     % useful function
-    h=@(t) 1./(1+param.weights*param.nu*gamma*t).^p;
+    h=@(t) 1./(1+2*param.weights*param.nu*gamma*t).^p;
 
     % size of the signal
 
@@ -130,16 +130,23 @@ if param.tight
     
 
     if param.d2
-        
+        % Perform the equivalent filtering in the Fourier domain
         L=size(temp,1);
         Q=size(temp,2);
+        
+        % Make the frequencies vector
+        % a) indices
         l=(0:L-1)';
         q=(0:Q-1);
-        lambda=(2-2*cos(2*pi*l/L))*(2-2*cos(2*pi*q/Q));
+        % b) values
+        eig_l = (2-2*cos(2*pi*l/L));
+        eig_q = (2-2*cos(2*pi*q/Q));
+        % c) Compute the radius for the kernel
+        rho = repmat(eig_l,1,Q) + repmat(eig_q,L,1);
 
-        
+        % Perform the filtering
         sol=x+1/param.nu*param.At(ifft2(fft2(temp).*...
-            repmat(h(lambda),[1,1,size(temp,3)]))-temp);
+            repmat(h(rho),[1,1,size(temp,3)]))-temp);
                 
         [dx, dy] =  gradient_op(param.A(sol)  );
         curr_norm = norm(dx.^2+dy.^2,'fro')^2;

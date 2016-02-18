@@ -89,15 +89,21 @@ test_weights(param.weights,warning);
 p=param.deriveorder;
 
 % useful function
-h=@(t) 1./(1+param.weights(:)*gamma*t).^p;
+h=@(t) 1./(1+2*param.weights(:)*gamma*t).^p;
 
 if param.d2
-    L=size(x,1);
-    Q=size(x,2);
-    l=(0:L-1)';
-    q=(0:Q-1);
-    lambda=(2-2*cos(2*pi*l/L))*(2-2*cos(2*pi*q/Q));
-    sol=x.*repmat(h(lambda),[1,1,size(x,3)]);
+    % Make the frequencies vector
+        % a) indices
+        L=size(x,1);
+        Q=size(x,2);
+        l=(0:L-1)';
+        q=(0:Q-1);
+        % b) values
+        eig_l = (2-2*cos(2*pi*l/L));
+        eig_q = (2-2*cos(2*pi*q/Q));
+        % c) Compute the radius for the kernel
+        rho = repmat(eig_l,1,Q) + repmat(eig_q,L,1);
+        sol=x.*repmat(h(rho),[1,1,size(x,3)]);
     
     [dx, dy] =  gradient_op(1/sqrt(L)*1/sqrt(Q)*fft2(sol));
     curr_norm = norm(dx.^2+dy.^2,'fro')^2;
