@@ -30,7 +30,7 @@ function [sol,info] = prox_l2(x, gamma, param)
 %
 %   * *param.At* : Adjoint operator (default: A).
 %
-%   * *param.tightT* : 1 if $A^T$ is a tight frame or 0 if not (default = 1)
+%   * *param.tightT* : 1 if $A^T$ is a tight frame or 0 if not (default = 0)
 %     Note that $A^T$ tight means $A A^T = \nu I$.
 %
 %   * *param.tight* : 1 if A is a tight frame or 0 if not (default = 1)
@@ -76,7 +76,7 @@ function [sol,info] = prox_l2(x, gamma, param)
  
 % Author: Nathanael Perraudin
 % Date: Nov 2012
-%
+% Testing: test_prox_l2
  
 % Start the time counter
 t1 = tic;

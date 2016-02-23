@@ -7,6 +7,8 @@ function stop_crit = select_stopping_criterion(algo)
         switch lower(algo)
             case 'admm'
                 stop_crit = 'rel_norm_primal_dual';
+            case 'chambolle_pock'
+                stop_crit = 'rel_norm_primal_dual';
             case 'sdmm'
                 stop_crit = 'rel_norm_primal_dual';
             case 'pocs'

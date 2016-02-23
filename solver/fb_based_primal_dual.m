@@ -14,7 +14,7 @@ function [sol, info] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
 %
-%   `admm` (using alternating-direction method of multipliers) solves:
+%   `fb_based_primal_dual` solves:
 %
 %   .. sol = argmin f1(x) + f2(Lx) + f3(x)
 %

@@ -1,4 +1,4 @@
-% Copyright (C) 2012-2013 Nathanael Perraudin.
+% Copyright (C) 2012-2016 Nathanael Perraudin.
 % This file is part of UNLOCBOX version {VERSION}
 %
 % This program is free software: you can redistribute it and/or modify

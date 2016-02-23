@@ -30,37 +30,44 @@ function [sol, info] = chambolle_pock(x_0,f1, f2, param)
 %
 %   .. math:: \min_x f_2(Lx) + f_1(x)  
 %
-%   The algorithm only returns the optimal variable $x$ in the field `sol`
+%   Note that *f2* is a structure of a functions with:
 %
-%   *f1* and *f2* are structures representing convex functions. Inside the
-%   structure, there have to be the prox of the function that can be called
-%   by *f1.prox* and the function itself that can be called by *f1.eval*.
+%   * `f2.eval(x_i)` : an operator to evaluate the function
+%   * `f2.prox(x_i, gamma)` : an operator to evaluate the prox of the function
+%
+%   Optionally you can define
+%
+%   * `f2.L`  : linear operator, matrix or operator (default identity)
+%   * `f2.Lt` : adjoint of linear operator, matrix or operator (default identity)
+%   * `f2.norm_L` : bound on the norm of the operator L (default: 1), i.e.
+%
+%     .. ` ||L x||^2 <= nu * ||x||^2 
+%
+%     .. math::  \|L x\|^2 \leq \nu \|x\|^2
+%
+%   *param.tau* and *param.sigma* need to satisfy:
+%
+%   .. tau * beta * nu < 1
+%
+%   .. math:: \tau * \beta * \nu < 1
+%
+%   The default choice for the time-step makes the following 
+%
+%     .. tau  = beta = 1/sqrt(nu)
+%
+%     .. math::  {\tau} - \sigma  = \frac{1}{\sqrt{\nu}}   
 %
 %   *param* a Matlab structure containing solver paremeters. See the
-%   function |solvep| for more information. Additionally it contains those
-%   aditional fields:  
+%   function |solvep| for more information.
 %
-%   * *param.tau* : convergence parameter of $f_1$. It is a strictly
-%     positiv number. Be default, it's 1.
-%
-%   * *param.rho* : convergence parameter of $f_2$. It is a strictly
-%     positiv number. Be default, it's 1.
-%
-%   * *param.L* : linear operator. This operator can be given in a matrix
-%     form (default Identity) 
-% 
-%   * *param.Lt* : adjoint operator of *param.L* (default Identity)
-%
-%   See also: admm, sdmm
-%
-%   Demos:  demo_chambolle_pock
+%   See also: fb_based_primal_dual, admm, sdmm
 %
 %   References: chambolle2010first
 
  
 % Author: Nathanael Perraudin
 % Date: 23 May 2013
-% Testing: test_solver
+% Testing: test_solvers
 
 param.algo = 'CHAMBOLLE_POCK';
 [sol, info] = solvep(x_0,{f1,f2},param);

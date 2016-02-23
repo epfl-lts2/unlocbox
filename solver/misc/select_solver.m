@@ -14,7 +14,7 @@ function solver = select_solver(Fg,Fp)
         end
         if numel(Fp)==0
             solver = 'GRADIENT_DESCENT';
-        elseif numel(Fp)==2
+        elseif numel(Fp)==2 
             solver = 'FB_BASED_PRIMAL_DUAL';
         elseif (numel(Fp)<=2) && n
             solver = 'FB_BASED_PRIMAL_DUAL';            
@@ -24,10 +24,9 @@ function solver = select_solver(Fg,Fp)
             solver = 'GENERALIZED_FORWARD_BACKWARD';
         end
     else % All function are non smooth
-        if numel(Fp) == 1
-            error('Do you really want to minimize only one function?')        
-        elseif (numel(Fp)<=2) && (n == 1)
-            solver = 'FB_BASED_PRIMAL_DUAL';    
+     
+        if (numel(Fp)<=2) && (n == 1)
+            solver = 'CHAMBOLLE_POCK';    
         elseif (n>1)
             solver = 'SDMM';
         elseif numel(Fp) == 2

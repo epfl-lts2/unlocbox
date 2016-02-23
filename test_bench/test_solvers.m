@@ -3,8 +3,10 @@ function [ errors ] = test_solvers( )
 errors=0;
 gsp_reset_seed(1);
 
-% errors=errors+test_chambolle_pock_simple();
-% errors=errors+test_chambolle_pock_complex();
+errors=errors+test_chambolle_pock_simple();
+errors=errors+test_chambolle_pock_complex();
+
+
 errors = errors+ test_primal_dual();
 
 
@@ -1029,17 +1031,18 @@ function [errors]=test_chambolle_pock_complex()
     paraml2.verbose = 0;
     paraml2.y = y;
     f1.prox = @(x,T) prox_l2(x,0.5*T,paraml2);
+
   
     paraml1.verbose = 0;
     f2.eval = @(x) norm(x,1);
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
+    f2.L = A;
+    f2.Lt = At;
+    f2.norm_L = B;
     param.maxit = 1000;
-    param.tol = 10 *eps;
-    param.verbose = 2;
-    param.L =A;
-    param.Lt = At;
-    param.tau = 1/B;
-    param.rho = 1/B;
+    param.tol = 1000 *eps;
+    param.verbose = 0;
+
     
     p2 = chambolle_pock(x0,f1,f2, param);
     
@@ -1084,12 +1087,12 @@ function [errors] = test_chambolle_pock_simple()
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
     
     param.tol = 100*eps;
-    param.verbose = 2;
+    param.verbose = 0;
     param.gamma = 1;
     
     
     [p2,infos] = chambolle_pock(x0,f1,f2, param);
-    p3 = prox_l1(y,1,paraml1);
+    p3 = solvep(x0, {f1,f2},param);
     
     if norm(p3-p2)/norm(p3)<1e-6
         fprintf('  Test chambolle pock  simple 1 OK\n')
@@ -1099,7 +1102,7 @@ function [errors] = test_chambolle_pock_simple()
         errors= errors +1;
     end
     
-    if strcmp(infos.crit,'CURR_NORM')
+    if strcmp(infos.crit,'REL_NORM_PRIMAL_DUAL')
         fprintf('  Test chambolle pock simple 2 OK\n')
     else
         fprintf('  Test chambolle pock simple 2 Pas OK!!!!!!!!!!!!!!!!\n')
