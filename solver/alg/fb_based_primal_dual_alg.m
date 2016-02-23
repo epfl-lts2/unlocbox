@@ -136,31 +136,14 @@ if (numel(Fp)==1)
     Fp{2}.prox = @(x,T) x;
     Fp{2}.eval = eps;
 end
-% 	grad = fg.grad(sol);
-%     s.x_n{1} = Fp{s.ind(1)}.prox_ad(...
-%         sol - s.tau * (grad + s.OpLt(s.vn)), ...
-%         s.tau);
-%     s.qn = s.prox_adjoint( ...
-%         s.vn + s.sigma * s.OpL(2*s.x_n{1}{1} - sol), s.sigma);
+
+
 grad = fg.grad(sol);
 s.x_n{1} = Fp{s.ind(1)}.prox(...
     sol - s.tau * (grad + s.OpLt(s.vn)), ...
     s.tau);
 s.qn = s.prox_adjoint( ...
     s.vn + s.sigma * s.OpL(2*s.x_n{1} - sol), s.sigma);
-
-%     % updates
-%     if strcmp(s.method, 'FISTA')
-%         tn1 = (1 + sqrt(1+4*s.tn^2))/2;
-%         sol = sol + (s.tn-1)/tn1 * (s.x_n{1}{1} - sol);
-%         s.vn = s.vn + (s.tn-1)/tn1 * (s.qn - s.vn);
-%         s.tn = tn1;
-%     elseif strcmp(s.method, 'ISTA')
-%         sol = sol + param.lambda * (s.x_n{1}{1} - sol);
-%         s.vn = s.vn + param.lambda * (s.qn - s.vn);
-%     else
-%         error('Unknown method')
-%     end
 % updates
 if strcmp(s.method, 'FISTA')
     tn1 = (1 + sqrt(1+4*s.tn^2))/2;
@@ -176,6 +159,25 @@ end
 
 s.dual_var = s.vn;
 
+
+% 	grad = fg.grad(sol);
+%     s.x_n{1} = Fp{s.ind(1)}.prox_ad(...
+%         sol - s.tau * (grad + s.OpLt(s.vn)), ...
+%         s.tau);
+%     s.qn = s.prox_adjoint( ...
+%         s.vn + s.sigma * s.OpL(2*s.x_n{1}{1} - sol), s.sigma);
+%     % updates
+%     if strcmp(s.method, 'FISTA')
+%         tn1 = (1 + sqrt(1+4*s.tn^2))/2;
+%         sol = sol + (s.tn-1)/tn1 * (s.x_n{1}{1} - sol);
+%         s.vn = s.vn + (s.tn-1)/tn1 * (s.qn - s.vn);
+%         s.tn = tn1;
+%     elseif strcmp(s.method, 'ISTA')
+%         sol = sol + param.lambda * (s.x_n{1}{1} - sol);
+%         s.vn = s.vn + param.lambda * (s.qn - s.vn);
+%     else
+%         error('Unknown method')
+%     end
 
 
 end
