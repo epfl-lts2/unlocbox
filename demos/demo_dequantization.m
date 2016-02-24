@@ -1,12 +1,12 @@
-%DEMO_DEQUANTIZATION 
-%  This demo shows how a quantized signal, sparse in the DCT domain, can be dequantized
-%  solving a convex problem using Douglas-Rachford algorithm
+%DEMO_DEQUANTIZATION Dequantization demo
+%   This demo shows how a quantized signal, sparse in the DCT domain, can be dequantized
+%   solving a convex problem using Douglas-Rachford algorithm
 %
-%  Suppose signal y has been quantized. In this demo we use quantization levels 
-%  that are uniformly spread between the min. and max. value of the
-%  signal. The resulting signal is y_Q.
+%   Suppose signal y has been quantized. In this demo we use quantization levels 
+%   that are uniformly spread between the min. and max. value of the
+%   signal. The resulting signal is y_Q.
 %
-%  The problem can be expressed as 
+%   The problem can be expressed as 
 %
 %   ..   argmin_x  || x ||_1     s.t.   ||Dx - y_Q||_infty <= alpha/2 
 %
@@ -25,9 +25,11 @@
 %   * $f_1(x)=||x||_{1}$. Its respective prox is the soft thresholding operator.
 %
 %   * $f_2(x)=i_C$ is the indicator function of the set C, defined as
+%
 %     .. C = { x | ||Dx - y_Q||_infty <= alpha/2 } 
 %
 %     .. math:: C = \{ x | \|Dx - y_Q\|_\infty <= \frac{\alpha}{2} \}
+%
 %   Its prox is the orthogonal projection onto that set, which is realized
 %   by entry-wise 1D projections onto the quantization stripes. This is
 %   realized for all the entries at once by function proj_box.
@@ -35,9 +37,30 @@
 %   As an alternative, setting algorithm = 'LP' switches to computing the
 %   result via linear programming (requires Matlab optimization toolbox).
 %
+%   Results
+%   -------
+%
+%   .. figure::
+%
+%      Original, quantized and dequantized signals
+%
+%       
+%
+%   .. figure::
+%
+%      Quantization error and error of reconstruction (i.e. original - reconstr.)
+%
+%      
+%
+%   .. figure::
+%
+%      Coefficients of original and reconstructed signals
+%
+%      
+%
 %   References: combettes2007douglas
 
-% Authors: Pavel Rajmic, Pavel Záviška
+% Authors: Pavel Rajmic, Pavel ZÃ¡viÅ¡ka
 % Date: August 2015
 
 
@@ -207,7 +230,7 @@ switch algorithm
         paramsolver.lambda = 1;   % step for DR algorithm (default 1)
         paramsolver.gamma = 1e-2;        % here threshold for soft thresholding
         
-        [sol, info, objective] = douglas_rachford(At(y_quant), f1, f2, paramsolver);
+        [sol, info] = douglas_rachford(At(y_quant), f1, f2, paramsolver);
         info
         
         sol = f2.prox(sol,[]); %final projection into the constraints

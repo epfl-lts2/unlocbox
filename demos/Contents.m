@@ -17,9 +17,9 @@
 %    DEMO_SOUND_RECONSTRUCTION - Reconstructs missing part of a sound
 %    DEMO_DOUGLAS_RACHFORD -  Reconstruction of missing pixel in an image
 %    DEMO_PIERRE -  Solves a source separation problem
+%    DEMO_DEQUANTIZATION -  Solves a dequantization problem
 %
 %  Other demo
-%    DEMO_OVERLAPING_GROUPS_STRUCTURED_SPARSITY - Demonstration of the use of overlapping groups in structured sparsity
 %    DEMO_ADMM          -  Demonstration of the use of the admm solver
 %    DEMO_SDMM          -  Demonstration of the use of the SDMM solver
 %    DEMO_WEIGHTED_L1  -  Demonstration of the use of the bpdn solver
@@ -27,5 +27,9 @@
 %    DEMO_FBB_PRIMAL_DUAL -  Demonstration for forward bacward based primal dual
 %
 %  For help, bug reports, suggestions etc. please send email to
-%  unlocbox-help@lists.sourceforge.net
+%  unlocbox (at) groupes (dot) epfl (dot) ch
 %
+
+
+
+%    DEMO_OVERLAPING_GROUPS_STRUCTURED_SPARSITY - Demonstration of the use of overlapping groups in structured sparsity

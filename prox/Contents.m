@@ -27,6 +27,7 @@
 %    PROX_TV1D          -  Proximal operator of the 1D TV norm
 %    PROX_TV4D          -  Proximal operator of the 4D TV norm
 %    PROX_SUM_LOG       -  Proximal operor for the sum of logarithms.
+%    PROX_SUM_LOG_NORM2 -  Proximal operator of log-barrier  - sum(log(x))
 %
 %  Projection operators
 %    PROJ_B1            -  Projection on a B1-Ball
@@ -45,6 +46,7 @@
 %    PROX_FAX           -  Proximal operator of f(Ax)
 %
 %  For help, bug reports, suggestions etc. please send email to
-%  unlocbox-help@lists.sourceforge.net
+%  unlocbox (at) groupes (dot) epfl (dot) ch
 %
+	
 

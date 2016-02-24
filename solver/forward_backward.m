@@ -1,8 +1,8 @@
-function [sol, info,objective] = forward_backward(x_0,f1, f2, param)
+function [sol, info] = forward_backward(x_0,f1, f2, param)
 %FORWARD_BACKWARD Forward-backward splitting algorithm
 %   Usage: sol = forward_backward(x_0,f1, f2, param);
 %          sol = forward_backward(x_0,f1, f2);
-%          [sol,infos,objectiv] = forward_backward(...);
+%          [sol,infos] = forward_backward(...);
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -12,7 +12,6 @@ function [sol, info,objective] = forward_backward(x_0,f1, f2, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   `forward_backward` solves:
 %
@@ -55,7 +54,7 @@ function [sol, info,objective] = forward_backward(x_0,f1, f2, param)
 % Testing: test_solver
 
 param.algo = 'FORWARD_BACKWARD';
-[sol, info,objective] = solvep(x_0,{f2,f1},param);
+[sol, info] = solvep(x_0,{f2,f1},param);
 
 end
 

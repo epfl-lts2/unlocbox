@@ -1,4 +1,4 @@
-function [sol, info,objective] = admm(x_0,f1, f2, param)
+function [sol, info] = admm(x_0,f1, f2, param)
 %ADMM alternating-direction method of multipliers
 %   Usage: sol = admm(x_0,f1,f2,param);
 %          sol = admm(x_0,f1,f2);
@@ -12,7 +12,6 @@ function [sol, info,objective] = admm(x_0,f1, f2, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   `admm` (using alternating-direction method of multipliers) solves:
 %
@@ -64,7 +63,7 @@ function [sol, info,objective] = admm(x_0,f1, f2, param)
 % Testing: test_solvers
 
 param.algo = 'ADMM';
-[sol, info,objective] = solvep(x_0,{f1,f2},param);
+[sol, info] = solvep(x_0,{f1,f2},param);
 
 end
 

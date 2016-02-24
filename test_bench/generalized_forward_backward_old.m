@@ -45,7 +45,7 @@ end
 
 sol=x_0;
 curr_norm = f.eval(sol)+norm_sumg(sol,F);
-[~,~,prev_norm,iter,objective,~] = convergence_test(curr_norm);
+[~,~,prev_norm,iter,objective,~] = convergence_test_old(curr_norm);
 
 % Algorithm - Loop
 
@@ -69,8 +69,8 @@ while 1
     % Global stopping criterion
 
     curr_norm = f.eval(sol)+norm_sumg(sol,F);
-    [stop,rel_norm,prev_norm,iter,objective,crit] = convergence_test(curr_norm,prev_norm,iter,objective,param);
-    [sol, param] = post_process(sol, iter, curr_norm, prev_norm, objective, param);
+    [stop,rel_norm,prev_norm,iter,objective,crit] = convergence_test_old(curr_norm,prev_norm,iter,objective,param);
+    [sol, param] = post_process_old(sol, iter, curr_norm, prev_norm, objective, param);
     if stop
         break;
     end

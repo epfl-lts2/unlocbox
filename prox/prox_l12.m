@@ -13,20 +13,19 @@ function [sol,info] = prox_l12(x, gamma , param)
 %
 %   `prox_L12(x, gamma, param)` solves:
 %
-%   .. sol = argmin_{z} 0.5*||x - z||_2^2 + gamma * ||x||_12^2
+%   .. sol = argmin_{z} 0.5*||x - z||_2^2 + gamma * || z ||_12^2
 %
-%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \| x\|_{12}^2
+%   .. math::  sol = \min_{z} \frac{1}{2} \|x - z\|_2^2 + \gamma  \| z\|_{1,2}^2
 %
 %   where 
 %
-%   ..  ' || x ||_12 =  sum_j ( sum_i |x(i,j)|)^2  
+%   ..  ' || x ||_12 =  sqrt ( sum_j ( sum_i |x(i,j)|)^2  )
 %
-%   .. math::  \| x \|_{21}^2 =  \sum_j \left| \sum_i |x(i,j)|  \right|^2 
+%   .. math::  \| x \|_{1,2}^2 = \sqrt{ \sum_j \left| \sum_i |x(i,j)| \right|^2 }
 %
-%   The easiest way to use this proximla operator is to give a matrix x as
-%   input. In this case, the one norm will be computed over the lines (2nd
-%   dimention) and the two norm will be computed over the rows (1st
-%   dimention).
+%   The easiest way to use this proximal operator is to give a matrix $x$ as
+%   input. In this case, the $l_{1,2}$ norm is computed like in the
+%   expression above.
 %
 %   *param* is a Matlab structure containing the following fields: 
 %
@@ -81,7 +80,7 @@ function [sol,info] = prox_l12(x, gamma , param)
 %
 %   See also:  prox_l1 prox_linf1 prox_l21 prox_sumg
 %
-%   Demos: demo_compress_sensing3 demo_overlaping_groups_structured_sparsity
+%   Demos: demo_compress_sensing3
 %
 %   References: bach2011optimization kowalski2013social kowalski2009sparse kowalski2009sparsity
 %
@@ -209,7 +208,7 @@ if param.multi_group==0
     
     
     
-    norm_L12=norm_l12(x,param.g_d,param.g_t,param.weights);
+    norm_L12 = norm_l12(x,param.g_d,param.g_t,param.weights);
     % Log after the calculous of the prox
     if param.verbose >= 1
         fprintf('  prox_L12: ||x||_12^2 = %e\n', norm_L12^2);

@@ -7,20 +7,20 @@
 %
 %   The problem can be expressed as this
 %
-%   ..   argmin || x||_12 s.t ||b-Ax||_2 < epsilon
+%   ..   argmin || x||_{2,1} s.t ||b-Ax||_2 < epsilon
 %
-%   .. math:: arg \min_x \| x\|_{12} \hspace{1cm} such \hspace{0.25cm}  that \hspace{1cm} \|b-Ax\|_2 \leq \epsilon
+%   .. math:: arg \min_x \| x\|_{2,1} \hspace{1cm} such \hspace{0.25cm}  that \hspace{1cm} \|b-Ax\|_2 \leq \epsilon
 %  
 %   Where b are the measurements and A the measurement matrix.
 %
 %   We set 
 %
-%   * $f_1(x)=||x||_{12}$
+%   * $f_1(x)=||x||_{2,1}$
 %     We define the prox of $f_1$ as: 
 %
-%     .. prox_{f1,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma ||z||_12
+%     .. prox_{f1,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma ||z||_{2,1}
 %
-%     .. math:: prox_{f1,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2  +  \gamma \|z\|_{12}
+%     .. math:: prox_{f1,\gamma} (z) = arg \min_{x} \frac{1}{2} \|x-z\|_2^2  +  \gamma \|z\|_{2,1}
 %
 %   * $f_2$ is the indicator function of the set S define by $||Ax-b||_2 < \epsilon$
 %     We define the prox of $f_2$ as 
@@ -152,7 +152,7 @@ param_solver.gamma = 1e-2;      % stepsize
 sol = solvep(zeros(N,1), {f1, f2}, param_solver);
 
 %% displaying the result
-% figure;
+figure;
 plot(1:N, x, 'o', 1:N, sol, 'xr');
 legend('Original signal', 'Reconstructed signal');
     

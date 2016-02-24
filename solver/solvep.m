@@ -1,4 +1,4 @@
-function [sol, info,objective] = solvep(x_0, F, param)
+function [sol, info] = solvep(x_0, F, param)
 %SOLVEP solve a minimization problem
 %   Usage: sol = solvep(x_0, F, param);
 %          sol = solvep(x_0, F);
@@ -11,7 +11,6 @@ function [sol, info,objective] = solvep(x_0, F, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
 %   `solvep` solves:
 %
@@ -27,7 +26,8 @@ function [sol, info,objective] = solvep(x_0, F, param)
 %   *F* is an array of structure representing convex function to be
 %   minimized. Those Functions
 %   can be minimized thanks to their gradient (if they are differentiable)
-%   or thanks to their proximal operator. As a result the algorithm will needs some of those operators. The easiest way to define a
+%   or thanks to their proximal operator. As a result the algorithm will
+%   needs some of those operators. The easiest way to define a 
 %   function *f1* is to create a struture with the fields f1.eval, f1.grad
 %   and f1.prox. Those field all contatains an inline function that
 %   compute respectively the evaluation of the function itself, the
@@ -42,31 +42,43 @@ function [sol, info,objective] = solvep(x_0, F, param)
 %     continuous). By default, it is computed with the lipschitz constant
 %     of all smooth functions.
 %
-%   * *param.tol* : is stop criterion for the loop. The algorithm stops if
-%
-%       ..  (  n(t) - n(t-1) )  / n(t) < tol,
-%      
-%       .. math:: \frac{  n(t) - n(t-1) }{ n(t)} < tol,
-%
-%       where  $n(t) = f_1(x)+f_2(x)$ is the objective function at iteration *t*
-%       by default, `tol=10e-4`.
+%   * *param.tol* : Tolerance to stop iterating. Please see
+%     *param.stopping_criterion*. (Default 1e-4).
 %
 %   * *param.algo* : solver used for the problem. Determined
 %     automatically with the functions in *f*.
 %
-%   * *param.maxit* : is the maximum number of iteration. By default, it is 200.
+%   * *param.stopping_criterion* : is stopping criterion to end the
+%     algorithm. Possible values are:
+%
+%     * 'rel_norm_obj' : Relative norm of the objective function.
+%     * 'rel_norm_primal' : Relative norm of the primal variables. 
+%     * 'rel_norm_dual' : Relative norm of the dual variables. 
+%     * 'rel_norm_primal_dual' : Relative norm of the primal and the dual
+%       variables.  
+%     * 'obj_increase' : Stops when the objective function starts
+%       increasing or stay equal.
+%     * 'obj_threshold' : Stops when the objective function is below a
+%       threshold. The threshold is set in *param.tol*.
+%
+%     For the 'rel_norm' stopping criterion, the algorithm end if 
+%
+%       .. '  ||  n(t) - n(t-1) ||_2  /  || n(t) ||_2 < tol,
+%      
+%       .. math:: \frac{ \| n(t) - n(t-1) \|_2 }{\| n(t)\|_2} < tol,
+%
+%       where  $n(t)$ is the objective function, the primal or the dual
+%       variable at iteration *t*. 
+%
+%   * *param.maxit* : is the maximum number of iteration. By default, it is
+%     200. 
 % 
 %   * *param.verbose* : 0 no log, 1 print main steps, 2 print all steps.
 %
-%   * *param.abs_tol* : If activated, this stopping critterion is the
-%     objectiv function smaller than *param.tol*. By default 0.
+%   * *param.debug_mode* : Compute all internal convergence parameters.
+%     Activate this option for debugging
 %
-%   * *param.use_dual* : If activated, use the norm of the dual variable
-%     instead of the evaluation of the function itself for stopping
-%     criterion. This is used in ADMM and SDMM for instance. To use it, the
-%     algorithm needs to store the dual variable in *s.dual_var*.
-%
-%   info is a Matlab structure containing the following fields:
+%   *info* is a Matlab structure containing the following fields:
 %
 %   * *info.algo* : Algorithm used
 %
@@ -74,18 +86,29 @@ function [sol, info,objective] = solvep(x_0, F, param)
 %
 %   * *info.time* : Time of exectution of the function in sec.
 %
-%   * *info.final_eval* : Final evaluation of the objectivs functions
-%
 %   * *info.crit* : Stopping critterion used 
 %
-%   * *info.rel_norm* : Relative norm at convergence 
+%   Additionally, depending on the stopping critterion, the structure
+%   *info* also contains:
 %
-
-
+%   * *info.objective* : Value of the objective function
+%
+%   * *info.rel_norm_obj* : Relative norm of the objective function.
+%
+%   * *info.rel_norm_primal* : Relative norm of the primal variable.
+%
+%   If the flag *param.debug_mode* is activated, the previous quantity are
+%   always computed. Moreover, for solver using dual variable, *info* also
+%   contains:
+%
+%   * *info.rel_norm_dual* : Relative norm of the dual variable.
+%
+%   * *info.dual_var* : Final dual variables.
+%   
 
 
 % Author: Nathanael Perraudin
-% Date: 22 Feb 2015
+% Date: 16 oct 2015
 % Testing: test_solver
 
 % Start the time counter
@@ -98,14 +121,18 @@ if nargin<2
     error('Not enough input arguments')
 end
 
+if nargout>3
+    error('The third argument objective has been moved in info.objective')
+end
 
-if ~isfield(param, 'tol'), param.tol=10e-4 ; end
+
+if ~isfield(param, 'tol'), param.tol=1e-4 ; end
 if ~isfield(param, 'maxit'), param.maxit=200; end
 if ~isfield(param, 'verbose'), param.verbose=1 ; end
 if ~isfield(param, 'lambda'), param.lambda=0.99 ; end
 if ~isfield(param, 'fast_eval'), param.fast_eval = 0  ; end
-if ~isfield(param, 'abs_tol'), param.abs_tol = 0  ; end
-if ~isfield(param, 'use_dual'), param.use_dual = 0  ; end
+if ~isfield(param, 'debug_mode'), param.debug_mode = 0 ; end
+
 
 
 % test the input for eval
@@ -129,15 +156,20 @@ else
     end    
 end
 
+% Select the algorithm
 if ~isfield(param, 'algo'), param.algo = select_solver(Fg,Fp)  ; end
 
+% Select the stopping critterion
+if ~isfield(param, 'stopping_criterion')
+    param.stopping_criterion = select_stopping_criterion(param.algo);
+end;
 
 algo = get_algo(param.algo);
 
 % Transform all smooth functions into one function.
 fg = add_smooth_functions(Fg);
 
-if param.verbose>=1, 
+if param.verbose>1, 
     fprintf(['Algorithm selected: ', algo.name,' \n']);
 end
 
@@ -145,38 +177,20 @@ end
 
 
 % Initialization
-if param.use_dual && isfield(s,'dual_var')
-    [curr_eval, dual_var_old] = eval_dual_var(s.dual_var);
-else
-    curr_eval = eval_function(fg,Fp,x_0);
-end
-[~,~,prev_eval,iter,objective,~] = convergence_test(curr_eval);
-
+[info, iter, s] = initialize_convergence_variable(sol, s, fg, Fp, param);
 
 % Main loop
 while 1
 
-    if param.verbose >= 2
-        fprintf('Iteration %i:\n', iter);
+    if param.verbose >1
+        fprintf('Iter %.3i:   ', iter);
     end
+    
     [sol, s] = algo.algorithm(x_0, fg, Fp, sol, s, param);
     
-    % Global stopping criterion
-    if param.use_dual && isfield(s,'dual_var')
-        [curr_eval, dual_var_old] = eval_dual_var(s.dual_var,dual_var_old);
-    else
-        curr_eval = eval_function(fg,Fp,sol,s,param);
-    end   
-    [stop,rel_eval,prev_eval,iter,objective,crit] = convergence_test(curr_eval,prev_eval,iter,objective,param,s);
-    [sol, param] = post_process(sol, iter, curr_eval, prev_eval, objective, param);
-    if param.verbose >= 2
-        if param.use_dual && isfield(s,'dual_var')
-            fprintf('   Dual relative norm = %e\n', curr_eval);
-        else
-            fprintf('  ||f|| = %e, rel_norm = %e\n', ...
-            curr_eval, rel_eval);
-        end
-    end
+    [stop, crit, s, iter, info] = ...
+        convergence_test(sol, s, iter, fg, Fp, info, param);
+    [sol, param] = post_process(sol, iter, info, param);
     if stop
         break;
     end
@@ -185,74 +199,24 @@ end
 
 sol = algo.finalize(x_0, fg, Fp, sol, s, param);
 
-% Log
-if param.verbose>=2
-    % Print norm
-    fprintf(['\n ',algo.name,':\n']);
-    if param.use_dual && isfield(s,'dual_var')
-        fprintf(' Final dual relative evaluation: %e\n', curr_eval );    
-    else
-        fprintf(' Final relative evaluation: %e\n', rel_eval );   
-        fprintf(' ||f|| = %e\n', curr_eval );  
-    end
-    % Stopping criterion
-    fprintf(' %i iterations\n', iter);
-    fprintf(' Stopping criterion: %s \n\n', crit);
-elseif param.verbose>=1
-    if param.use_dual && isfield(s,'dual_var')
-        fprintf([algo.name,': Final dual relative evaluation = %e, it = %i, %s\n'], ...
-                        curr_eval, iter,crit);
-    else
-        fprintf([algo.name,': f(x^*) = %e, rel_eval = %e, it = %i, %s\n'], ...
-                        curr_eval, rel_eval, iter,crit);
-    end
+summary_print(s,info,iter,algo,crit,param);
+
+
+info.algo = algo.name;
+info.iter = iter;
+info.crit = crit;
+info.time = toc(t1);
+
+% Return the dual variable if availlable
+if isfield(s,'dual_var')
+    info.dual_var = s.dual_var;
 end
-
-% Here if use_dual && isfield(s,'dual_var'), we might return something
-% else. To be fixed...
-
-info.algo=algo.name;
-info.iter=iter;
-info.final_eval=curr_eval;
-info.crit=crit;
-info.time=toc(t1);
-info.rel_norm=rel_eval;
 
 end
 
 
-function solver = select_solver(Fg,Fp)
-    n = numberofL(Fp);
-    if numel(Fg)
-        if n>2
-            error('Sorry, no solver is able to solve your problem yet!')
-        end
-        if numel(Fp)==0
-            solver = 'GRADIENT_DESCENT';
-        elseif numel(Fp)==2
-            solver = 'FB_BASED_PRIMAL_DUAL';
-        elseif (numel(Fp)<=2) && n
-            solver = 'FB_BASED_PRIMAL_DUAL';            
-        elseif numel(Fp)==1
-            solver = 'FORWARD_BACKWARD';
-        else
-            solver = 'GENERALIZED_FORWARD_BACKWARD';
-        end
-    else
-        if numel(Fp) == 1
-            error('Do you really want to minimize only one function?')        
-        elseif (numel(Fp)<=2) && (n == 1)
-            solver = 'FB_BASED_PRIMAL_DUAL';    
-        elseif (n>1)
-            solver = 'SDMM';
-        elseif numel(Fp) == 2
-            solver = 'DOUGLAS_RACHFORD';
-        else
-            solver = 'PPXA';
-        end
-    end
-        
-end
+
+
 
 function gamma = compute_gamma(Fg)
     beta = 0;
@@ -275,48 +239,5 @@ function algo = get_algo(name)
         algo = algoname(name);
     else
         error('The algorithm is not a string and not a struct!')
-    end
-end
-
-
-function [rel_norm, x_old] =  eval_dual_var(x1,x2)
-
-    if nargin<2
-        if iscell(x1)
-            x2 = cell(length(x1),1);
-            for ii = 1:length(x1)
-                x2{ii} = 0;
-            end
-        else
-            x2 = 0;
-        end
-    end
-    
-    if iscell(x1)
-        rel_norm = 0;
-        for ii = 1:length(x1)
-            tmp = norm(x1{ii}(:)-x2{ii}(:))/(norm(x1{ii}(:))+eps);
-            if tmp>rel_norm
-                rel_norm = tmp;
-            end
-        end
-    else
-        rel_norm = norm(x1(:)-x2(:))/(norm(x1(:))+eps);
-    end
-
-
-    x_old = x1;
-end
-
-function n = numberofL(Fp)
-% Return the number of functions with a linear opeartor inside
-n = 0;
-    for ii = 1:length(Fp)
-        if isfield(Fp{ii},'L') 
-            n = n + 1;
-            if ~isfield(Fp{ii},'Lt')
-                warning('You did not define the Lt operator!');
-            end
-        end
     end
 end

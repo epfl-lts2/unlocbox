@@ -147,7 +147,11 @@ param.maxit = 30; % maximum iteration
 param.tol = 10e-5; % tolerance to stop iterating
 %param.do_ts = @(x) log_decreasing_ts(x, 10, 0.1, 80);
 
-sol=Psit(solvep(Psi(sound_depleted),{f1,f2},param));
+% Change the stopping criterion to avoid computing the objective function
+% every iteration.
+param.stopping_criterion = 'rel_norm_primal'; 
+
+sol = Psit(solvep(Psi(sound_depleted),{f1,f2},param));
 
 
 

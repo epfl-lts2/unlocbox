@@ -107,7 +107,7 @@ m = size(F,2);
     for i = 1:m
        curr_norm = F(i).eval(x)+curr_norm;
     end
-    [~,~,prev_norm,iter,objectiv,~] = convergence_test(curr_norm);
+    [~,~,prev_norm,iter,objectiv,~] = convergence_test_old(curr_norm);
     
     while 1
         
@@ -138,7 +138,7 @@ m = size(F,2);
             curr_norm = F(i).eval(sol)+curr_norm;
         end
                 
-        [stop,rel_norm,prev_norm,iter,objectiv,crit] = convergence_test(curr_norm,prev_norm,iter,objectiv,param);
+        [stop,rel_norm,prev_norm,iter,objectiv,crit] = convergence_test_old(curr_norm,prev_norm,iter,objectiv,param);
         if stop
             break;
         end

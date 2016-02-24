@@ -13,14 +13,14 @@ function n12 = norm_l12(x, g_d,g_t,w1,w2)
 %   Output parameters:
 %         y     : Norm
 %
-%   `norm_l12(x, g_d, g_t, w1, w2)` returns the norm L21 of x. If x is a
-%   matrix the one norm will be computed over the lines (2nd dimention) and
-%   the two norm will be computed over the rows (1st dimention). In this
-%   case, all other argument are not necessary.
+%   `norm_l12(x, g_d, g_t, w1, w2)` returns the norm L21 of x. If $x$ is a
+%   matrix, the norm will be computed as follow: 
 %
 %   ..  n12 = || x ||_12 = ( sum_j | sum_i |x(i,j)| |^2 )^(1/2) 
 %
-%   ..math::  \| x \|_{21} = \left| \sum_j \left| \sum_i |x(i,j)|  \right|^2 \right|^{1/2} 
+%   .. math::  \| x \|_{1,2}^2 = \sqrt{ \sum_j \left| \sum_i |x(i,j)| \right|^2 }
+%
+%   In this case, all other argument are not necessary.
 %
 %   'norm_l12(x)' with x a row vector is equivalent to norm(x,2) and
 %   'norm_l12(x)' with x a line vector is equivalent to norm(x,1)

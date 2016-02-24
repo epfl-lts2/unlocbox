@@ -12,7 +12,7 @@ function [sol,info] = prox_sum_log(x, gamma, param)
 %         sol   : Solution.
 %         info : Structure summarizing informations at convergence
 %
-%   `prox_l1(x, gamma, param)` solves:
+%   `prox_sum_log(x, gamma, param)` solves:
 %
 %   .. sol = argmin_{z} 0.5*||x - z||_2^2 - gamma * sum(log(z))
 %
@@ -36,7 +36,7 @@ function [sol,info] = prox_sum_log(x, gamma, param)
 %   * *info.crit* : Stopping critterion used 
 %
 %
-%   See also:  prox_l1 prox_l2 prox_tv
+%   See also:  prox_l1 prox_l2 prox_tv prox_sum_log_norm2
 %
 
 % Author: Vassilis Kalofolias

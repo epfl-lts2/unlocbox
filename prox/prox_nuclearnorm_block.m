@@ -1,7 +1,7 @@
-function [sol, info] = prox_nuclearnorm_block(X, ind_rows, ind_cols, gamma, param)
+function [sol, info] = prox_nuclearnorm_block(X, gamma, ind_rows, ind_cols, param)
 %PROX_NUCLEARNORM_BLOCK Proximal operator of nuclear norms of blocks
-%   Usage:  sol = prox_nuclearnorm_block(x, ind_r, ind_c, gamma)
-%           sol = prox_nuclearnorm_block(x, ind_r, ind_c, gamma, param)
+%   Usage:  sol = prox_nuclearnorm_block(x, gamma, ind_r, ind_c)
+%           sol = prox_nuclearnorm_block(x, gamma, ind_r, ind_c, param)
 %           [sol, info] = prox_nuclearnorm_block(...)
 %
 %   Input parameters:
@@ -68,7 +68,7 @@ function [sol, info] = prox_nuclearnorm_block(X, ind_rows, ind_cols, gamma, para
 % date: Feb 2015
 
 
-if nargin < 3, param = struct; end
+if nargin < 5, param = struct; end
 
 if ~isfield(param, 'single'), param.single = isa(X, 'single'); end
 if ~isfield(param, 'verbose'), param.verbose = 1; end

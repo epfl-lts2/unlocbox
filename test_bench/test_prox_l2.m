@@ -370,7 +370,7 @@ f.eval=@(x) norm(x-y)^2;
 f2.prox=@(x,T) x;
 f2.eval=@(x) eps;
 
-param_p.abs_tol=1;
+% param_p.abs_tol=1;
 param_p.tol=0.5*tol;
 param_p.verbose=0;
 sol=ppxa(x,{f,f2},param_p);

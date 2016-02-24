@@ -1,8 +1,8 @@
-function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
+function [sol, info] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %FB_BASED_PRIMAL_DUAL forward backward based primal dual
 %   Usage: sol = fb_based_primal_dual(x_0,f1,f2, f3,param);
 %          sol = fb_based_primal_dual(x_0,f1,f2,f3);
-%          [sol,info,objective] = fb_based_primal_dual(...);
+%          [sol,info] = fb_based_primal_dual(...);
 %
 %   Input parameters:
 %         x_0   : Starting point of the algorithm
@@ -13,9 +13,8 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %   Output parameters:
 %         sol   : Solution
 %         info  : Structure summarizing informations at convergence
-%         objective: vector (evaluation of the objectiv function each iteration)
 %
-%   `admm` (using alternating-direction method of multipliers) solves:
+%   `fb_based_primal_dual` solves:
 %
 %   .. sol = argmin f1(x) + f2(Lx) + f3(x)
 %
@@ -34,6 +33,11 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %
 %   * `f2.L`  : linear operator, matrix or operator (default identity)
 %   * `f2.Lt` : adjoint of linear operator, matrix or operator (default identity)
+%   * `f2.norm_L` : bound on the norm of the operator L (default: 1), i.e.
+%
+%     .. ` ||L x||^2 <= nu * ||x||^2 
+%
+%     .. math::  \|L x\|^2 \leq \nu \|x\|^2 
 %
 %   The default choice for the time-step makes the following 
 %
@@ -62,12 +66,6 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 %
 %       Warning! This stopping criterion is different from other solver!
 %
-%   * *param.nu* : bound on the norm of the operator L (default: 1), i.e.
-%
-%     .. ` ||L x||^2 <= nu * ||x||^2 
-%
-%     .. math::  \|L x\|^2 \leq \nu \|x\|^2 
-%
 %   * *param.tau* : first timestep.   
 %
 %   * *param.sigma* : second timestep. The timesteps should satisfy the
@@ -94,6 +92,6 @@ function [sol, info,objective] = fb_based_primal_dual(x_0,f1, f2, f3, param)
 % Testing: test_solvers
 
 param.algo = 'FB_BASED_PRIMAL_DUAL';
-[sol, info,objective] = solvep(x_0,{f1, f2, f3},param);
+[sol, info] = solvep(x_0,{f1, f2, f3},param);
 
 end

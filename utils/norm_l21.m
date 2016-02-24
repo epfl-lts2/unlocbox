@@ -14,13 +14,13 @@ function n21 = norm_l21(x, g_d,g_t, w2,w1)
 %         y     : Norm
 %
 %   `norm_l21(x, g_d,g_t, w2,w1)` returns the norm L21 of x. If x is a
-%   matrix the 2 norm will be computed over the lines (2nd dimention) and
-%   the one norm will be computed over the rows (1st dimention). In this
-%   case, all other argument are not necessary.
+%   matrix the 2 norm will be computed as follow:
 %
 %   ..  n21 = || x ||_21 = sum_j ( sum_i |x(i,j)|^2 )^(1/2) 
 %
 %   .. math::  \| x \|_{21} = \sum_j \left| \sum_i |x(i,j)|^2  \right|^{1/2} 
+%
+%   In this case, all other argument are not necessary.
 %
 %   'norm_l21(x)' with x a row vector is equivalent to norm(x,1) and
 %   'norm_l21(x)' with x a line vector is equivalent to norm(x)

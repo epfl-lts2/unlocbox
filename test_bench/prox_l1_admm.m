@@ -1,4 +1,4 @@
-function [sol,info,objective] = prox_l1_admm(z, gamma, param)
+function [sol,info] = prox_l1_admm(z, gamma, param)
 %PROX_L1_ADMM Proximal operator with L1 norm
 %   Usage:  sol=prox_l1_admm(x, gamma)
 %           sol=prox_l1_admm(x, gamma, param)
@@ -124,7 +124,7 @@ paramsolver.maxit = param.maxit;
 paramsolver.verbose = param.verbose;
 paramsolver.tol = param.tol;
 
-[sol, info,objective] = admm(z,f1, f2, paramsolver);
+[sol, info] = admm(z,f1, f2, paramsolver);
 
 
 info.algo=mfilename;

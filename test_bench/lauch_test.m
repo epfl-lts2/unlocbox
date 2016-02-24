@@ -20,9 +20,11 @@ demos=0; % to test also the demos
 %% Lauch different test
 
 errors=0;
+% This need to be redone
+test_proj_box; 
 
 % Mixed sparsity
-errors=errors+test_mixed_sparsity();
+test_proj_box; 
 
 % Prox L2
 errors=errors+test_prox_l2();
@@ -61,6 +63,8 @@ errors = errors + test_prox_functions();
 errors = errors + test_utils();
 errors = errors + test_lp();
 errors = errors + test_prox_sum_log();
+errors = errors + test_proj_simplex();
+errors = errors + test_prox_l2grad();
 
 
 %% Error in testbench

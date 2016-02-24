@@ -3,20 +3,22 @@ function [ errors ] = test_solvers( )
 errors=0;
 gsp_reset_seed(1);
 
-% errors=errors+test_chambolle_pock_simple();
-% errors=errors+test_chambolle_pock_complex();
+errors=errors+test_chambolle_pock_simple();
+errors=errors+test_chambolle_pock_complex();
 
-%errors = errors + test
+
+errors = errors+ test_primal_dual();
+
 
 errors=errors+test_all_solver();
 
 
-errors=errors+test_pocs();
 
+errors=errors+test_pocs();
 errors=errors+test_gradient_descent();
 
-errors=errors+test_gefwbw_simple();
-errors=errors+test_gefwbw_with_old();
+errors = errors+test_gefwbw_simple();
+errors = errors+test_gefwbw_with_old();
 
 
 
@@ -51,6 +53,7 @@ errors = errors+ test_fb_based_primal_dual4();
 errors = errors+ test_fb_based_primal_dual_fista();
 
 
+errors=errors + test_verbosity();
 
 
 end
@@ -181,6 +184,7 @@ function [errors]=test_all_solver()
     f22.x0 = H(x0);
     f22.L = H;
     f22.Lt = Ht;
+    f22.norm_L = 1;
     
     p6 = sdmm({f22,f1}, param);
     %p7 = chambolle_pock(x0, f2,f1, param);
@@ -297,7 +301,7 @@ function [errors]=test_gefwbw_with_old()
     
     f3 = f2;
     f4 = f2;
-    param.maxit = 1000;
+    param.maxit = 3000;
     param.tol = 100*eps;
     param.verbose = 0;
     p3 = solvep(x0, {f2,f3,f1,f4}, param);
@@ -326,7 +330,7 @@ function [errors]=test_gefwbw_with_old()
         errors= errors +1;
     end
     
-    if norm(p3-p4)/norm(p3)<1e-6
+    if norm(p3-p4)/norm(p3)<1e-5
         fprintf('  Test gefwbw with FISTA 1 OK\n')
     else
         fprintf('  Test gefwbw with FISTA 1 Pas OK!!!!!!!!!!!!!!!!\n')
@@ -334,7 +338,7 @@ function [errors]=test_gefwbw_with_old()
         errors= errors +1;
     end
     
-    if norm(p5-p4)/norm(p4)<1e-6
+    if norm(p5-p4)/norm(p4)<1e-5
         fprintf('  Test primal dual with FISTA 1 OK\n')
     else
         fprintf('  Test primal dual with FISTA 1 Pas OK!!!!!!!!!!!!!!!!\n')
@@ -373,10 +377,10 @@ function [errors]=test_fwbw_simple()
         norm(p3-p2)/norm(p3)
         errors= errors +1;
     end
-    N = 6;
+    N = 10;
     
-    A = rand(3,N);
-    y = N*rand(3,1);
+    A = dct(eye(N));
+    y = N*rand(N,1);
     x0 = rand(N,1);
 
     f1.eval = @(x) 1/2*norm(A*x-y)^2;
@@ -387,7 +391,7 @@ function [errors]=test_fwbw_simple()
     param.tol = eps;
 
     p5 = forward_backward(x0, f2,f1,param);
-    
+
     param.method = 'ISTA';
     p4 = forward_backward(x0, f2,f1,param);
 
@@ -472,8 +476,7 @@ function [errors]=test_admm_simple()
         norm(p3-p2)/norm(p3)
         errors= errors +1;
     end
-    
-    if strcmp(infos.crit,'CURR_NORM')
+    if strcmp(infos.crit,'REL_NORM_PRIMAL_DUAL')
         fprintf('  Test admm simple 2 OK\n')
     else
         fprintf('  Test admm simple 2 Pas OK!!!!!!!!!!!!!!!!\n')
@@ -891,13 +894,6 @@ function [errors]=test_sdmm_simple()
         norm(p3-p2)/norm(p3)
         errors= errors +1;
     end
-    
-    if strcmp(infos.crit,'CURR_NORM')
-        fprintf('  Test sdmm simple 2 OK\n')
-    else
-        fprintf('  Test sdmm simple 2 Pas OK!!!!!!!!!!!!!!!!\n')
-        errors= errors +1;
-    end
 end
 
 function [errors]=test_sdmm_complex()
@@ -1035,17 +1031,18 @@ function [errors]=test_chambolle_pock_complex()
     paraml2.verbose = 0;
     paraml2.y = y;
     f1.prox = @(x,T) prox_l2(x,0.5*T,paraml2);
+
   
     paraml1.verbose = 0;
     f2.eval = @(x) norm(x,1);
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
+    f2.L = A;
+    f2.Lt = At;
+    f2.norm_L = B;
     param.maxit = 1000;
-    param.tol = 10 *eps;
-    param.verbose = 2;
-    param.L =A;
-    param.Lt = At;
-    param.tau = 1/B;
-    param.rho = 1/B;
+    param.tol = 1000 *eps;
+    param.verbose = 0;
+
     
     p2 = chambolle_pock(x0,f1,f2, param);
     
@@ -1090,12 +1087,12 @@ function [errors] = test_chambolle_pock_simple()
     f2.prox = @(x,T) prox_l1(x,T,paraml1);
     
     param.tol = 100*eps;
-    param.verbose = 2;
+    param.verbose = 0;
     param.gamma = 1;
     
     
     [p2,infos] = chambolle_pock(x0,f1,f2, param);
-    p3 = prox_l1(y,1,paraml1);
+    p3 = solvep(x0, {f1,f2},param);
     
     if norm(p3-p2)/norm(p3)<1e-6
         fprintf('  Test chambolle pock  simple 1 OK\n')
@@ -1105,7 +1102,7 @@ function [errors] = test_chambolle_pock_simple()
         errors= errors +1;
     end
     
-    if strcmp(infos.crit,'CURR_NORM')
+    if strcmp(infos.crit,'REL_NORM_PRIMAL_DUAL')
         fprintf('  Test chambolle pock simple 2 OK\n')
     else
         fprintf('  Test chambolle pock simple 2 Pas OK!!!!!!!!!!!!!!!!\n')
@@ -1226,6 +1223,7 @@ function [errors] = test_fb_based_primal_dual3()
     f21.prox = @(x,T) prox_l1(x,T,paraml11);    
     f21.L = A;
     f21.Lt = At;
+    f22.norm_L = 1;
     
     paraml12.verbose = 0;
     paraml12.A = A;
@@ -1279,6 +1277,7 @@ function [errors] = test_fb_based_primal_dual4()
     f21.prox = @(x,T) prox_l1(x,T,paraml11);    
     f21.L = A;
     f21.Lt = At;
+    f21.norm_L = 1;
     
     paraml12.verbose = 0;
     paraml12.A = A;
@@ -1334,6 +1333,7 @@ function [errors] = test_fb_based_primal_dual_fista()
     f21.prox = @(x,T) prox_l1(x,T,paraml11);    
     f21.L = A;
     f21.Lt = At;
+    f21.norm_L = 1;
     
     paraml12.verbose = 0;
     paraml12.A = A;
@@ -1366,3 +1366,194 @@ function [errors] = test_fb_based_primal_dual_fista()
     
 end
 
+
+function errors = test_primal_dual()
+
+    errors = 0;
+    
+    N =10;
+    M = 6;
+    y = 3*rand(N,1);
+    x0 = rand(N,1);
+    Mat = randn(M,N);
+    A = @(x) Mat*x;
+    At = @(x) Mat'*x;
+    f1.eval = @(x) 1/2*norm(x-y)^2;
+    paraml2.y = y;
+    paraml2.verbose = 0;
+    f1.prox = @(x,T) prox_l2(x,0.5*T,paraml2);
+    f1.grad = @(x) x-y;
+    f1.beta = 1;
+    
+    paraml11.verbose = 0;
+    f21.eval = @(x) norm(x,1);
+    f21.prox = @(x,T) prox_l1(x,T,paraml11);    
+    f21.L = A;
+    f21.Lt = At;
+    f21.norm_L = 1;
+    
+    paraml12.verbose = 0;
+    f22.eval = @(x) norm(x,1);
+    f22.prox = @(x,T) prox_l1(x,T,paraml12);
+    
+    param.tol = 100*eps;
+    param.verbose = 1;
+    param.gamma = 0.1;
+    param.maxit = 1000;
+     
+    paramb2.verbose = 0;
+    paramb2.y = 5*rand(N,1);
+    paramb2.epsilon = 2;
+    f3.prox = @(x,T) proj_b2(x,T,paramb2);
+    f3.eval = @(x) eps;
+
+	p3 = fb_based_primal_dual(x0,f1,f21,f3, param);
+    
+    p2 = fbf_primal_dual(x0,f1,f21,f3, param);
+
+    if norm(p3-p2)/norm(p3)<1e-6
+        fprintf('  Test primal dual OK\n')
+    else
+        fprintf('  Test primal dual Pas OK!!!!!!!!!!!!!!!!\n')
+        norm(p3-p2)/norm(p3)
+        errors= errors +1;
+    end
+
+
+end
+
+
+function errors = test_verbosity()
+errors = 0;
+
+
+x = randn(10,1);
+y = randn(10,1);
+A = rand(10);
+
+paraml1.verbose = 0;
+f1.prox = @(x,T) prox_l1(x,T,paraml1);
+f1.eval = @(x) norm(x,1);
+
+f2.prox = @(x,T) prox_l1(x,T,paraml1);
+f2.eval = @(x) norm(x,1);
+
+f3.grad = @(x,T) 2*A'*(A*x-y);
+f3.eval = @(x) norm(A*x-y,2)^2;
+f3.beta = 2*norm(A)^2;
+
+param.maxit = 10;
+
+try
+    param.test_type = 'rel_norm_obj';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity rel_norm_obj')
+    errors = errors + 1;
+end
+
+try
+    param.test_type = 'rel_norm_primal';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity rel_norm_primal')
+    errors = errors + 1;
+end
+
+try
+    param.test_type = 'rel_norm_dual';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity rel_norm_dual')
+    errors = errors + 1;
+end
+
+try
+    param.test_type = 'obj_increase';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity obj_increase')
+    errors = errors + 1;
+end
+
+try
+    param.test_type = 'obj_threshold';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity obj_threshold')
+    errors = errors + 1;
+end
+
+param.debug_mode = 1;
+
+try
+    param.test_type = 'rel_norm_obj';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity rel_norm_obj')
+    errors = errors + 1;
+end
+
+try
+    param.test_type = 'rel_norm_primal';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity rel_norm_primal')
+    errors = errors + 1;
+end
+
+try
+    param.test_type = 'rel_norm_dual';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity rel_norm_dual')
+    errors = errors + 1;
+end
+
+try
+    param.test_type = 'obj_increase';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity obj_increase')
+    errors = errors + 1;
+end
+
+try
+    param.test_type = 'obj_threshold';
+    param.verbose = 1;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+    param.verbose = 2;
+    fb_based_primal_dual(x,f1,f2,f3,param);    
+catch
+    warning('Error in verbosity obj_threshold')
+    errors = errors + 1;
+end
+
+end

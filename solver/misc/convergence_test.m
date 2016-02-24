@@ -1,114 +1,41 @@
-function [stop,rel_norm,prev_norm,iter,objectiv,crit] = convergence_test(curr_norm,prev_norm,iter,objectiv,param,s)
+function [stop, crit, s, iter, info] = convergence_test(sol, s, iter, fg, Fp, info, param)
 %CONVERGENCE_TEST Test the convergence of an algorithm
-%   Usage: stop = convergence_test(curr_norm,prev_norm,objectiv,param);
-%          stop = convergence_test(curr_norm,prev_norm,[],param);
-%          stop = convergence_test(curr_norm,prev_norm);
-%          [stop,rel_norm,prev_norm,iter,objectiv,crit] = convergence_test(...);
-%          [~,rel_norm,prev_norm,iter,objectiv,crit] = convergence_test(curr_norm);
-%          [~,rel_norm,prev_norm,iter,objectiv,crit] = convergence_test();
-%
-%   Input parameters:
-%         curr_norm : Current norm (scalar)
-%         prev_norm : Previous norm (scalar)
-%         iter      : Current iteration (positiv integer)
-%         objectiv  : Vector (previous objectiv function values)
-%         param     : Optional parameter
-%
-%   Output parameters:
-%         stop      : Convergence (boolean)
-%         rel_norm  : Relativ norm (scalar)
-%         prev_norm : Updated previous norm (scalar)
-%         objectiv  : Vector (updated objectiv function values)
-%         crit      : Convergence criterion
+%   Usage: stop = convergence_test(curr_norm,prev_norm,objective,param);
 %
 %   This function test the convergence of an algorithms and performs
-%   updates.
+%   some updates. Additionally, it handles verbosity during the iterations.
 %
 %   At convergence, the flag stop is set to one.
 %
-%   If *curr_norm* and *prev_norm* are close enought (*param.tol*), the stopping
-%   criterion *crit* will be 'REL_NORM'.
-%
-%   If the maximum number of iteration is obtained, the stoping criterion
-%   *crit* is 'MAX_IT'.
-%
-%   If *curr_norm* is smaller than *param.tol* and *param.abs_tol* is 
-%   activated, the stopping criterion *crit* will be 'CURR_NORM'.
-%
-%   `[~,~,prev_norm,iter,objectiv,~]= convergence_test(curr_norm)` will
-%   initiate all the values for algorithm. `Prev_norm=curr_norm`
-%
-%   `[~,~,prev_norm,iter,objectiv,~] = convergence_test()` will
-%   initiate all the values for algorithm.  `Prev_norm=eps`
-%
-%   *param* a Matlab structure containing the following fields:
-%
-%   * *param.tol* : is stop criterion for the loop. The algorithm stops if
-%
-%     ..  (  n(t) - n(t-1) )  / n(t) < tol,
-%      
-%     .. math:: \frac{  n(t) - n(t-1) }{ n(t)} < tol,
-%
-%     where  $n(t) = f(x)$ is the objective function at iteration *t*
-%     by default, `tol=10e-4`.
-%
-%   * *param.maxit* : is the maximum number of iteration. By default, it is 200.
-%
-%   * *param.abs_tol* : If activated, this stopping critterion is the
-%     objectiv function smaller than *param.tol*. By default 0.
-%
-%   * *param.verbose* : 0 no warning, 1 warning activated. (Default = 1)
-%
-%   * *param.alg* : algorithm name
-%
-%   * *param.alg* : Show a box to stop the algorithm (default 0)
+
 %
 
 %   Nathanael Perraudin
-%   Date: 14 dec 2012
+%   Date: 16 oct 2015
 
 global FS
 
-% Optional input arguments
+%% Optional input arguments
 
-% param
-if nargin<5, param=struct; end
-if ~isfield(param, 'tol'), param.tol=10e-4 ; end
-if ~isfield(param, 'maxit'), param.maxit=200; end
-if ~isfield(param, 'abs_tol'), param.abs_tol=0 ; end
-if ~isfield(param, 'verbose'), param.verbose=1 ; end
-if ~isfield(param, 'use_dual'), param.use_dual=0 ; end
+% Param
+if ~isfield(param, 'stop_box'), param.stop_box = 0; end
 
+if isfield(param, 'use_dual') || isfield(param, 'abs_tol')
+    warning('You are using the old method... Please update')
+end
+
+% Set algorithm name
 if ~isfield(param, 'alg'), 
     txt = dbstack(); 
     param.alg = txt(2).name ; 
 end
 
-if ~isfield(param, 'stop_box'), param.stop_box = 0; end
-
-% objectiv
-if nargin<4, objectiv=[]; end
-
-% objectiv
-if nargin<3, iter=0; end
-
-% prev_norm
-if nargin<2, prev_norm=0; end
-
-% curr_norm
-if nargin<1
-   curr_norm=0;
-   param.verbose=0;
-end
-
+% Starting keyboard stop
 if ~kbstop('lauched')
     kbstop('init');
 end
 
-if param.use_dual &&  nargin>=6 && isfield(s,'reldual')
-    curr_norm = s.reldual;
-    param.abs_tol = 1;
-end
+% Use the stopbox
 if param.stop_box
     if iter<=1
         if isstruct(FS)
@@ -119,57 +46,191 @@ if param.stop_box
         FS = stopstruct(param.alg,'Stop the algorithm') ;
     end
 end
-% % perform simple test
-% if (curr_norm==0)
-%     if param.verbose
-%         fprintf('WARNING: current norm is equal to 0! Adding eps to continure...\n');
-%     end
-%     curr_norm=eps;
-% end
 
-if ~(numel(curr_norm)==1)
-    error('One of your evaluation function does not return a scalar.')
+
+stop = 0;
+crit= 'NOT_DEFINED';
+
+switch lower(param.stopping_criterion)
+    case 'rel_norm_obj'
+        curr_eval = eval_objective(fg,Fp,sol,s,param);
+        info.objective(iter+1) = curr_eval;
+        rel_eval = abs(curr_eval - info.objective(iter))/(curr_eval + eps);
+        info.rel_eval(iter) = rel_eval;
+        if (abs(rel_eval) < param.tol) && iter>1
+            crit = 'REL_NORM_OBJ';
+            stop=1;   
+        end
+
+    case 'rel_norm_primal'
+        rel_norm_primal = norm(sol(:)-s.prev_sol(:))/norm(sol(:));
+        info.rel_norm_primal(iter) = rel_norm_primal;
+        if (abs(rel_norm_primal) < param.tol) && iter>1
+            crit = 'REL_NORM_PRIMAL';
+            stop=1;   
+        end
+        s.prev_sol = sol;
+
+    case 'rel_norm_dual'
+        [rel_norm_dual, s.dual_var_old] = eval_dual_var(s.dual_var,s.dual_var_old);
+        info.rel_norm_dual(iter) = rel_norm_dual;
+        if (abs(rel_norm_dual) < param.tol) && iter>1
+            crit = 'REL_NORM_DUAL';
+            stop=1;   
+        end   
+    case 'rel_norm_primal_dual'
+        rel_norm_primal = norm(sol(:)-s.prev_sol(:))/norm(sol(:));
+        info.rel_norm_primal(iter) = rel_norm_primal;
+        [rel_norm_dual, s.dual_var_old] = eval_dual_var(s.dual_var,s.dual_var_old);
+        info.rel_norm_dual(iter) = rel_norm_dual;
+        if (abs(rel_norm_primal) < param.tol) && ...
+                (abs(rel_norm_dual) < param.tol) && iter>1
+            crit = 'REL_NORM_PRIMAL_DUAL';
+            stop=1;   
+        end
+        s.prev_sol = sol;
+    case 'obj_increase'
+        curr_eval = eval_objective(fg,Fp,sol,s,param);
+        info.objective(iter+1) = curr_eval;
+        if curr_eval >= info.objective(iter)
+            crit = 'OBJ_INCREASE';
+            stop = 1;   
+        end
+    case 'obj_threshold'
+        curr_eval = eval_objective(fg,Fp,sol,s,param);
+        info.objective(iter+1) = curr_eval;
+        if (curr_eval < param.tol) && iter>1
+            crit = 'OBJ_THRESHOLD';
+            stop=1;    
+        end        
+    otherwise
+        error('Unknown stopping criterion!')
 end
 
-rel_norm = abs(curr_norm - prev_norm)/(curr_norm + eps);
-if iter
-    if isa(curr_norm,'gpuArray')
-        objectiv(iter)=gather(curr_norm);
+%% Handling debug mode
+% We compute what has not been computed yet
+if param.debug_mode
+    switch lower(param.stopping_criterion)
+        case 'rel_norm_obj'
+            rel_norm_primal = norm(sol(:)-s.prev_sol(:))/norm(sol(:));
+            info.rel_norm_primal(iter) = rel_norm_primal;
+            if isfield(s,'dual_var')
+                [rel_norm_dual, s.dual_var_old] = ...
+                    eval_dual_var(s.dual_var,s.dual_var_old);
+                info.rel_norm_dual(iter) = rel_norm_dual;                
+            end
+
+        case 'rel_norm_primal'
+            curr_eval = eval_objective(fg,Fp,sol,s,param);
+            info.objective(iter+1) = curr_eval;
+            info.rel_eval(iter) = ...
+                abs((info.objective(iter+1)-info.objective(iter))/ ...
+                info.objective(iter+1));
+
+            if isfield(s,'dual_var')
+                [rel_norm_dual, s.dual_var_old] = ...
+                    eval_dual_var(s.dual_var,s.dual_var_old);
+                info.rel_norm_dual(iter) = rel_norm_dual;                
+            end
+
+        case 'rel_norm_dual'
+            curr_eval = eval_objective(fg,Fp,sol,s,param);
+            info.objective(iter+1) = curr_eval;
+            info.rel_eval(iter) = ...
+                abs((info.objective(iter+1)-info.objective(iter))/ ...
+                info.objective(iter+1));
+
+            rel_norm_primal = norm(sol(:)-s.prev_sol(:))/norm(sol(:));
+            info.rel_norm_primal(iter) = rel_norm_primal;
+            s.prev_sol = sol;
+            
+        case 'rel_norm_primal_dual'
+            curr_eval = eval_objective(fg,Fp,sol,s,param);
+            info.objective(iter+1) = curr_eval;
+            info.rel_eval(iter) = ...
+                abs((info.objective(iter+1)-info.objective(iter))/ ...
+                info.objective(iter+1));
+
+        case 'obj_increase'
+            rel_norm_primal = norm(sol(:)-s.prev_sol(:))/norm(sol(:));
+            info.rel_norm_primal(iter) = rel_norm_primal;
+            info.rel_eval(iter) = ...
+                abs((info.objective(iter+1)-info.objective(iter))/ ...
+                info.objective(iter+1));
+
+            if isfield(s,'dual_var')
+                [rel_norm_dual, s.dual_var_old] = ...
+                    eval_dual_var(s.dual_var,s.dual_var_old);
+                info.rel_norm_dual(iter) = rel_norm_dual;                
+            end
+        case 'obj_threshold'
+            rel_norm_primal = norm(sol(:)-s.prev_sol(:))/norm(sol(:));
+            info.rel_norm_primal(iter) = rel_norm_primal;
+            info.rel_eval(iter) = ...
+                abs((info.objective(iter+1)-info.objective(iter))/ ...
+                info.objective(iter+1));
+            if isfield(s,'dual_var')
+                [rel_norm_dual, s.dual_var_old] = ...
+                    eval_dual_var(s.dual_var,s.dual_var_old);
+                info.rel_norm_dual(iter) = rel_norm_dual;                
+            end     
+        otherwise
+            error('Unknown stopping criterion!')
+    end    
+end
+
+    
+%% Handle verbosity
+if param.verbose >= 2
+    if param.debug_mode
+        fprintf('  f(x^*) = %e, rel_eval = %e\n', ...
+            curr_eval, info.rel_eval(iter));       
+        fprintf('   Relative norm of the primal variables: %e\n',...
+                    rel_norm_primal);
+        if isfield(s,'dual_var')
+        	fprintf('   Relative norm of the dual variables: %e\n',...
+            	rel_norm_dual);  
+        end
     else
-        objectiv(iter)=curr_norm;
+        switch lower(param.stopping_criterion)
+            case 'rel_norm_obj'   
+                fprintf('  f(x^*) = %e, rel_eval = %e\n', ...
+                    curr_eval, rel_eval);                   
+            case 'rel_norm_primal'
+                fprintf('   Relative norm of the primal variables: %e\n',...
+                    rel_norm_primal);
+            case 'rel_norm_dual'
+                fprintf('   Relative norm of the dual variables: %e\n',...
+                    rel_norm_dual);                
+            case 'rel_norm_primal_dual'
+                fprintf('   Relative norm of the primal variables: %e\n',...
+                    rel_norm_primal);
+                fprintf('   Relative norm of the dual variables: %e\n',...
+                    rel_norm_dual);  
+            case 'obj_increase'
+                fprintf('  f(x^*) = %e, prev_it:  %e\n', ...
+                    curr_eval, info.objective(iter));   
+            case 'obj_threshold'
+                 fprintf('  f(x^*) = %e\n', ...
+                    curr_eval);      
+            otherwise
+                error('Unknown stopping criterion!')
+        end
     end
 end
 
-if numel(curr_norm)>1
-    error('One of your evaluation functions .eval returns a vector and not a scalar');
+%% Stopping if too many iteration
+
+if iter >= param.maxit
+    crit= 'MAX_IT';
+    stop=1;  
 end
 
-if (curr_norm < param.tol) && logical(param.abs_tol) && iter>1
-    crit = 'CURR_NORM';
-    stop=1;
-elseif (abs(rel_norm) < param.tol) && (~param.abs_tol) && iter>1
-    crit = 'REL_NORM';
-    stop=1;
-elseif iter >= param.maxit
-    crit= 'MAX_IT';
-    stop=1;    
-% would be great to have a text like this (thinking about it)    
-% elseif curr_norm > prev_norm
-%     crit = 'OBJ_INC';
-%     stop = 1;
-elseif  kbstop() || (param.stop_box && FS.stop())
+%% Stopping if the user press crtl +d
+if  kbstop() || (param.stop_box && FS.stop())
     crit= 'USER';
     stop = 1;
-else
-    crit= 'NOT_DEFINED';
-    stop=0;
 end
-
-% Performed updates
-if ~stop
-    iter=iter+1;
-end
-prev_norm=curr_norm;
 
 if stop
     kbstop('stop');
@@ -186,5 +247,58 @@ if stop
 end
 
 
+%% Performed updates
+if ~stop
+    iter=iter+1;
 end
+
+
+
+
+end
+
+
+function curr_eval = eval_objective(fg,Fp,sol,s,param)
+        curr_eval = eval_function(fg,Fp,sol,s,param);
+        if ~(numel(curr_eval)==1)
+            error('A least, one of your evaluation function does not return a scalar.')
+        end
+
+%         if isa(curr_norm,'gpuArray')
+%             s.objective(iter)=gather(curr_norm);
+%         else
+%             s.objective(iter)=curr_norm;
+%         end
+end
+
+
+function [rel_norm, x_old] =  eval_dual_var(x1,x2)
+
+    if nargin<2
+        if iscell(x1)
+            x2 = cell(length(x1),1);
+            for ii = 1:length(x1)
+                x2{ii} = 0;
+            end
+        else
+            x2 = 0;
+        end
+    end
+    
+    if iscell(x1)
+        rel_norm = 0;
+        for ii = 1:length(x1)
+            tmp = norm(x1{ii}(:)-x2{ii}(:))/(norm(x1{ii}(:))+eps);
+            if tmp>rel_norm
+                rel_norm = tmp;
+            end
+        end
+    else
+        rel_norm = norm(x1(:)-x2(:))/(norm(x1(:))+eps);
+    end
+
+
+    x_old = x1;
+end
+
 
