@@ -8,6 +8,7 @@ function s = fb_based_primal_dual_alg()
 %           param.algo = fb_based_primal_dual();
 %           sol = solvep(x0, {f1, f2, f3}, param);
 %
+% see also: fb_based_primal_dual
 
 % This function returns a structure with 4 fields:
 % 1) The name of the solver. This is used to select the solvers.

@@ -37,6 +37,8 @@ s.finalize = @(x_0, fg, Fp, sol, s, param) sol;
 %
 %
 % [1] playing with duality, primal dual ... Komodakis, Pesquet.
+%
+% see also: fbf_primal_dual
 end
 
 

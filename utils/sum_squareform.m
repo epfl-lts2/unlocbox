@@ -5,8 +5,8 @@ function [S, St] = sum_squareform(n, mask)
 %       S*w = sum(W),       where w = squareform(W)
 %
 %   Usage:
-%           [S, St] = LG_create_S_matrix(n)
-%           [S, St] = LG_create_S_matrix(n, mask)
+%           [S, St] = sum_squareform(n)
+%           [S, St] = sum_squareform(n, mask)
 %
 %   Input parameters:
 %           n:  size of matrix W

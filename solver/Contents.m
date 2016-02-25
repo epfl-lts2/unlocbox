@@ -15,7 +15,7 @@
 %    GRADIENT_DESCENT   -  Simple gradient descent solver.
 %    POCS               -  Projection onto convex sets.
 %
-%  Composed solver
+%  Composed solvers
 %    RLR                -  Regularized Linear Regresssion solver (special case of forward-backward).
 %    SOLVE_BPDN         -  Solve a BPDN (Basis Pursuit denoising) problem.
 %    SOLVE_TVDN         -  Solve a TVDN (TV denoising) problem.
@@ -23,6 +23,7 @@
 %  Demo solver
 %    DEMO_FORWARD_BACKWARD_ALG - Example solver
 %
-%  For help, bug reports, suggestions etc. please send email to
+%  For help, bug reports, suggestions etc. please send an email to
 %  unlocbox (at) groupes (dot) epfl (dot) ch
 %
+% see also: solvep prox

@@ -24,16 +24,36 @@ function [sol, info] = solvep(x_0, F, param)
 %   could significantly reduce the computation time
 %
 %   *F* is an array of structure representing convex function to be
-%   minimized. Those Functions
-%   can be minimized thanks to their gradient (if they are differentiable)
-%   or thanks to their proximal operator. As a result the algorithm will
-%   needs some of those operators. The easiest way to define a 
-%   function *f1* is to create a struture with the fields f1.eval, f1.grad
-%   and f1.prox. Those field all contatains an inline function that
-%   compute respectively the evaluation of the function itself, the
-%   gradient or the proximal operator. Depending on the solver, not all
-%   this operators are necessary. See each solver documentation for
-%   details. When three functions are defined, F = {f1, f2, f3}.
+%   minimized. These functions can be minimized thanks to:
+%   1) their gradient (only if they are differentiable) OR
+%   2) their proximal operator.
+%   As a result the algorithm will need at least one of the above. To
+%   define a function *f1* you usually need to either create a structure
+%   with the fields
+%   1) f1.eval  AND
+%   2) f1.prox
+%   that is needed in case of non-differentiable functions *f1*, OR a
+%   structure with the fields
+%   1) f1.eval  AND
+%   2) f1.grad  AND
+%   3) f1.beta
+%   The fields f1.eval, f1.prox and f1.grad contain an inline function that
+%   computes respectively the evaluation of the function *f1* itself, its
+%   proximal operator or its gradient. The field f1.beta usually needed for
+%   differentiable functions is an upper bound of the Lipschitz constant of
+%   the gradient of f1 (i.e. the squared norm of the gradient operator).
+%
+%   Depending on the solver, not all this operators are necessary. Also,
+%   depending on the existence of the above field, solvep chooses a
+%   different solver. See each solver documentation for details.
+%
+%   When three functions are defined, F = {f1, f2, f3}, then primal dual
+%   algorithms are used, in that case the linear operator that brings us
+%   from the primal to the dual space and the adjoint operator should be
+%   defined:
+%   1) `f1.L`  : linear operator, matrix or operator (default identity)
+%   2) `f1.Lt` : adjoint of f1.L, matrix or operator (default identity)
+%   3) `f1.norm_L` : upper bound of the norm of operator L (default: 1)
 %   
 %   *param* a Matlab structure containing the following fields:
 %
@@ -105,6 +125,7 @@ function [sol, info] = solvep(x_0, F, param)
 %
 %   * *info.dual_var* : Final dual variables.
 %   
+% see also: solver 
 
 
 % Author: Nathanael Perraudin
