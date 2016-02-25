@@ -78,7 +78,7 @@ function [sol,info] = prox_l2grad(x, gamma, param)
 
 % Author: Nathanael Perraudin
 % Date: Nov 2012
-%
+% Testing: test_prox_l2grad
 
 % Start the time counter
 t1 = tic;
@@ -138,12 +138,13 @@ if param.tight
         % a) indices
         l=(0:L-1)';
         q=(0:Q-1);
-        % b) values
+        % b) values(columns)
         eig_l = (2-2*cos(2*pi*l/L));
         eig_q = (2-2*cos(2*pi*q/Q));
         % c) Compute the radius for the kernel
-        rho = repmat(eig_l,1,Q) + repmat(eig_q,L,1);
-
+        % rho = repmat(eig_l,1,Q) + repmat(eig_q,L,1);
+        rho = bsxfun(@plus, eig_l, eig_q);
+        
         % Perform the filtering
         sol=x+1/param.nu*param.At(ifft2(fft2(temp).*...
             repmat(h(rho),[1,1,size(temp,3)]))-temp);

@@ -55,7 +55,7 @@ function [sol,info] = prox_l2gradfourier(x, gamma, param)
 
 % Author: Nathanael Perraudin
 % Date: Jan 2013
-%
+% Testing: test_prox_l2grad
 
 % Start the time counter
 t1 = tic;

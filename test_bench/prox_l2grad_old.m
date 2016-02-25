@@ -81,7 +81,7 @@ p=param.deriveorder;
 
 
 % useful function
-h=@(t) 1./(1+param.weights*gamma*t).^p;
+h=@(t) 1./(1+2*param.weights*gamma*t).^p;
 
 % size of the signal
 
