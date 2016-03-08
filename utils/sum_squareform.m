@@ -1,11 +1,6 @@
 function [S, St] = sum_squareform(n, mask)
-% SUM_SQUAREFORM: sparse matrix that sums the squareform of a vector
-%
-%   Creates sparse matrices S, St = S' so that
-%       S*w = sum(W),       where w = squareform(W)
-%
-%   Usage:
-%           [S, St] = sum_squareform(n)
+%SUM_SQUAREFORM: sparse matrix that sums the squareform of a vector
+%   Usage:  [S, St] = sum_squareform(n)
 %           [S, St] = sum_squareform(n, mask)
 %
 %   Input parameters:
@@ -16,6 +11,8 @@ function [S, St] = sum_squareform(n, mask)
 %         S:    matrix so that S*w = sum(W) for vector w = squareform(W)
 %         St:   the adjoint of S
 %
+%   Creates sparse matrices S, St = S' so that
+%       S*w = sum(W),       where w = squareform(W)
 %
 %   The mask is used for large scale computations where only a few
 %   non-zeros in W are to be summed. It needs to be the same size as w,
@@ -38,10 +35,9 @@ function [S, St] = sum_squareform(n, mask)
 %   S = S(:, ind_i);
 %   St = St(ind_i, :);
 %
+%   See also squareform_sp
 %
-%
-% see also squareform_sp
-%
+
 %
 % code author: Vassilis Kalofolias
 % date: June 2015
