@@ -107,8 +107,8 @@ function errors = test_gradient_descent()
     f.grad = @(x) 2*A'*(A*x-y);
     f.beta = 2*norm(A)^2;
     
-    param.tol = 100 * eps;
-    param.maxit = 1001;
+    param.tol = 10 * eps;
+    param.maxit = 2001;
     param.verbose = 0;
     sol2 = gradient_descent(x0,f,param);
 

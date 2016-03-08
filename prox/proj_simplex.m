@@ -41,8 +41,7 @@ function [sol, info] = proj_simplex(x, ~, param)
 %
 %   See also:  proj_linear_eq, proj_b1
 %
-% References: Duchi, Shalev, Singer, Chandra, Efficient Projections onto
-% the l1-Ball for Learning in High Dimensions 
+%   References: duchi2008efficient
 
 % TODO: implement "figure 2" algorithm of same paper!! (difficult to
 % vectorize!)
