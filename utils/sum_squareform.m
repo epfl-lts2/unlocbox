@@ -9,23 +9,21 @@ function [S, St] = sum_squareform(n, mask)
 %           [S, St] = sum_squareform(n, mask)
 %
 %   Input parameters:
-%           n:  size of matrix W
-%           mask: if given, S will only contain the columns corresponding
-%                   to non-zeros in the mask. Used for large scale
-%                   computations where only a few non-zeros in W are to be
-%                   summed. 
-%                   It needs to be the same size as w, n(n-1)/2 elements
-%                   See the example below for more details of usage.
+%         n:    size of matrix W
+%         mask: if given, S only contain the columns indicated by the mask
 %
 %   Output parameters:
-%           S:      matrix so that S*w = sum(W) for vector w =
-%                   squareform(W). 
-%                   Size: S is (n) by (n(n-1)/2) if no mask is given.
-%                         If mask is given, the size of S is (n by nnz(w))
-%           St:     the adjoint of S
+%         S:    matrix so that S*w = sum(W) for vector w = squareform(W)
+%         St:   the adjoint of S
 %
+%
+%   The mask is used for large scale computations where only a few
+%   non-zeros in W are to be summed. It needs to be the same size as w,
+%   n(n-1)/2 elements. See the example below for more details of usage.
 %
 %   Properties of S:
+%   * size(S) = [n, (n(n-1)/2)]     % if no mask is given.
+%   * size(S, 2) = nnz(w)           % if mask is given
 %   * norm(S)^2 = 2(n-1)
 %   * sum(S) = 2*ones(1, n*(n-1)/2)
 %   * sum(St) = sum(squareform(mask))   -- for full mask = (n-1)*ones(n,1)
@@ -68,7 +66,7 @@ if mask_given
         error('mask size has to be n(n-1)/2');
     end
     
-    %% TODO: make more efficient! (Maybe impossible)
+    % TODO: make more efficient! (Maybe impossible)
     if iscolumn(mask)
         [ind_vec, ~] = find(mask);
     else

@@ -6,11 +6,12 @@ function w = squareform_sp(w)
 % where w = vector and W = matrix
 %
 %   Input parameters
-%       - w, sparse vector with n(n-1)/2 elements or
-%       - W, matrix with size [n, n] and zero diagonal
+%       w: sparse vector with n(n-1)/2 elements OR
+%       W: matrix with size [n, n] and zero diagonal
 %
 %   Output:
-%       - matrix form of input vector OR vector form of input matrix
+%       W: matrix form of input vector w OR
+%       w: vector form of input matrix W
 %
 % This function is to be used instead of squareform.m when the matrix W or
 % the vector w is sparse. For large scale computations, e.g. for learning
