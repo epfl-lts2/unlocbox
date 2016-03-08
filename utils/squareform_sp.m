@@ -10,7 +10,6 @@ function w = squareform_sp(w)
 %       W: matrix form of input vector w OR
 %       w: vector form of input matrix W
 %
-%
 %   This function is to be used instead of squareform.m when the matrix W
 %   or the vector w is sparse. For large scale computations, e.g. for
 %   learning the graph structure of a big graph it is necessary to take
@@ -18,11 +17,11 @@ function w = squareform_sp(w)
 %
 %   Example:::
 %
-%   B = sprand(8, 8, 0.1);
-%   B = B+B';
-%   B(1:9:end) = 0;
-%   b = squareform_sp(B);
-%   Bs = squareform_sp(b);
+%       B = sprand(8, 8, 0.1);
+%       B = B+B';
+%       B(1:9:end) = 0;
+%       b = squareform_sp(B);
+%       Bs = squareform_sp(b);
 %
 %   See also: squareform sum_squareform pdist
 
@@ -99,3 +98,5 @@ else
     new_ind = ind_j + (ind_i-1)*n - ind_i.*(ind_i+1)/2;
     w = sparse(new_ind, 1, s, n*(n-1)/2, 1);
 end    
+
+end

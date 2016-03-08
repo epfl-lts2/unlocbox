@@ -1390,7 +1390,7 @@ function errors = test_primal_dual()
     f21.prox = @(x,T) prox_l1(x,T,paraml11);    
     f21.L = A;
     f21.Lt = At;
-    f21.norm_L = 1;
+    f21.norm_L = norm(Mat)^2;
     
     paraml12.verbose = 0;
     f22.eval = @(x) norm(x,1);
@@ -1398,7 +1398,6 @@ function errors = test_primal_dual()
     
     param.tol = 100*eps;
     param.verbose = 1;
-    param.gamma = 0.1;
     param.maxit = 1000;
      
     paramb2.verbose = 0;

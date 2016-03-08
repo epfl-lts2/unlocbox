@@ -1,5 +1,5 @@
 function [S, St] = sum_squareform(n, mask)
-%SUM_SQUAREFORM: sparse matrix that sums the squareform of a vector
+%SUM_SQUAREFORM sparse matrix that sums the squareform of a vector
 %   Usage:  [S, St] = sum_squareform(n)
 %           [S, St] = sum_squareform(n, mask)
 %
@@ -25,17 +25,16 @@ function [S, St] = sum_squareform(n, mask)
 %   * sum(S) = 2*ones(1, n*(n-1)/2)
 %   * sum(St) = sum(squareform(mask))   -- for full mask = (n-1)*ones(n,1)
 %
+%   Example::
+%           % if mask is given, the resulting S are the ones we would get with the
+%           % following operations (but memory efficiently):
+%           [S, St] = sum_squareform(n);
+%           [ind_i, ~, w] = find(mask(:));
+%           % get rid of the columns of S corresponding to zeros in the mask
+%           S = S(:, ind_i);
+%           St = St(ind_i, :);
 %
-%   Example: 
-%   % if mask is given, the resulting S are the ones we would get with the
-%   % following operations (but memory efficiently):
-%   [S, St] = sum_squareform(n);
-%   [ind_i, ~, w] = find(mask(:));
-%   % get rid of the columns of S corresponding to zeros in the mask
-%   S = S(:, ind_i);
-%   St = St(ind_i, :);
-%
-%   See also squareform_sp
+%   See also: squareform_sp
 %
 
 %
@@ -119,3 +118,5 @@ end
 
 St = sparse([1:ncols, 1:ncols], [I, J], 1, ncols, n);
 S = St';
+
+end
