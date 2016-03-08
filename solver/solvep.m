@@ -125,7 +125,7 @@ function [sol, info] = solvep(x_0, F, param)
 %
 %   * *info.dual_var* : Final dual variables.
 %   
-% see also: solver 
+%   See also: solver 
 
 
 % Author: Nathanael Perraudin

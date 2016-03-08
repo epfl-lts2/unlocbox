@@ -150,7 +150,7 @@
 %   For instance, the function $\|Ax-y\|_2^2$ is defined in MATLAB by::
 %
 %           fsmooth.grad = @(x) 2 * A' * (A*x-y);
-%           fsmooth.eval = @(x) norm(A*x-y);
+%           fsmooth.eval = @(x) norm(A*x-y)^2;
 %           fsmooth.beta = 2 * norm(A)^2;
 %
 %   The Lipschitz constant of a the gradient is defined as:
@@ -188,7 +188,7 @@
 %
 %     ..        x^* = prox_{f}(x^*)  = argmin_{x} 1/2 ||x-x^*||_2^2  + f(x)  
 %
-%     .. math:: x^* = prox_{f} (x^* =) = arg \min_{x} \frac{1}{2} \|x-x^* =\|_2^2 + f(x)
+%     .. math:: x^* = prox_{f} (x^* ) = arg \min_{x} \frac{1}{2} \|x-x^* \|_2^2 + f(x)
 %
 %   In a sense, proximity operators perform a regularized minimization of
 %   the function $f$. However, they also provide a framework to handle

@@ -35,3 +35,8 @@
 %  For help, bug reports, suggestions etc. please send email to
 %  unlocbox (at) groupes (dot) epfl (dot) ch
 %
+
+% To be done 
+% sum_squareform
+% squareform_sp
+
