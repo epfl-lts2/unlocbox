@@ -25,7 +25,7 @@ function w = squareform_sp(w)
 %   b = squareform_sp(B);
 %   Bs = squareform_sp(b);
 %
-% See also: squareform sum_squareform pdist
+% See also: squareform sum_squareform pdist, zero_diag
 %
 % Date: December 2015
 % Author: Vassilis Kalofolias
