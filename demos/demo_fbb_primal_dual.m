@@ -1,4 +1,4 @@
-%DEMO_FBB_PRIMAL_DUAL  Example of use of the forward backward based primal dual  solver
+%DEMO_FBB_PRIMAL_DUAL Example of use of the forward backward based primal dual  solver
 %
 %   We present an example of the the forward backward based primal dual
 %   solver through an image de-noising, in-painting problem. We express the
@@ -20,7 +20,7 @@
 %
 %      Results
 %
-%   
+%      
 %
 %   References: komodakis2014playing
 
@@ -96,8 +96,8 @@ imagesc_gray(img, 1, '(a) Original image',221,[0 1]);
 imagesc_gray(noisy_img, 1, '(b) Noisy image',222,[0 1]);
 imagesc_gray(b, 1, '(c) Measurements',223,[0 1]);
 imagesc_gray(sol, 1, '(d) Solution of optimization',224,[0 1]);  
-paramplot.position = [100 100 500 500];
-gsp_plotfig('inpainting_fbb_primal_dual',paramplot);
+%paramplot.position = [100 100 500 500];
+%gsp_plotfig('inpainting_fbb_primal_dual',paramplot);
 
 %% Closing the toolbox
 close_unlocbox();

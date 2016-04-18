@@ -2,6 +2,7 @@ function n_errors = test_squareform
 
 n_errors = test_squareform_sp + test_sum_squareform;
 
+
 end
 
 
@@ -96,20 +97,6 @@ if norm(ws - w, 'fro') / norm(w, 'fro') > tol
     n_errors = n_errors + 1;
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-% create operators to be tested
-[S, St] = sum_squareform(n);
 
 
 

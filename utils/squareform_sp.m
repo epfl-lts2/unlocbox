@@ -1,36 +1,34 @@
 function w = squareform_sp(w)
 %SQUAREFORM_SP Sparse counterpart of matlab's squareform
 %   Usage: w = squareform_sp(W);
-%          W = squareform_sp(w);
 %
-% where w = vector and W = matrix
+%   Input parameters:
+%       w: sparse vector with n(n-1)/2 elements OR
+%       W: matrix with size [n, n] and zero diagonal
 %
-%   Input parameters
-%       - w, sparse vector with n(n-1)/2 elements or
-%       - W, matrix with size [n, n] and zero diagonal
+%   Output parameters:
+%       W: matrix form of input vector w OR
+%       w: vector form of input matrix W
 %
-%   Output:
-%       - matrix form of input vector OR vector form of input matrix
+%   This function is to be used instead of squareform.m when the matrix W
+%   or the vector w is sparse. For large scale computations, e.g. for
+%   learning the graph structure of a big graph it is necessary to take
+%   into account the sparsity.
 %
-% This function is to be used instead of squareform.m when the matrix W or
-% the vector w is sparse. For large scale computations, e.g. for learning
-% the graph structure of a big graph it is necessary to take into account
-% the sparsity.
+%   Example:::
 %
-% Example:::
+%       B = sprand(8, 8, 0.1);
+%       B = B+B';
+%       B(1:9:end) = 0;
+%       b = squareform_sp(B);
+%       Bs = squareform_sp(b);
 %
-%   B = sprand(8, 8, 0.1);
-%   B = B+B';
-%   B(1:9:end) = 0;
-%   b = squareform_sp(B);
-%   Bs = squareform_sp(b);
 %
 % See also: squareform sum_squareform pdist, zero_diag
-%
-% Date: December 2015
-% Author: Vassilis Kalofolias
 
-% Testing: test_squareform
+%   Date: December 2015
+%   Author: Vassilis Kalofolias
+%   Testing: test_squareform
 
 % if input is not sparse it doesn't make sense to use this function!
 if not(issparse(w)) && nnz(w)/numel(w) > 1/10
@@ -101,3 +99,5 @@ else
     new_ind = ind_j + (ind_i-1)*n - ind_i.*(ind_i+1)/2;
     w = sparse(new_ind, 1, s, n*(n-1)/2, 1);
 end    
+
+end

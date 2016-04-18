@@ -65,7 +65,7 @@ function errors = test_prox_sumg()
     param.G = {f1,f2};
     param.maxit = 100;
     param.tol = 0;
-    param.verbose = 1;
+    param.verbose = 0;
     p1 = prox_sumg(x0,T,param);
 
     param.algo = 'generalized_forward_backward'; 
