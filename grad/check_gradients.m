@@ -74,6 +74,10 @@ end
 
 if verbose
     fprintf('Theoretical derivative: %f, approximation: %f\n', df, df_approx);
-    if is_ok, fprintf('derivative seems OK\n'); end
+    if is_ok
+        fprintf('derivative seems OK\n'); 
+    else
+        fprintf('derivative NOT OK !!\n'); 
+    end
 end
 
