@@ -22,7 +22,7 @@
 %   where the $f_i$ are  lower semi-continuous convex functions and $x$ the
 %   optimization variables. For more details about the problems, please
 %   refer to the userguide (UNLocBoX-note-002) available on
-%   https://lts2research.epfl.ch/unlocbox/note/ .
+%   https://lts2.epfl.ch/unlocbox/notes/unlocbox-note-002.pdf .
 %
 %   This toolbox is based on proximal splitting methods. Those methods cut
 %   the problem into smaller (and easier) subproblems that can be solved in
@@ -129,7 +129,7 @@
 %   We have presented two ways to formulate the problem. The reader should
 %   keep in mind that choosing between one or the other problem will affect
 %   the choice of the solver and the convergence rate. With experience, one
-%   should be able to know in advance which problem will leads to the best
+%   should be able to know in advance which problem will lead to the best
 %   solver.
 %
 %   Note that there exists a bijection between the parameters $\lambda$ and
@@ -150,7 +150,7 @@
 %   For instance, the function $\|Ax-y\|_2^2$ is defined in MATLAB by::
 %
 %           fsmooth.grad = @(x) 2 * A' * (A*x-y);
-%           fsmooth.eval = @(x) norm(A*x-y);
+%           fsmooth.eval = @(x) norm(A*x-y)^2;
 %           fsmooth.beta = 2 * norm(A)^2;
 %
 %   The Lipschitz constant of a the gradient is defined as:
@@ -188,7 +188,7 @@
 %
 %     ..        x^* = prox_{f}(x^*)  = argmin_{x} 1/2 ||x-x^*||_2^2  + f(x)  
 %
-%     .. math:: x^* = prox_{f} (x^* =) = arg \min_{x} \frac{1}{2} \|x-x^* =\|_2^2 + f(x)
+%     .. math:: x^* = prox_{f} (x^* ) = arg \min_{x} \frac{1}{2} \|x-x^* \|_2^2 + f(x)
 %
 %   In a sense, proximity operators perform a regularized minimization of
 %   the function $f$. However, they also provide a framework to handle
@@ -210,7 +210,7 @@
 %
 %   It is important to keep in mind the equivalence between constraints and
 %   indicative functions. This is the trick that allows to use hard
-%   constraint with the UNLocBoX as it cannot directly handle directly. The
+%   constraint with the UNLocBoX as it cannot directly handle them. The
 %   constraints will thus be inserted in the form of indicative functions.
 %
 %   Solving problem I
@@ -223,8 +223,9 @@
 %   operator (or gradient step). In the particular case of problem (I), the
 %   solver will iteratively, first minimize a little bit the TV norm and
 %   second perform the projection on the fidelity term B2-ball. (The
-%   B2-ball is the space of point $x$ satisfying $\|Ax-y\| \leq \sqrt{N}
-%   \epsilon$). To solve problem (I), we minimize two functions:
+%   B2-ball is the space of point $x$ satisfying
+%   $\|Ax-y\|\leq\sqrt{N}\epsilon$). To solve problem (I), we minimize two
+%   functions:
 %
 %   * The TV norm: $f_1(x)= \lambda ||x||_{TV}$
 %     The proximity operator of $f_1$ is given by: 
@@ -433,7 +434,7 @@
 %
 %   Remark: The parameter *lambda* (the regularization parameter) and
 %   *epsilon* (The radius of the l2 ball) can be chosen empirically.
-%   Some methods allow to compute those parameter. However, this is far
+%   Some methods allow to compute those parameters. However, this is far
 %   beyond the scope of this tutorial.
 %
 %   

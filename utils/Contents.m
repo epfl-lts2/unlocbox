@@ -31,7 +31,14 @@
 %    vec                -  Vectorize
 %    svdecon            -  Acceleleration of svd
 %    svdsecon           -  Acceleleration of svds
+%    sum_squareform     -  Sparse matrix that sums the squareform of a vector
+%    squareform_sp      -  Sparse counterpart of matlab's squareform
 %
 %  For help, bug reports, suggestions etc. please send email to
 %  unlocbox (at) groupes (dot) epfl (dot) ch
 %
+
+% To be done 
+% sum_squareform
+% squareform_sp
+

@@ -1,8 +1,8 @@
 %
-%   In this function all test are launched
+%   In this function all tests are launched
 %   Perraudin Nathanael, 27 nov 2012
 
-%% Initialisation
+%% Initialization
 
 clear all;
 close all;
@@ -34,7 +34,7 @@ errors=errors+test_ppxa_and_other();
 errors=errors+test_ppxa();
 
 % Test prox_lp
-errors=errors+test_proxl2grad();
+errors=errors+test_prox_l2grad();
 
 % Test proj_b2
 errors=errors+test_proj_b2();
@@ -64,7 +64,7 @@ errors = errors + test_utils();
 errors = errors + test_lp();
 errors = errors + test_prox_sum_log();
 errors = errors + test_proj_simplex();
-errors = errors + test_prox_l2grad();
+errors = errors + test_squareform();
 
 
 %% Error in testbench

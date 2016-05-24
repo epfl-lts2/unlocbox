@@ -34,7 +34,7 @@ function [sol, info] = proj_b2(x, ~, param)
 %
 %   * *param.epsilon* : Radius of the L2 ball (default = 1e-3).
 %
-%   * *param.tight* : 1 if A is a tight frame or 0 if not (default = 1)
+%   * *param.tight* : 1 if A is a tight frame or 0 if not (default = 0)
 %
 %   * *param.nu* : bound on the norm of the operator A (default: 1), i.e.
 %
@@ -91,7 +91,7 @@ t1 = tic;
 if ~isfield(param, 'y'), param.y = 0; end
 if ~isfield(param, 'A'), param.A = @(x) x; param.At = @(x) x; end
 if ~isfield(param, 'epsilon'), param.epsilon = 1e-3; end
-if ~isfield(param, 'tight'), param.tight = 1; end
+if ~isfield(param, 'tight'), param.tight = 0; end
 if ~isfield(param, 'tol'), param.tol = 1e-3; end
 if ~isfield(param, 'verbose'), param.verbose = 1; end
 if ~isfield(param, 'nu'), param.nu = 1; end
