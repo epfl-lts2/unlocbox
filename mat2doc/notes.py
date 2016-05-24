@@ -1,7 +1,7 @@
 #!/bin/env python
 
 import sys,os,shutil,time
-
+#import codecs
 cwd=os.getcwd()+'/'
 sys.path.append(cwd)
 
@@ -211,6 +211,7 @@ def createindexpage(noteprefix,notesdir,allnotes,keys,filename):
     obuf.append('</table>')
         
     f=file(filename,'w')
+    #f=codecs.open(filename,'w','utf-8')
     for line in obuf:
         f.write(line+'\n')
 

@@ -69,6 +69,7 @@ function [sol, info] = proj_linear_eq( x,~, param )
 t1 = tic;
 
 if ~isfield(param, 'method'), param.method = 'exact'; end
+if ~isfield(param, 'verbose'), param.verbose = 1; end
 
 switch lower(param.method)
     case 'exact'
@@ -159,7 +160,11 @@ switch lower(param.method)
 end
 
 % Log after the projection
-err=norm(param.y-param.A *sol );
+if isnumeric(param.A)
+    err=norm(param.y-param.A *sol );
+else
+    err=norm(param.y-param.A(sol) );
+end
 if param.verbose >= 1
     fprintf(['  Proj. lin eq: ||y-Ax||_2 = %e,', ...
         ' %s, iter = %i\n'],err , crit, iter);
