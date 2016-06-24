@@ -1,5 +1,5 @@
 function [dx, dy] = gradient_op(I, wx, wy)
-%GRADIENT_OP 2 Dimentional gradient operator
+%GRADIENT_OP 2 Dimensional gradient operator
 %   Usage:  [dx, dy] = gradient_op(I)
 %           [dx, dy] = gradient_op(I, wx, wy)
 %
@@ -12,7 +12,7 @@ function [dx, dy] = gradient_op(I, wx, wy)
 %         dx    : Gradient along x
 %         dy    : Gradient along y
 %
-%   Compute the 2-dimentional gradient of I. If the input I is a cube. This
+%   Compute the 2-dimensional gradient of I. If the input I is a cube. This
 %   function will compute the gradient of all image and return two cubes.
 %
 %   See also: gradient_op3d gradient_op1d div_op laplacian_op
