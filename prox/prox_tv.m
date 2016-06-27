@@ -57,7 +57,7 @@ function [sol, info] = prox_tv(b, gamma, param)
 %   * *info.crit* : Stopping critterion used 
 %
 %
-%   See also:  prox_l1 prox_tv3d prox_tv1d
+%   See also:  prox_l1 prox_tv3d prox_tv1d gradient_op div_op
 %
 %
 %   References: beck2009fastTV

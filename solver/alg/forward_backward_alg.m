@@ -1,3 +1,4 @@
+
 function s = forward_backward_alg()
    s.name = 'FORWARD_BACKWARD';
    s.initialize = @(x_0, fg, Fp, param) forward_backward_initialize(x_0,fg,Fp,param);

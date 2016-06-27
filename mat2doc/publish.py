@@ -38,7 +38,7 @@ except:
 
 # -------- Configuration of note ------------
 
-notesdir = homefolder+'/work/svn/unlocbox-note/'
+notesdir = homefolder+'/work/git/notes/unlocbox-note/'
 notehtml = homefolder+'/work/publish/unlocbox/notes/'
 noteswww = www+'notes/'
 
@@ -237,6 +237,7 @@ if 'notesmake' in todo:
 if 'noteshtml' in todo:
 
     notes.printnoteshtml('unlocbox-note-',notesdir,notehtml)
+    #os.system(iconv -f original_charset -t utf-8 originalfile > newfile 
         
     
 

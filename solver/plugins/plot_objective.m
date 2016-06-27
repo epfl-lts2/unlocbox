@@ -31,7 +31,7 @@ end
 
 % 
 title(['Current it: ', num2str(info_iter.iter),'   Curr obj: ', ...
-    num2str(info_iter.curr_norm)]);
+    num2str(info_iter.info.objective(end))]);
 semilogy(info_iter.info.objective); title('Objective function')
 drawnow;
 
