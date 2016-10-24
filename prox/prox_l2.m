@@ -33,7 +33,7 @@ function [sol,info] = prox_l2(x, gamma, param)
 %   * *param.tightT* : 1 if $A^T$ is a tight frame or 0 if not (default = 0)
 %     Note that $A^T$ tight means $A A^T = \nu I$.
 %
-%   * *param.tight* : 1 if A is a tight frame or 0 if not (default = 1)
+%   * *param.tight* : 1 if A is a tight frame or 0 if not (default = 0)
 %     Note that $A$ tight means $A^T A = \nu I$.
 %
 %   * *param.nu* : bound on the norm of the operator A (default: 1), i.e.
@@ -86,7 +86,7 @@ if nargin<3, param=struct; end
  
 % Optional input arguments
 if ~isfield(param, 'verbose'), param.verbose = 1; end
-if ~isfield(param, 'tight'), param.tight = 1; end
+if ~isfield(param, 'tight'), param.tight = 0; end
 if ~isfield(param, 'tightT'), param.tightT = 0; end
 if ~isfield(param, 'nu'), param.nu = 1; end
 if ~isfield(param, 'tol'), param.tol = 1e-3; end

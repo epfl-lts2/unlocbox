@@ -471,7 +471,7 @@ close all;
 % Loading toolbox
 init_unlocbox();
 
-verbose=2; % verbosity level
+verbose = 2; % verbosity level
 
 %% Load an image
 
@@ -479,25 +479,25 @@ verbose=2; % verbosity level
 im_original = cameraman; 
 
 % Displaying original image
-imagesc_gray(im_original,1,'Original image');  
+imagesc_gray( im_original, 1, 'Original image' );  
 
 %% Creation of the problem
 
 sigma_noise = 5/255;
-im_noisy = im_original+sigma_noise*randn(size(im_original));
+im_noisy = im_original + sigma_noise * randn(size(im_original));
 
 % Create a matrix with randomly 50 % of zeros entry
 p = 0.5;
-matA = rand(size(im_original));
-matA = (matA>(1-p));
+matA = rand( size(im_original) );
+matA = ( matA > (1-p) );
 % Define the operator
-A=@(x) matA.*x;
+A = @(x) matA .* x;
 
 % Depleted image
-y = matA .* im_noisy;
+y = A( im_noisy );
 
 % Displaying depleted image
-imagesc_gray(y,2,'Depleted image');  
+imagesc_gray(y, 2, 'Measurements' );  
 
 %% Setting the proximity operator
 
@@ -509,13 +509,13 @@ f1.prox = @(x, T) prox_tv(x, lambda *T, paramtv);
 f1.eval = @(x) lambda * norm_tv(x);   
 
 % setting the function f2 
-param_proj.epsilon = sqrt(sigma_noise^2*length(im_original(:))*p);
+param_proj.epsilon = sqrt( sigma_noise^2 * numel(im_original) * p );
 param_proj.A = A;
 param_proj.At = A;
 param_proj.y = y;
-param_proj.verbose = verbose-1;
-f2.prox=@(x,T) proj_b2(x,T,param_proj);
-f2.eval=@(x) eps;
+param_proj.verbose = verbose - 1;
+f2.prox = @(x,T) proj_b2(x, T, param_proj);
+f2.eval = @(x) eps;
 
 
 
@@ -527,14 +527,14 @@ paramdg.maxit = 100;    % maximum number of iterations
 paramdg.tol = 1e-5;    % tolerance to stop iterating
 paramdg.gamma = 0.1 ;     % Convergence parameter
 fig = figure(100);
-paramdg.do_sol=@(x) plot_image(x,fig); % plotting plugin
+paramdg.do_sol = @(x) plot_image(x,fig); % plotting plugin
 
 % solving the problem with Douglas Rachord
 paramdg.method = 'douglas_rachford';
-sol = solvep(y,{f1,f2},paramdg);
+sol = solvep( y, {f1, f2}, paramdg );
 
 %% Displaying the result
-imagesc_gray(sol,3,'Problem I - Douglas Rachford');   
+imagesc_gray( sol, 3, 'Problem I - Douglas Rachford' );   
 
 
 %% Defining the function for problem II
@@ -543,12 +543,12 @@ lambda = 0.05;
 % setting the function f1 (norm TV)
 paramtv.verbose = verbose-1;
 paramtv.maxit = 50;
-f1.prox = @(x, T) prox_tv(x, lambda *T, paramtv);
+f1.prox = @(x, T) prox_tv(x, lambda * T, paramtv);
 f1.eval = @(x) lambda * norm_tv(x);
 
 % setting the function f3
-f3.grad = @(x) 2*A(A(x)-y);
-f3.eval = @(x) norm(A(x)-y,'fro')^2;
+f3.grad = @(x) 2 * A( A(x) - y );
+f3.eval = @(x) norm( A(x) - y, 'fro' )^2;
 f3.beta = 2;
 
 % To be able to use also Douglas Rachford
@@ -556,34 +556,32 @@ param_l2.A = A;
 param_l2.At = A;
 param_l2.y = y;
 param_l2.verbose = verbose-1;
-param_l2.tight = 0;
+param_l2.tightT = 1;
+param_l2.pcg = 0;
 param_l2.nu = 1;
-f3.prox=@(x,T) prox_l2(x,T,param_l2);
+f3.prox = @(x,T) prox_l2( x, T, param_l2 );
 
 %% Solving problem II (forward backward)
-% solving the problem with Douglas Rachord
 paramfw.verbose = verbose;    % display parameter
 paramfw.maxit = 100;    % maximum number of iterations
 paramfw.tol = 1e-5;    % tolerance to stop iterating
 fig = figure(100);
-paramfw.do_sol=@(x) plot_image(x,fig); % plotting plugin
+paramfw.do_sol = @(x) plot_image(x, fig); % plotting plugin
 paramfw.method = 'forward_backward';
-sol21 = solvep(y,{f1,f3},paramfw);
-
+sol21 = solvep(y, {f1, f3}, paramfw );
+close(fig);
 %% Displaying the result
-imagesc_gray(sol21,4,'Problem II - Forward Backward');   
+imagesc_gray(sol21, 4, 'Problem II - Forward Backward' );   
 
 %% Solving problem II (Douglas Rachford)
-
 paramdg.method = 'douglas_rachford';
 paramdg.gamma = 0.5 ;     % Convergence parameter
 fig = figure(100);
-paramdg.do_sol=@(x) plot_image(x,fig); % plotting plugin
-sol22 = douglas_rachford(y,f3,f1,paramdg);
-
+paramdg.do_sol = @(x) plot_image(x,fig); % plotting plugin
+sol22 = douglas_rachford(y, f3, f1, paramdg );
+close(fig);
  %% Displaying the result
-imagesc_gray(sol22,5,'Problem II - Douglas Rachford');  
+imagesc_gray(sol22, 5, 'Problem II - Douglas Rachford' );  
 
 %% Close the UNLcoBoX
-close(fig);
 close_unlocbox();
