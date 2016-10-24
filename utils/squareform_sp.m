@@ -33,7 +33,7 @@ function w = squareform_sp(w)
 % if input is not sparse it doesn't make sense to use this function!
 if not(issparse(w)) && nnz(w)/numel(w) > 1/10
     w = squareform(w);
-    warning('Use standard squareform for non sparse vector! Full version returned.');
+%     warning('Use standard squareform for non sparse vector! Full version returned.');
     return
 end
 

@@ -1,13 +1,13 @@
 function W = zero_diag(W)
 %ZERO_DIAG sets the diagonal of a matrix to 0
-%   Usage: B = gsp_distanz(A);
+%   Usage: B = zero_diag(A);
 %
 %   Input parameters:
 %       A   : input matrix
 %   Output parameters:
 %       B   : output with zero diagonal
 %
-%   Works also for non-diagonal matrices
+%   Works also for non-square matrices
 %
 %see also: squareform, squareform_sp
 

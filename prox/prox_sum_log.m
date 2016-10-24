@@ -5,9 +5,10 @@ function [sol,info] = prox_sum_log(x, gamma, param)
 %           [sol, info] = prox_sum_log(x, gamma, param)
 %
 %   Input parameters:
-%         x     : Input signal.
+%         x     : Input signal (vector or matrix!).
 %         gamma : Regularization parameter.
 %         param : Structure of optional parameters.
+%
 %   Output parameters:
 %         sol   : Solution.
 %         info : Structure summarizing informations at convergence
@@ -24,15 +25,19 @@ function [sol,info] = prox_sum_log(x, gamma, param)
 %       report negative inputs.
 %
 %   info is a Matlab structure containing the following fields:
+%   
+%   MATRICES:
+%   Note that this prox works for matrices as well. The log of the sum
+%   gives the same result independently of which dinension we perform the
+%   summation over: 
+%       sol = (x + sqrt(x.^2 + 4*gamma)) /2;
+%
+%   
 %
 %   * *info.algo* : Algorithm used
-%
 %   * *info.iter* : Number of iteration
-%
 %   * *info.time* : Time of exectution of the function in sec.
-%
 %   * *info.final_eval* : Final evaluation of the function
-%
 %   * *info.crit* : Stopping critterion used 
 %
 %
