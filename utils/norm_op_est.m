@@ -18,7 +18,8 @@ function [e, cnt] = norm_op_est(S_op, St_op, size_x, tol)
 %   corresponding linear matrix.
 %
 %   It is useful when we have a fast way to compute the operator without
-%   actually forming the matrix.
+%   actually forming the matrix. It is also useful for finding the
+%   Lipschitz constant of differentiable functions.
 %
 %   Example:::
 % 

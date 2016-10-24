@@ -1,9 +1,10 @@
 %DEMO_UNLOCBOX  Simple tutorial for the UNLocBoX
 %
-%   Welcome to the tutorial to use the UNLocBoX. In this document, we
-%   provide the basic concepts to use the toolbox and some tricks that may
-%   be very useful. You can find an introduction and some more detailed
-%   documentation in the userguide available at
+%   Welcome to the tutorial of the UNLocBoX. In this document, we provide
+%   an example application that uses the basic concepts of the toolbox.
+%   Here you will also find some tricks that may be very useful. You can
+%   find an introduction and more detailed documentation in the userguide,
+%   available at
 %   http://unlocbox.sourceforge.net/notes/unlocbox-note-002.pdf
 %
 %   This toolbox is designed to solve convex optimization problems of the
@@ -39,8 +40,8 @@
 %   * Demonstration files: examples to help you to use the toolbox
 %
 %   This toolbox is provided for free. We would be happy to receive
-%   comments, bugs information or any kind of help in order to improve the
-%   toolbox.
+%   comments, information about bugs or any other kind of help in order to
+%   improve the toolbox.
 %
 %   A simple example: Image in-painting
 %   -----------------------------------
@@ -59,7 +60,7 @@
 %   Assumptions
 %   -----------
 %
-%   In this particular example, we firstly assume that we know the position 
+%   In this particular example, we firstly assume that we know the position
 %   of the missing pixels. This happens when we know that a specific
 %   part of a photo is destroyed, or when we have sampled some of the
 %   pixels in known positions and we wish to recover the rest of the image.
@@ -71,7 +72,7 @@
 %
 %   .. figure::
 %
-%      Measurements. 50 percents of the pixels have been removed.    
+%      Measurements. 50 percent of the pixels have been removed.
 %
 %       
 %
@@ -149,8 +150,8 @@
 %
 %   For instance, the function $\|Ax-y\|_2^2$ is defined in MATLAB by::
 %
-%           fsmooth.grad = @(x) 2 * A' * (A*x-y);
-%           fsmooth.eval = @(x) norm(A*x-y)^2;
+%           fsmooth.grad = @(x) 2 * A' * (A*x - y);
+%           fsmooth.eval = @(x) norm(A*x - y)^2;
 %           fsmooth.beta = 2 * norm(A)^2;
 %
 %   The Lipschitz constant of a the gradient is defined as:
@@ -261,7 +262,7 @@
 %     Not that for problem (I), lambda can be dropped or set to 1. This
 %     parameter will be used when solving problem (II).
 %
-%   * $f_2$ is the indicator function of the set S defined by $||Ax-y||_2 <\epsilon$ 
+%   * $f_2$ is the indicator function of the set S defined by $||Ax-y||_2 < \epsilon$ 
 %     The proximity operator of $f_2$ is: 
 %
 %     .. prox_{f2,gamma} (z) = argmin_{x} 1/2 ||x-z||_2^2  +  gamma i_S( x ),
@@ -385,8 +386,8 @@
 %   modification of the previous code. First we define another function as
 %   follow::
 %
-%           f3.grad = @(x) 2*A(A(x)-y);
-%           f3.eval = @(x) norm(A(x)-y,'fro');
+%           f3.grad = @(x) 2*A(A(x) - y);
+%           f3.eval = @(x) norm(A(x) - y, 'fro')^2;
 %           f3.beta = 2;
 %
 %   The structure of *f3* contains a field *f3.grad*. In fact, the l2-norm 
@@ -406,16 +407,16 @@
 %           param_l2.At = A;
 %           param_l2.y = y;
 %           param_l2.verbose = 1;
-%           f3.prox = @(x,T) prox_l2(x,T,param_l2);   
-%           f3.eval = @(x) norm(A(x)-y,'fro');
+%           f3.prox = @(x,T) prox_l2(x, T, param_l2);   
+%           f3.eval = @(x) norm(A(x) - y, 'fro')^2;
 %   
 %           param.method = "douglas_rachford"     
-%           sol22 = solvep(y,{f1,f3},param); 
+%           sol22 = solvep(y, {f1,f3}, param); 
 %
-%   We remind that `forward_backward` will not use the field *f3.prox* and
-%   `douglas_rachford` will not use the field *f3.grad*.
+%   We remind the user that `forward_backward` will not use the field
+%   *f3.prox* and `douglas_rachford` will not use the field *f3.grad*.
 %
-%   These two solvers will converge (up to numerical errors) to the same
+%   These two solvers will converge (up to numerical error) to the same
 %   solution. However, convergence speed might be different. As we perform
 %   only 100 iterations with both of them, we do not obtain exactly the
 %   same result.
@@ -469,7 +470,7 @@ clear;
 close all;
 
 % Loading toolbox
-init_unlocbox();
+init_unlocbox;
 
 verbose = 2; % verbosity level
 
@@ -479,7 +480,7 @@ verbose = 2; % verbosity level
 im_original = cameraman; 
 
 % Displaying original image
-imagesc_gray( im_original, 1, 'Original image' );  
+imagesc_gray(im_original, 1, 'Original image');  
 
 %% Creation of the problem
 
@@ -488,33 +489,33 @@ im_noisy = im_original + sigma_noise * randn(size(im_original));
 
 % Create a matrix with randomly 50 % of zeros entry
 p = 0.5;
-matA = rand( size(im_original) );
-matA = ( matA > (1-p) );
+matA = rand(size(im_original));
+matA = (matA > (1-p));
 % Define the operator
 A = @(x) matA .* x;
 
-% Depleted image
-y = A( im_noisy );
+% Masked image
+y = A(im_noisy);
 
-% Displaying depleted image
-imagesc_gray(y, 2, 'Measurements' );  
+% Displaying masked image
+imagesc_gray(y, 2, 'Measurements');
 
 %% Setting the proximity operator
 
 lambda = 1;
 % setting the function f1 (norm TV)
-paramtv.verbose = verbose-1;
+paramtv.verbose = verbose - 1;
 paramtv.maxit = 100;
-f1.prox = @(x, T) prox_tv(x, lambda *T, paramtv);
+f1.prox = @(x, T) prox_tv(x, lambda*T, paramtv);
 f1.eval = @(x) lambda * norm_tv(x);   
 
 % setting the function f2 
-param_proj.epsilon = sqrt( sigma_noise^2 * numel(im_original) * p );
+param_proj.epsilon = sqrt(sigma_noise^2 * numel(im_original) * p);
 param_proj.A = A;
 param_proj.At = A;
 param_proj.y = y;
 param_proj.verbose = verbose - 1;
-f2.prox = @(x,T) proj_b2(x, T, param_proj);
+f2.prox = @(x, T) proj_b2(x, T, param_proj);
 f2.eval = @(x) eps;
 
 
@@ -527,14 +528,14 @@ paramdg.maxit = 100;    % maximum number of iterations
 paramdg.tol = 1e-5;    % tolerance to stop iterating
 paramdg.gamma = 0.1 ;     % Convergence parameter
 fig = figure(100);
-paramdg.do_sol = @(x) plot_image(x,fig); % plotting plugin
+paramdg.do_sol = @(x) plot_image(x, fig); % plotting plugin
 
 % solving the problem with Douglas Rachord
 paramdg.method = 'douglas_rachford';
-sol = solvep( y, {f1, f2}, paramdg );
+sol = solvep(y, {f1, f2}, paramdg);
 
 %% Displaying the result
-imagesc_gray( sol, 3, 'Problem I - Douglas Rachford' );   
+imagesc_gray(sol, 3, 'Problem I - Douglas Rachford');
 
 
 %% Defining the function for problem II
@@ -547,19 +548,19 @@ f1.prox = @(x, T) prox_tv(x, lambda * T, paramtv);
 f1.eval = @(x) lambda * norm_tv(x);
 
 % setting the function f3
-f3.grad = @(x) 2 * A( A(x) - y );
-f3.eval = @(x) norm( A(x) - y, 'fro' )^2;
+f3.grad = @(x) 2 * A(A(x) - y);
+f3.eval = @(x) norm(A(x) - y, 'fro')^2;
 f3.beta = 2;
 
 % To be able to use also Douglas Rachford
 param_l2.A = A;
 param_l2.At = A;
 param_l2.y = y;
-param_l2.verbose = verbose-1;
+param_l2.verbose = verbose - 1;
 param_l2.tightT = 1;
 param_l2.pcg = 0;
 param_l2.nu = 1;
-f3.prox = @(x,T) prox_l2( x, T, param_l2 );
+f3.prox = @(x,T) prox_l2(x, T, param_l2);
 
 %% Solving problem II (forward backward)
 paramfw.verbose = verbose;    % display parameter
@@ -568,7 +569,7 @@ paramfw.tol = 1e-5;    % tolerance to stop iterating
 fig = figure(100);
 paramfw.do_sol = @(x) plot_image(x, fig); % plotting plugin
 paramfw.method = 'forward_backward';
-sol21 = solvep(y, {f1, f3}, paramfw );
+sol21 = solvep(y, {f1, f3}, paramfw);
 close(fig);
 %% Displaying the result
 imagesc_gray(sol21, 4, 'Problem II - Forward Backward' );   
@@ -577,11 +578,11 @@ imagesc_gray(sol21, 4, 'Problem II - Forward Backward' );
 paramdg.method = 'douglas_rachford';
 paramdg.gamma = 0.5 ;     % Convergence parameter
 fig = figure(100);
-paramdg.do_sol = @(x) plot_image(x,fig); % plotting plugin
-sol22 = douglas_rachford(y, f3, f1, paramdg );
+paramdg.do_sol = @(x) plot_image(x, fig); % plotting plugin
+sol22 = douglas_rachford(y, f3, f1, paramdg);
 close(fig);
  %% Displaying the result
-imagesc_gray(sol22, 5, 'Problem II - Douglas Rachford' );  
+imagesc_gray(sol22, 5, 'Problem II - Douglas Rachford');
 
 %% Close the UNLcoBoX
-close_unlocbox();
+close_unlocbox;
