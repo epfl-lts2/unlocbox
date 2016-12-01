@@ -72,6 +72,12 @@
 %
 %   .. figure::
 %
+%      Noisy image.
+%
+%
+%
+%   .. figure::
+%
 %      Measurements. 50 percent of the pixels have been removed.
 %
 %       
@@ -484,7 +490,7 @@ imagesc_gray(im_original, 1, 'Original image');
 
 %% Creation of the problem
 
-sigma_noise = 5/255;
+sigma_noise = 10/255;
 im_noisy = im_original + sigma_noise * randn(size(im_original));
 
 % Create a matrix with randomly 50 % of zeros entry
@@ -497,8 +503,11 @@ A = @(x) matA .* x;
 % Masked image
 y = A(im_noisy);
 
+% Displaying the noisy image
+imagesc_gray(im_noisy, 2, 'Noisy image');
+
 % Displaying masked image
-imagesc_gray(y, 2, 'Measurements');
+imagesc_gray(y, 3, 'Measurements');
 
 %% Setting the proximity operator
 
@@ -535,7 +544,7 @@ paramdg.method = 'douglas_rachford';
 sol = solvep(y, {f1, f2}, paramdg);
 
 %% Displaying the result
-imagesc_gray(sol, 3, 'Problem I - Douglas Rachford');
+imagesc_gray(sol, 4, 'Problem I - Douglas Rachford');
 
 
 %% Defining the function for problem II
@@ -572,7 +581,7 @@ paramfw.method = 'forward_backward';
 sol21 = solvep(y, {f1, f3}, paramfw);
 close(fig);
 %% Displaying the result
-imagesc_gray(sol21, 4, 'Problem II - Forward Backward' );   
+imagesc_gray(sol21, 5, 'Problem II - Forward Backward' );   
 
 %% Solving problem II (Douglas Rachford)
 paramdg.method = 'douglas_rachford';
@@ -582,7 +591,7 @@ paramdg.do_sol = @(x) plot_image(x, fig); % plotting plugin
 sol22 = douglas_rachford(y, f3, f1, paramdg);
 close(fig);
  %% Displaying the result
-imagesc_gray(sol22, 5, 'Problem II - Douglas Rachford');
+imagesc_gray(sol22, 6, 'Problem II - Douglas Rachford');
 
 %% Close the UNLcoBoX
 close_unlocbox;

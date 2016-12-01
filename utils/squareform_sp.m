@@ -15,7 +15,7 @@ function w = squareform_sp(w)
 %   learning the graph structure of a big graph it is necessary to take
 %   into account the sparsity.
 %
-%   Example:::
+%   Example::
 %
 %       B = sprand(8, 8, 0.1);
 %       B = B+B';
@@ -24,7 +24,7 @@ function w = squareform_sp(w)
 %       Bs = squareform_sp(b);
 %
 %
-% See also: squareform sum_squareform pdist, zero_diag
+%   See also: squareform sum_squareform pdist, zero_diag
 
 %   Date: December 2015
 %   Author: Vassilis Kalofolias
