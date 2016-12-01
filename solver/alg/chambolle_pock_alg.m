@@ -88,8 +88,9 @@ function [sol, s, param] = chambolle_pock_initialize(x_0,fg,Fp,param)
 
 
     if param.lambda>=1
-        warning('Reducing param.lambda to 0.99');
-        param.lambda = 0.99;
+        warning('param.lambda is greater than 1!');
+        % warning('Reducing param.lambda to 0.99');
+        % param.lambda = 0.99;
     end
 
 
