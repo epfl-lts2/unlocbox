@@ -15,14 +15,15 @@ function [sz] = soft_threshold(z,T)
 % Nathanael Perraudin
 % Date: 14 May 2013
 
-tic
+
+size_z = size(z);
+
 if all(T==0)
     sz = z;  %identity
 elseif any(T<0)
     error('Threshold value(s) cannot be negative!')
 elseif isscalar(T)  %for scalar threshold it is faster to compute it like this
     % handle the size
-    size_z = size(z);
     z=z(:);
     
     % This soft thresholding function only supports real signal
@@ -33,7 +34,6 @@ elseif isscalar(T)  %for scalar threshold it is faster to compute it like this
     
 else  %for vector threshold(s) it is faster to compute it like this
     % handle the size
-    size_z = size(z);
     z=z(:);
     T=T(:);
     
@@ -46,4 +46,3 @@ end
 
 % Handle the size
 sz = reshape(sz,size_z);
-toc
