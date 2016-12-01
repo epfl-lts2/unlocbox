@@ -5,29 +5,45 @@ function [sz] = soft_threshold(z,T)
 %   Input parameters:
 %         z     : Input signal
 %         T     : Threshold
+%                 if T is a vector, then thresholding is applied component-wise
+%
 %   Output parameters:
 %         sz    : Soft thresholded signal
 %   
-%   This function soft threshold z by T. It can handle complex numbers.
+%   This function soft thresholds z by T. It can handle complex input z.
 
 % Nathanael Perraudin
 % Date: 14 May 2013
 
+tic
+if all(T==0)
+    sz = z;  %identity
+elseif any(T<0)
+    error('Threshold value(s) cannot be negative!')
+elseif isscalar(T)  %for scalar threshold it is faster to compute it like this
     % handle the size
-    if T>0
-        size_z=size(z);
-        z=z(:);
-        T=T(:);
+    size_z = size(z);
+    z=z(:);
+    
+    % This soft thresholding function only supports real signal
+    % sz = sign(z).*max(abs(z)-T, 0);
+    
+    % This soft thresholding function supports complex numbers
+    sz = max(abs(z)-T,0)./(max(abs(z)-T,0)+T).*z;
+    
+else  %for vector threshold(s) it is faster to compute it like this
+    % handle the size
+    size_z = size(z);
+    z=z(:);
+    T=T(:);
+    
+    % This soft thresholding function supports complex numbers
+    % sz = max(abs(z)-T,0)./(max(abs(z)-T,0)+T).*z;
+    aux = max(abs(z)-T,0);
+    sz = aux./(aux+T).*z;
 
-        % This soft thresholding function only supports real signal
-        % sz= sign(z).*max(abs(z)-T, 0);
-
-        % This soft thresholding function supports complex numbers
-        sz = max(abs(z)-T,0)./(max(abs(z)-T,0)+T).*z;
-
-        % Handle the size
-        sz=reshape(sz,size_z);
-    else
-        sz = z;
-    end
 end
+
+% Handle the size
+sz = reshape(sz,size_z);
+toc
