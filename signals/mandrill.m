@@ -13,11 +13,11 @@ function [im]=mandrill(color)
 %
 %   `mandrill(1)` loads the color 'peppers' signal.
 %   
-%   This signal, and other standart image tests signals, can be found on
+%   This signal, and other standard image tests signals, can be found on
 %   Morgan McGuire's Computer Graphics
 %   Archive`<http://graphics.cs.williams.edu/data/images.xml>`_. 
 %
-%   For convegnience the output image is normalized by 255 and converted to
+%   For convenience the output image is normalized by 255 and converted to
 %   double.
 %
 %   Example
