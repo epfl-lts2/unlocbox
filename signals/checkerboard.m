@@ -5,7 +5,7 @@ function [im] = checkerboard()
 %   Input parameters:
 %       none
 %   Output parameters:
-%       ime    : image
+%       im    : image
 %
 %   Example
 %   -------
