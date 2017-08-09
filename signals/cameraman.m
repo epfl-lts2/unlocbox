@@ -3,13 +3,13 @@ function [im]=cameraman()
 %
 %   `cameraman` loads the 'cameraman' signal. The Cameraman (a.k.a.
 %   Photographer) is an image commonly used in image processing, especially
-%   filtering papers.  The resolution is of resolution (256 x 256).
+%   filtering papers.  The resolution is (256 x 256).
 %
-%   This signal, and other standart image tests signals, can be found on
+%   This signal, and other standard image tests signals, can be found on
 %   Morgan McGuire's Computer Graphics
 %   Archive`<http://graphics.cs.williams.edu/data/images.xml>`_. 
 %
-%   For convegnience the output image is normalized by 255 and converted to
+%   For convenience the output image is normalized by 255 and converted to
 %   double.
 %
 %   Example
