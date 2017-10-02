@@ -6,11 +6,11 @@ function [im]=barbara()
 %   range of tones and many thin line patterns. The resolution is (512 x
 %   512). 
 %
-%   This signal, and other standart image tests signals, can be found on
+%   This signal, and other standard image tests signals, can be found on
 %   Morgan McGuire's Computer Graphics
 %   Archive`<http://graphics.cs.williams.edu/data/images.xml>`_. 
 %
-%   For convegnience the output image is normalized by 255 and converted to
+%   For convenience the output image is normalized by 255 and converted to
 %   double.
 %
 %   Example
