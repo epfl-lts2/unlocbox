@@ -141,10 +141,10 @@ else % NON TIGHT FRAME CASE OR CONSTRAINT INVOLVED
         
         % L1 norm of the estimate
         dummy = param.A(sol);
-        norm_obj = .5*norm(x(:) - sol(:), 2)^2 + gamma * ...
-            sum(param.weights(:).*abs(dummy(:)-param.y(:)));
-        rel_obj = abs(norm_obj-prev_obj)/norm_obj;
         norm_l1 = gamma*sum(param.weights(:).*abs(dummy(:)-param.y(:)));
+        norm_obj = .5*norm(x(:) - sol(:), 2)^2 + norm_l1;
+        rel_obj = abs(norm_obj-prev_obj)/norm_obj;
+        
         
         % Log
         if param.verbose>1

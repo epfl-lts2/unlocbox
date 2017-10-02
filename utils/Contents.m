@@ -33,6 +33,7 @@
 %    svdsecon           -  Acceleleration of svds
 %    sum_squareform     -  Sparse matrix that sums the squareform of a vector
 %    squareform_sp      -  Sparse counterpart of matlab's squareform
+%    zero_diag          -  sets the diagonal of a matrix to 0
 %
 %  For help, bug reports, suggestions etc. please send email to
 %  unlocbox (at) groupes (dot) epfl (dot) ch

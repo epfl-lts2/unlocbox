@@ -18,6 +18,14 @@
 
 function plot_some_images(X, pix_y, pix_x, n_rows, n_cols)
 
+if nargin<5
+   n_cols = round(sqrt(size(X,2))*pix_x/pix_y);
+end
+
+if nargin<4
+   n_rows = floor(size(X,2)/n_cols);
+end
+
 % the big image
 I = zeros(pix_y * n_rows, pix_x * n_cols);
 

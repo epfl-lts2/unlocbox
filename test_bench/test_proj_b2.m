@@ -6,10 +6,44 @@ tol=10e-5;
 errors=errors+test_proj_b2_simple(tol);
 errors=errors+test_proj_b2_FISTA(tol);
 
+gsp_reset_seed(1)
+errors=errors+test1();
+
+
 
 end
 
 
+function errors = test1()
+
+errors = 0;
+
+y = randn(100,1);
+z = zeros(100,1);
+epsilon = 1.3;
+
+paramp.y = z;
+paramp.epsilon = epsilon;
+paramp.tight = 1;
+
+x = proj_b2(y,1,paramp);
+errors = errors + assert_test(norm(x-z),epsilon,1e-8,'Test proj_b2 1');
+
+z = randn(100,1);
+paramp.y = z;
+
+x = proj_b2(y,1,paramp);
+errors = errors + assert_test(norm(x-z),epsilon,1e-8,'Test proj_b2 2');
+
+A = dctmtx(100);
+paramp.A = @(x) A*x;
+paramp.At = @(x) A'*x;
+
+x = proj_b2(y,1,paramp);
+errors = errors + assert_test(norm(A*x-z),epsilon,1e-8,'Test proj_b2 3');
+
+
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  -- test proj b2 simple --  %
