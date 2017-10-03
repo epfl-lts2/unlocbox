@@ -31,9 +31,8 @@ user = 'nati'
 mat2docpath=homefolder+'/work/git/mat2doc'
 
 # Configure matlab paths
-unlocxpath = homefolder+'/work/git/toolbox/unlocbox';
-ltfatpath = homefolder+'/work/git/toolbox/ltfat';
-
+unlocxpath = homefolder+'/work/git/toolbox/unlocbox'
+ltfatpath = homefolder+'/work/git/toolbox/ltfat'
 outputdirweb= '~/work/git/website/unlocbox-html/'
 
 # -------- Configuration of note ------------
@@ -41,7 +40,7 @@ outputdirweb= '~/work/git/website/unlocbox-html/'
 notesdir = homefolder+'/work/git/notes/unlocbox-note/'
 notehtml = homefolder+'/work/publish/unlocbox/notes/'
 noteswww = homefolder+'/work/git/website/unlocbox-html/notes/'
-
+docwww = homefolder+'/work/git/website/unlocbox-html/doc/'
 
 # -------- Configuration of doc tex ------------
 fulldocnote='003'
@@ -57,6 +56,7 @@ outputdirphp=outputdir+projectname+'-php/'
 outputdirmat=outputdir+projectname+'-mat/'
 outputdirrelease=outputdir+projectname+'-release/'
 outputdirtex=outputdir+projectname+'-tex/'
+outputdirhtml=outputdir+projectname+'-html/'
 
 f=file(project+projectname+'_version')
 versionstring=f.read()[:-1]
@@ -67,7 +67,7 @@ f = open(project + 'mat2doc/startup.m', 'w')
 f.write('addpath ' + unlocxpath + '\n')
 f.write('init_unlocbox;\n\n')
 f.write('addpath ' + ltfatpath + '\n')
-f.write('ltfatstart;\n');
+f.write('ltfatstart;\n')
 f.close()
 
 
@@ -114,8 +114,8 @@ if 'package' in todo:
     # Remove unwanted files
     os.system('rm -rf '+outputdirmat+'mat2doc_old')
     os.system('rm -rf '+outputdirmat+'test_bench')
-    os.system('rm '+outputdirmat+'demos/demo_lrjs.m')
-    os.system('rm '+outputdirmat+'solver/solve_lrjs.m')
+    # os.system('rm '+outputdirmat+'demos/demo_lrjs.m')
+    # os.system('rm '+outputdirmat+'solver/solve_lrjs.m')
 
     #fname=outputdir+'/'+projectname+'-'+versionstring
     ## Create the Unix src package
@@ -139,35 +139,25 @@ if 'package' in todo:
     os.system('rm -r '+outputdir+projectname)
 
 
+# if 'sendphp' in todo:
+
+#     s="rsync -e 'ssh -p 10422' -av "+outputdirphp+' '+host+':'+www+'doc/'
+#     print s
+#     os.system(s)  
 
 
-#  Send to the server
-
-
-if 'sendphp' in todo:
-
-    s="rsync -e 'ssh -p 10422' -av "+outputdirphp+' '+host+':'+www+'doc/'
-#    s='rsync -av '+outputdirphp+' '+host+':'+www+'doc/'
-    print s
-    os.system(s)  
-
-
-#if 'sendweb' in todo:
-#	s='rsync -av --exclude=".svn" '+outputdirweb+' '+host+':'+www
-#	os.system(s)
-
-if 'sendfile' in todo:
-    fname=outputdir+projectname+'-'+versionstring
-    # later on to put file on file of sourceforge
-    # s ='rsync -e ssh '+outputdir+fname+'.tar.gz '+'nperraud@frs.sourceforge.net:/home/frs/project/'+projectname+'/'
-    s = 'cp '+fname+'.tar.gz '+outputdir+projectname+'.tar.gz '
-    os.system(s)
-    s = 'cp '+fname+'.zip '+outputdir+projectname+'.zip '
-    os.system(s)
-    s='rsync -av '+outputdir+projectname+'.tar.gz '+host+':'+www
-    os.system(s)
-    s='rsync -av '+outputdir+projectname+'.zip '+host+':'+www
-    os.system(s)
+# if 'sendfile' in todo:
+#     fname=outputdir+projectname+'-'+versionstring
+#     # later on to put file on file of sourceforge
+#     # s ='rsync -e ssh '+outputdir+fname+'.tar.gz '+'nperraud@frs.sourceforge.net:/home/frs/project/'+projectname+'/'
+#     s = 'cp '+fname+'.tar.gz '+outputdir+projectname+'.tar.gz '
+#     os.system(s)
+#     s = 'cp '+fname+'.zip '+outputdir+projectname+'.zip '
+#     os.system(s)
+#     s='rsync -av '+outputdir+projectname+'.tar.gz '+host+':'+www
+#     os.system(s)
+#     s='rsync -av '+outputdir+projectname+'.zip '+host+':'+www
+#     os.system(s)
 
 
 
@@ -195,7 +185,8 @@ if 'copytex' in todo:
             #print line
     f.close()
 
-
+if 'copyhtml' in todo:
+    os.system('rsync -av '+outputdirhtml+' '+docwww)
 
 
 #  Make the notes
@@ -204,7 +195,6 @@ if 'noteall' in todo:
     todo.append('notesmake')
     todo.append('notestexclean')
     todo.append('notescopy')
-    todo.append('notesend')
 
 if 'notesclean' in todo:
 
@@ -246,16 +236,5 @@ if 'noteshtml' in todo:
 if 'notescopy' in todo:
     os.system('rsync -av '+notehtml+' '+noteswww)
     # os.system("rsync -e 'ssh -p 10422' -av "+notehtml+' '+host+':'+noteswww);
-
-if 'sendweb' in todo:
-    pass
-#    s="rsync --verbose --archive --exclude '.git' "+outputdirweb+' '+host+':'+www
-    # s="rsync -e 'ssh -p 10422' --verbose --archive --exclude '.git' "+outputdirweb+' '+host+':'+www
-    # os.system(s)  
-
- 
-
-
-
 
 
