@@ -22,17 +22,16 @@ function [sol,info] = prox_sum_log(x, gamma, param)
 %   param is a Matlab structure containing the following fields:
 %
 %   * *param.verbose* : 0 no log, (1) print -sum(log(z)), 2 additionally
-%       report negative inputs.
-%
-%   info is a Matlab structure containing the following fields:
+%     report negative inputs.
 %   
 %   MATRICES:
 %   Note that this prox works for matrices as well. The log of the sum
 %   gives the same result independently of which dinension we perform the
-%   summation over: 
+%   summation over::
+%
 %       sol = (x + sqrt(x.^2 + 4*gamma)) /2;
 %
-%   
+%   info is a Matlab structure containing the following fields:
 %
 %   * *info.algo* : Algorithm used
 %   * *info.iter* : Number of iteration

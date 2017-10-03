@@ -124,8 +124,7 @@ function [sol, info] = solvep(x_0, F, param)
 %   * *info.rel_norm_dual* : Relative norm of the dual variable.
 %
 %   * *info.dual_var* : Final dual variables.
-%   
-%   See also: solver 
+%
 
 
 % Author: Nathanael Perraudin

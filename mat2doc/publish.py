@@ -10,43 +10,45 @@ curdir = os.path.dirname(os.path.realpath(__file__))
 
 projectname='unlocbox'
 
-if platform.system()=='Darwin':
-    homefolder='/Users/user'
+if platform.system() == 'Darwin':
+    homefolder = '/Users/nati'
 else:
-    homefolder='/home/user'
+    homefolder = '/home/nati'
 
-project=homefolder+'/'+projectname+'/'
+
+project=homefolder+'/work/git/toolbox/unlocbox/'
 
 # Configure HTML placement at remote server
 # host='nperraud,'+projectname+'@web.sourceforge.net'
 # www='/home/project-web/unlocbox/htdocs/'
 # outputdirweb= '~/work/git/website/unlocbox/'
 
-host='root@lts2srv1.epfl.ch'
-www='/var/www/html/unlocbox/'
-outputdirweb= '~/work/git/website/unlocbox/'
+
+# Configure HTML placement at remote server
+user = 'nati'
 
 # -------- Configuration of mat2doc ------------
-mat2docpath='~/mat2doc'
+mat2docpath=homefolder+'/work/git/mat2doc'
 
-try :
-    from publish_local import *
-except:
-    pass
+# Configure matlab paths
+unlocxpath = homefolder+'/work/git/toolbox/unlocbox';
+ltfatpath = homefolder+'/work/git/toolbox/ltfat';
 
-
+outputdirweb= '~/work/git/website/unlocbox-html/'
 
 # -------- Configuration of note ------------
 
 notesdir = homefolder+'/work/git/notes/unlocbox-note/'
 notehtml = homefolder+'/work/publish/unlocbox/notes/'
-noteswww = www+'notes/'
+noteswww = homefolder+'/work/git/website/unlocbox-html/notes/'
 
 
 # -------- Configuration of doc tex ------------
 fulldocnote='003'
 tutorialnote1='008'
 tutorialname1='demos/demo_unlocbox*'
+
+
 
 # -------- Automatique configuration ------------
 import conf
@@ -201,7 +203,7 @@ if 'noteall' in todo:
     todo.append('notesclean')
     todo.append('notesmake')
     todo.append('notestexclean')
-    todo.append('noteshtml')
+    todo.append('notescopy')
     todo.append('notesend')
 
 if 'notesclean' in todo:
@@ -241,14 +243,15 @@ if 'noteshtml' in todo:
         
     
 
-if 'notesend' in todo:
-#    os.system('rsync -av '+notehtml+' '+host+':'+noteswww);
-    os.system("rsync -e 'ssh -p 10422' -av "+notehtml+' '+host+':'+noteswww);
+if 'notescopy' in todo:
+    os.system('rsync -av '+notehtml+' '+noteswww)
+    # os.system("rsync -e 'ssh -p 10422' -av "+notehtml+' '+host+':'+noteswww);
 
 if 'sendweb' in todo:
+    pass
 #    s="rsync --verbose --archive --exclude '.git' "+outputdirweb+' '+host+':'+www
-    s="rsync -e 'ssh -p 10422' --verbose --archive --exclude '.git' "+outputdirweb+' '+host+':'+www
-    os.system(s)  
+    # s="rsync -e 'ssh -p 10422' --verbose --archive --exclude '.git' "+outputdirweb+' '+host+':'+www
+    # os.system(s)  
 
  
 

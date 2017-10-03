@@ -9,7 +9,7 @@ function W = zero_diag(W)
 %
 %   Works also for non-square matrices
 %
-%   See also: squareform, squareform_sp
+%   See also: squareform_sp
 
 % code author: Vassilis Kalofolias
 % date: March 2016

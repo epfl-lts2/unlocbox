@@ -1,68 +1,46 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.0//EN">
-<html>
-<head>
-<title>{TITLE}</title>
-<link rel="stylesheet" href="{BASEDIR}include/mat2doc.css" type="text/css">
-<link rel="stylesheet" href="{BASEDIR}include/color_text.css" type="text/css">
-<META NAME="keywords" CONTENT="{KEYWORDS}"/> 
-
-<!-- Script to enable latex equations with MathJax -->
-<script type="text/javascript"
-   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-
+<!DOCTYPE html>
+<html lang="en">
+<head class="include" file="../../include/header.html">
+<link rel="stylesheet" href="../../include/html4css1.css" type="text/css">
+<link rel="stylesheet" href="../../include/unlocbox.css" type="text/css">
+<link rel="stylesheet" href="../../include/color_text.css" type="text/css">
+<title>UNLocBoX - Matlab Convex optimization toolbox</title>
+<META NAME="keywords" CONTENT="UNLocX, UNLocBoX, convex, optimization, problem, sparsity, forward, backward, admm, sdmm, douglas, rachford, proximal, operator, splitting, method, matlab, toolbox, LTS2"/> 
 </head>
-
+<body>
 <div id="container">
-<div id="header">
-<table style="height:100%; width:100%">
-<tr>
-<td valign="top" width="75%">
-<h1>The title of my toolbox</h1>
+    <div id="header">
+        <div class="masthead include" file="../../include/topofpage.html"></div>
+    </div>
+    <div id="navigation">
+        <div class="masthead include" file="../../include/menu.html"></div>
+    </div>
+     <div id="content">
+        <table width=100% >
+            <tr valign=top>
+            <td>
+                <div id="main_content">
 
-<h2>Short description of my toolbox</h2>
-</td>
-<td valign="middle">
-<a href="./index.php"><img src="{BASEDIR}include/logo_tr.png" alt="Logo" height="70"></a>
-</td>
-</tr>
-</table> 
+                    {CONTENT}
+
+                </div>
+            </td>
+            <td>
+                <div id="sidebar">
+                    <div class="span2-doc" id="codeswitch">{SWITCHVIEW}</div>
+                    <br/>
+                    <div id="seealso"><p>{SEEALSO}</p></div>
+                </div>
+            </td>            
+            </tr>
+        </table>
+    </div>
+    <div id="footer">
+        <div class="masthead include" file="../../include/bottom.html"></div>
+    </div>
 </div>
-<div id="space"></div>
-<div id="main_content">
-<table width="100%">
-<tr>
-<td valign="top" width="20%">
-<div id="menu">
-{SWITCHVIEW}
-{SEEALSO}
-{MENU}
-
-</div>
-</td>
-<td valign="top"  width="80%">
-
-
-
-<div id="content">
-
-{CONTENT}
-
-
-</div>
-
-
-</td>
-</tr>
-</table>
-</div>
-<div id="space"></div>
-<div id="footer">
-Designed by: {AUTHOR}
-</div>
-</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="../../include/unlocbox.js" type="text/javascript"></script>
 
 </body>
 </html>
-
-

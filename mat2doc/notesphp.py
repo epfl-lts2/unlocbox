@@ -148,7 +148,7 @@ def createindexpage(noteprefix,notesdir,allnotes,keys,filename):
 
     # Open table, and append header and first horizontal line
     obuf.append('<table cellpadding=5><tr valign=top><td>')   
-    obuf.append('<tr valign="top" align="left"><th><a href="index.html">No.</a></th><th><a href="index_author.html">Name</a></th><th><a href="index_year.html">Year</a></th><th><a href="index_type.html">Type</a></th></tr>')
+    obuf.append('<tr valign="top" align="left"><th><a href="index.php">No.</a></th><th><a href="index_author.php">Name</a></th><th><a href="index_year.php">Year</a></th><th><a href="index_type.php">Type</a></th></tr>')
     obuf.append('<tr><td colspan=4><hr /></td></tr>')
 
     for note in keys:
@@ -234,21 +234,21 @@ def printnoteshtml(noteprefix,notesdir,notehtml):
     keys=allnotesdict.keys()
     keys.sort()
 
-    createindexpage(noteprefix,notesdir,allnotesdict,keys,notehtml+'by_number.html')
+    createindexpage(noteprefix,notesdir,allnotesdict,keys,notehtml+'by_number.php')
     
     keys.sort(key=lambda x: allnotesdict[x]['year'])
 
-    createindexpage(noteprefix,notesdir,allnotesdict,keys,notehtml+'by_year.html')
+    createindexpage(noteprefix,notesdir,allnotesdict,keys,notehtml+'by_year.php')
 
     keys.sort()
     keys.sort(key=lambda x: allnotesdict[x]['type'])
 
-    createindexpage(noteprefix,notesdir,allnotesdict,keys,notehtml+'by_type.html')
+    createindexpage(noteprefix,notesdir,allnotesdict,keys,notehtml+'by_type.php')
 
     keys.sort()
     keys.sort(key=lambda x: allnotesdict[x]['author'][0]['name'].split(' ')[:-1])
 
-    createindexpage(noteprefix,notesdir,allnotesdict,keys,notehtml+'by_author.html')
+    createindexpage(noteprefix,notesdir,allnotesdict,keys,notehtml+'by_author.php')
 
     for note in notes:                
         notename=noteprefix+note
