@@ -49,14 +49,14 @@ function [sol, s, param] = chambolle_pock_initialize(x_0,fg,Fp,param)
         s.tau = 1/sqrt(s.norm_L);
         s.sigma = 1/sqrt(s.norm_L);
     % timestep #2
-    elseif ~isfield(param, 'tau')
+    elseif isfield(param, 'tau')
         s.tau = param.tau;
         s.sigma = 1/ (s.tau * s.norm_L);
         if s.sigma <0
             error('Tau is too big!')
         end
     % timestep #1
-    elseif ~isfield(param, 'sigma')
+    elseif isfield(param, 'sigma')
         s.sigma = param.sigma;
         s.tau = 1/(s.sigma * s.norm_L);
     else
@@ -78,8 +78,6 @@ function [sol, s, param] = chambolle_pock_initialize(x_0,fg,Fp,param)
     end
     
     
-       if ~isfield(param, 'tau'), param.tau=1 ; end
-    if ~isfield(param, 'rho'), param.rho=1 ; end
  
     
 
