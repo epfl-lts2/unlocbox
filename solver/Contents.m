@@ -5,8 +5,9 @@
 %
 %  General solvers
 %    ADMM               -  Alternating-direction method of multipliers algorithm.
-%    DOUGLAS_RACHFORD   -  Foward backward splitting algorithm.
+%    DOUGLAS_RACHFORD   -  Douglas Rachford splitting algorithm.
 %    FORWARD_BACKWARD   -  Foward backward splitting algorithm.
+%    CHAMBOLLE_POCK     -  Chambolle Pock splitting algorithm.
 %    GENERALIZED_FORWARD_BACKWARD - Generaliyed foward backward splitting algorithm.
 %    PPXA               -  Parallel Proximal algorithm.
 %    SDMM               -  Simultaneous-direction method of multipliers algorithm.

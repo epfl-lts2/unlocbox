@@ -14,7 +14,7 @@ function [sol, s, param] = chambolle_pock_initialize(x_0,fg,Fp,param)
 
     if (numel(Fp)==1)
         Fp{2}.prox = @(x,T) x;
-        Fp{2}.eval = eps;
+        Fp{2}.eval = @(x) eps;
     end
 
     s = struct;
