@@ -88,7 +88,12 @@ if sum(param.weight) == 0
 end
 
 % Get sign of b and set to absolute values
-signx = sign(x);
+is_real = isreal(x);
+if is_real
+    signx = sign(x);
+else
+    phi = angle(x);
+end
 x = abs(x);
 
 idx = find(x > eps); % Get index of all non-zero entries of d
@@ -97,8 +102,11 @@ sol   = x;             % Ensure x_i = b_i for all i not in index set idx
 
 
 % Restore signs in x
-sol = sol.*signx;
-
+if is_real
+    sol = sol.*signx;
+else
+    sol = sol.*exp(1i*phi);
+end
 
 
 % Log after the projection onto the L2-ball
