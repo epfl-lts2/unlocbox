@@ -74,7 +74,7 @@
 %
 %      Original image
 %
-%      This figure shows the original Lena image. 
+%      This figure shows the original image. 
 %
 %   .. figure::
 %
