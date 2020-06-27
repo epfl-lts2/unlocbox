@@ -25,7 +25,7 @@
 %
 %      Original image
 %
-%      This figure shows the original Lena image. 
+%      This figure shows the original image. 
 %
 %   .. figure::
 %
@@ -62,7 +62,8 @@ verbose = 2;    % verbosity level
 tau = 0.1; % Regularization parameter for the problem
 
 % Original image
-im_original = lena();
+im_original = barbara();
+
 
 % Creating the problem
 A=rand(size(im_original));
