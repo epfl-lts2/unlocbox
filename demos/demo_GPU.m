@@ -46,7 +46,7 @@
 %
 %      Original image
 %
-%      This figure shows the original128 lena image. 
+%      This figure shows the original image. 
 %
 %   .. figure::
 %
@@ -85,7 +85,7 @@ global GLOBAL_useGPU;
 %% Create a problem
 
 % Original image
-im_original = lena(); 
+im_original = barbara(); 
 
 % Creating the problem
 M=rand(size(im_original))<0.3;

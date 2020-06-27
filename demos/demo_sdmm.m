@@ -38,7 +38,7 @@
 %
 %      Original image
 %
-%      This figure shows the original image (The cameraman). 
+%      This figure shows the original image (Barbara). 
 %
 %   .. figure::
 %
@@ -72,7 +72,7 @@ verbose = 2;    % verbosity level
 %% Defining the problem
 
 % Original image
-im_original = lena();
+im_original = barbara();
 
 % Depleted image
 sigma=0.9;
