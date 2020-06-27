@@ -6,8 +6,9 @@
 .. |gradient_descent| replace:: :linkrole:`<a href="#BASEURL#/doc/solver/gradient_descent.html">gradient_descent</a>`
 .. |prox_tv3d| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_tv3d.html">prox_tv3d</a>`
 .. |close_unlocbox| replace:: :linkrole:`<a href="#BASEURL#/doc/base/close_unlocbox.html">close_unlocbox</a>`
-.. |prox_nuclearnorm_block| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_nuclearnorm_block.html">prox_nuclearnorm_block</a>`
+.. |vec| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/vec.html">vec</a>`
 .. |init_unlocbox| replace:: :linkrole:`<a href="#BASEURL#/doc/base/init_unlocbox.html">init_unlocbox</a>`
+.. |chambolle_pock| replace:: :linkrole:`<a href="#BASEURL#/doc/solver/chambolle_pock.html">chambolle_pock</a>`
 .. |prox_linf1| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_linf1.html">prox_linf1</a>`
 .. |gradient_op| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/gradient_op.html">gradient_op</a>`
 .. |demo_unlocbox| replace:: :linkrole:`<a href="#BASEURL#/doc/demos/demo_unlocbox.html">demo_unlocbox</a>`
@@ -60,7 +61,6 @@
 .. |rlr| replace:: :linkrole:`<a href="#BASEURL#/doc/solver/rlr.html">rlr</a>`
 .. |zero_diag| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/zero_diag.html">zero_diag</a>`
 .. |prox_l2gradfourier| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_l2gradfourier.html">prox_l2gradfourier</a>`
-.. |vec| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/vec.html">vec</a>`
 .. |norm_linf1| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/norm_linf1.html">norm_linf1</a>`
 .. |demo_graph_reconstruction| replace:: :linkrole:`<a href="#BASEURL#/doc/demos/demo_graph_reconstruction.html">demo_graph_reconstruction</a>`
 .. |norm_l21| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/norm_l21.html">norm_l21</a>`
@@ -68,12 +68,13 @@
 .. |proj_b1| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/proj_b1.html">proj_b1</a>`
 .. |proj_b2| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/proj_b2.html">proj_b2</a>`
 .. |prox_sum_log_norm2| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_sum_log_norm2.html">prox_sum_log_norm2</a>`
+.. |prox_nuclearnorm_block| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_nuclearnorm_block.html">prox_nuclearnorm_block</a>`
 .. |prox_adjoint| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_adjoint.html">prox_adjoint</a>`
 .. |gradient_op1d| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/gradient_op1d.html">gradient_op1d</a>`
 .. |div_op4d| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/div_op4d.html">div_op4d</a>`
-.. |norm_sumg| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/norm_sumg.html">norm_sumg</a>`
-.. |demo_admm| replace:: :linkrole:`<a href="#BASEURL#/doc/demos/demo_admm.html">demo_admm</a>`
 .. |proj_nuclearnorm| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/proj_nuclearnorm.html">proj_nuclearnorm</a>`
+.. |demo_admm| replace:: :linkrole:`<a href="#BASEURL#/doc/demos/demo_admm.html">demo_admm</a>`
+.. |norm_sumg| replace:: :linkrole:`<a href="#BASEURL#/doc/utils/norm_sumg.html">norm_sumg</a>`
 .. |prox_l1| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_l1.html">prox_l1</a>`
 .. |prox_l0| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_l0.html">prox_l0</a>`
 .. |prox_l2| replace:: :linkrole:`<a href="#BASEURL#/doc/prox/prox_l2.html">prox_l2</a>`
