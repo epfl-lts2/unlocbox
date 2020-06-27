@@ -69,7 +69,7 @@ t1 = tic;
 if ~isfield(param, 'verbose'), param.verbose = 1; end
 if ~isfield(param, 'method'), param.method = 'quadprog'; end
 
-if ~isfield(param, 'A'), param.A = eye(length(x)); end
+if ~isfield(param, 'A'), param.A = @(x) x; end
 
 if isnumeric(param.A)
     A = @(x) param.A*x;
