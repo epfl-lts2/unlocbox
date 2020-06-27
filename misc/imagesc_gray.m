@@ -32,7 +32,7 @@ function [] = imagesc_gray( im,nfig,tit,subplotn,clim )
 %
 %   Example:::
 %   
-%       img = lena();
+%       img = barbara();
 %       imagesc_gray(img);
 %
 
