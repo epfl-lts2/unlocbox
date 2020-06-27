@@ -46,7 +46,7 @@
 %
 %      Original image
 %
-%      This figure shows the original Lena image. 
+%      This figure shows the original image. 
 %
 %   .. figure::
 %
@@ -80,7 +80,7 @@ verbose = 2;    % Verbosity level
 %% Creation of the problem
 
 % Original image
-im_original = lena();   
+im_original = barbara();   
 
 % Creating the problem
 A = rand(size(im_original));
