@@ -8,10 +8,10 @@ function [im]=mandrill(color)
 %   Output parameters:
 %       none    :
 %
-%   `mandrill()` loads the graylevel 'peppers' signal. Peppers is a common
+%   `mandrill()` loads the black and white 'mandrill' signal. Mandrill is a common
 %   image processing test image of resolution (512 x 512).   
 %
-%   `mandrill(1)` loads the color 'peppers' signal.
+%   `mandrill(1)` loads the color 'mandrill' signal (512 x 512 x 3).
 %   
 %   This signal, and other standard image tests signals, can be found on
 %   Morgan McGuire's Computer Graphics
