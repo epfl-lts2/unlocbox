@@ -1,4 +1,5 @@
 .DS_Store
 *.pyc
 *~
+mat2doc/html/ref-unlocbox.txt
 test_bench/octave-workspace
