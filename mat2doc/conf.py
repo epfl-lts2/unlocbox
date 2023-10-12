@@ -5,8 +5,4 @@ versionfile="unlocbox_version"
 year="2014"
 
 outputdir = '/tmp'
-
-try:
-    from conf_local import *
-except:
-    raise
+outputdir='/Users/nati/work/publish/unlocbox/'

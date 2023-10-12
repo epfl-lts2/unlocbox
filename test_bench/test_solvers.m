@@ -1,7 +1,7 @@
 function [ errors ] = test_solvers( )
 %TEST_SOLVERS test differents solvers
 errors=0;
-gsp_reset_seed(1);
+reset_seed(1);
 
 errors=errors+test_chambolle_pock_simple();
 errors=errors+test_chambolle_pock_complex();
@@ -139,8 +139,8 @@ function [errors]=test_all_solver()
     lambda = 0.03;
 
     x0 = y;
-    H =@(x) 1/N* dct2(x);
-    Ht = @(x) N * idct2(x);
+    H =@(x) 1/N* dctii(x);
+    Ht = @(x) N * dstiii(x);
     
     f1.eval = @(x) 1/2*norm(A(x)-y)^2;
     f1.grad = @(x) At(A(x)-y);
@@ -379,7 +379,7 @@ function [errors]=test_fwbw_simple()
     end
     N = 10;
     
-    A = dct(eye(N));
+    A = dctii(eye(N));
     y = N*rand(N,1);
     x0 = rand(N,1);
 
@@ -1209,8 +1209,8 @@ function [errors] = test_fb_based_primal_dual3()
     
     y = 3*rand(N,1);
     x0 = rand(N,1);
-    A =@(x) 1/sqrt(N) * dct(x);
-    At = @(x) sqrt(N) * idct(x);
+    A =@(x) 1/sqrt(N) * dctii(x);
+    At = @(x) sqrt(N) * dctiii(x);
     f1.eval = @(x) 1/2*norm(x-y)^2;
     paraml2.y = y;
     paraml2.verbose = 0;
@@ -1263,8 +1263,8 @@ function [errors] = test_fb_based_primal_dual4()
     
     y = 3*rand(N,1);
     x0 = rand(N,1);
-    A =@(x) 1/sqrt(N) * dct(x);
-    At = @(x) sqrt(N) * idct(x);
+    A =@(x) 1/sqrt(N) * dctii(x);
+    At = @(x) sqrt(N) * dctiii(x);
     f1.eval = @(x) 1/2*norm(x-y)^2;
     paraml2.y = y;
     paraml2.verbose = 0;
@@ -1319,8 +1319,8 @@ function [errors] = test_fb_based_primal_dual_fista()
     
     y = 3*rand(N,1);
     x0 = rand(N,1);
-    A =@(x) 1/sqrt(N) * dct(x);
-    At = @(x) sqrt(N) * idct(x);
+    A =@(x) 1/sqrt(N) * dctii(x);
+    At = @(x) sqrt(N) * dctiii(x);
     f1.eval = @(x) 1/2*norm(x-y)^2;
     paraml2.y = y;
     paraml2.verbose = 0;

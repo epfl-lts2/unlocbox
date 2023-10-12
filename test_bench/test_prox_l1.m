@@ -47,7 +47,7 @@ function [errors]=test_tight(tol)
     s = 2*rand(N);
     y = 1/N*fft2(s);
     y(abs(y)<=1) = 0;
-    y(abs(y)>0) = exp(1i*phase(y(abs(y)>0))) .* (abs(y(abs(y)>0)) - 1);
+    y(abs(y)>0) = exp(1i*angle(y(abs(y)>0))) .* (abs(y(abs(y)>0)) - 1);
     
     param.verbose = 0;
     param.A = @(x) 1/N*fft2(x); 

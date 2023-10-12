@@ -38,7 +38,7 @@ def parseconfigfiles(noteprefix,notesdir,authdict):
 
         conffilename=notesdir+note+'/config'
         if not os.path.exists(conffilename):
-            print 'Skipping note',note,'config file missing'
+            print('Skipping note',note,'config file missing')
             continue
 
         notes_found.append(note)
@@ -220,7 +220,7 @@ def createindexpage(noteprefix,notesdir,allnotes,keys,filename):
 def printnoteshtml(noteprefix,notesdir,notehtml):
 
     # Parse the authors file in the scripts directory
-    print notesdir+'scripts/authors'
+    print(notesdir+'scripts/authors')
     authdict = parseauthors(notesdir+'scripts/authors')
 
     # Get information from all the 'config' files

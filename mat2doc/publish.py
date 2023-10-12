@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!python
 
 import sys,os,platform
 import publishfunctions
@@ -16,7 +16,8 @@ else:
     homefolder = '/home/nati'
 
 
-project=homefolder+'/work/git/toolbox/unlocbox/'
+# project=homefolder+'/work/git/toolbox/unlocbox/'
+project=homefolder+'/SDSC/codes/unlocbox/'
 
 # Configure HTML placement at remote server
 # host='nperraud,'+projectname+'@web.sourceforge.net'
@@ -28,11 +29,11 @@ project=homefolder+'/work/git/toolbox/unlocbox/'
 user = 'nati'
 
 # -------- Configuration of mat2doc ------------
-mat2docpath=homefolder+'/work/git/mat2doc'
+mat2docpath=homefolder+'/SDSC/codes/mat2doc'
 
 # Configure matlab paths
-unlocxpath = homefolder+'/work/git/toolbox/unlocbox'
-ltfatpath = homefolder+'/work/git/toolbox/ltfat'
+unlocxpath = homefolder+'/SDSC/codes/unlocbox'
+ltfatpath = homefolder+'/SDSC/codes/ltfat'
 outputdirweb= '~/work/git/website/unlocbox-html/'
 
 # -------- Configuration of note ------------
@@ -58,9 +59,8 @@ outputdirrelease=outputdir+projectname+'-release/'
 outputdirtex=outputdir+projectname+'-tex/'
 outputdirhtml=outputdir+projectname+'-html/'
 
-f=file(project+projectname+'_version')
-versionstring=f.read()[:-1]
-f.close()
+with open(project+projectname+'_version', 'r') as f:
+    versionstring=f.read()[:-1]
 
 # ------- do not edit below this line ----------
 f = open(project + 'mat2doc/startup.m', 'w')
@@ -104,7 +104,8 @@ if 'phpall' in todo:
 #  Publish
 for mode in  ['mat', 'php', 'html', 'tex']:
     if mode in todo:
-        s = '%s %s/mat2doc.py %s%s %s %s' % ('PYTHONPATH="%s:$PYTHONPATH"' % (curdir,), mat2docpath, plot if mode != 'mat' else '', build if mode != 'mat' else '', project, mode,)
+        s = 'python %s/mat2doc.py %s%s %s %s' % (mat2docpath, plot if mode != 'mat' else '', build if mode != 'mat' else '', project, mode,)
+        print(s)
         os.system(s)
 
 
@@ -203,7 +204,7 @@ if 'notesclean' in todo:
     notes2 = filter(lambda x: (os.path.exists(notesdir+x+'/Makefile')), notes2)
 
     for notenumber in notes2:
-        print 'Cleaning Unlocbox-note '+notenumber
+        print('Cleaning Unlocbox-note '+notenumber)
         os.system('cd '+notesdir+notenumber+'; make clean')
 
 if 'notestexclean' in todo:
@@ -213,7 +214,7 @@ if 'notestexclean' in todo:
     notes2 = filter(lambda x: (os.path.exists(notesdir+x+'/Makefile')), notes2)
 
     for notenumber in notes2:
-        print 'Cleaning Unlocbox-note '+notenumber
+        print('Cleaning Unlocbox-note '+notenumber)
         os.system('cd '+notesdir+notenumber+'; make texclean')
 
 if 'notesmake' in todo:
@@ -222,7 +223,7 @@ if 'notesmake' in todo:
     notes2 = filter(lambda x: (os.path.exists(notesdir+x+'/Makefile')), notes2)
 
     for notenumber in notes2:
-        print 'Trying to make Unlocbox-note '+notenumber
+        print('Trying to make Unlocbox-note '+notenumber)
         os.system('cd '+notesdir+notenumber+'; make')
 
 

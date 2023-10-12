@@ -15,7 +15,7 @@ function [sol, info] = chambolle_pock(x_0,f1, f2, param)
 %
 %   `chambolle_pock` solves:
 %
-%   ..  min max  <Lx;y> f1(x) - f2*(y)
+%   ..  min max  <Lx;y> + f1(x) - f2*(y)
 %   ..   x   y 
 %
 %   .. math::  \min_x \max_y \langle Lx ; y \rangle + f_1(x) - f_2^*(y)  
